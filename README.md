@@ -38,17 +38,17 @@ Note that this package is both an XBlock and a Django application. For installat
 			to
 			- ```‘ALLOW_ALL_ADVANCED_COMPONENTS’: True,```
 4. Log in to studio (with VM running).
-		1. Login
-			- ```paver devstack studio```
-		2. Open a browser and navigate to the following link.
-			http://localhost:8001/
-		3. Login through the user interface using one of the following accounts.
-			- ```staff@example.com / edx```
-			- ```verified@example.com / edx```
-			- ```audit@example.com / edx```
-			- ```honor@example.com / edx```
+	1. Login
+		- ```paver devstack studio```
+	2. Open a browser and navigate to the following link.
+		- http://localhost:8001/
+	3. Login through the user interface using one of the following accounts.
+		- ```staff@example.com / edx```
+		- ```verified@example.com / edx```
+		- ```audit@example.com / edx```
+		- ```honor@example.com / edx```
 5. Change Advanced Settings
-		1. Open a course you are authoring and select "Settings" ⇒ "Advanced Settings"
-		2. Navigate to the section titled “Advanced Modules”
-		3. Add “edx_sga” to module list.
-		4. Now when you add an “Advanced” unit in Studio, “Staff Graded Assignment” will be an option.
+	1. Open a course you are authoring and select "Settings" ⇒ "Advanced Settings
+	2. Navigate to the section titled “Advanced Modules”
+	3. Add “edx_sga” to module list.
+	4. Now when you add an “Advanced” unit in Studio, “Staff Graded Assignment” will be an option.
