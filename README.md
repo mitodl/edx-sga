@@ -10,14 +10,14 @@ Note that this package is both an XBlock and a Django application. For installat
 	2. Install Pip ```sudo easy_install pip```
 	3. Install Vagrant (Version 1.6.3).
 	4. Install Vagrant plugin.
-        	1. Download the Vagrantfile.
-        	2. Get the virtual machine running.
-                	- ```mkdir devstack```
-                	- ```cd devstack```
-                	- ```curl –L https://raw.githubusercontent.com/edx/configuration/master/vagrant/release/devstack/Vagrantfile > Vagrantfile```
-                	- ```vagrant plugin install vagrant-vbguest```
-                	- ```vagrant up```
-                	- ```vagrant ssh```
+		1. Download the Vagrantfile.
+		2. Get the virtual machine running.
+			- ```mkdir devstack```
+			- ```cd devstack```
+			- ```curl –L https://raw.githubusercontent.com/edx/configuration/master/vagrant/release/devstack/Vagrantfile > Vagrantfile```
+			- ```vagrant plugin install vagrant-vbguest```
+			- - ```vagrant up```
+			- ```vagrant ssh```
 2. Install Package using Pip install (with VM running)
 	1. Download edx_sga package from the following GitHub link.
 		- https://github.com/mitodl/edx-sga
@@ -52,3 +52,4 @@ Note that this package is both an XBlock and a Django application. For installat
 		2. Navigate to the section titled “Advanced Modules”
 		3. Add “edx_sga” to module list.
 		4. Now when you add an “Advanced” unit in Studio, “Staff Graded Assignment” will be an option.
+	
