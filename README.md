@@ -52,4 +52,3 @@ Note that this package is both an XBlock and a Django application. For installat
 		2. Navigate to the section titled “Advanced Modules”
 		3. Add “edx_sga” to module list.
 		4. Now when you add an “Advanced” unit in Studio, “Staff Graded Assignment” will be an option.
-	
