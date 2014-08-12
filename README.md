@@ -5,10 +5,49 @@ This package provides an XBlock for use with the edX platform which provides a s
 
 Note that this package is both an XBlock and a Django application. For installation:
 
--   Install this package as an egg into the same environment as the edX platform using pip install.
--   Add edx\_sga to INSTALLED\_APPS in your Django settings.
--   Log in to Studio, navigate to a course you are authoring, and select "Settings" -\> "Advanced Settings". Extend the key "advanced\_modules" to include "edx\_sga" in the list modules.
-
-Now when you add an "Advanced" unit in Studio, "Staff Graded Asssignment" will be an option:
-
-![image](/../screenshots/img/screenshot-studio-new-unit.png?raw=tru)
+1.     edX Developer Stack Installation: Install Vagrant, Pip, & VirtualBox
+1.1    Install Virtual Box (Version 4.3.12).
+1.2    Install Pip ```sudo easy_install pip```
+1.3    Install Vagrant (Version 1.6.3).
+1.4    Install Vagrant plugin.
+1.4.1  Download the Vagrantfile.
+1.4.2  Get the virtual machine running.
+```mkdir devstack```
+```cd devstack```
+```curl –L https://raw.githubusercontent.com/edx/configuration/master/vagrant/release/devstack/Vagrantfile > Vagrantfile```
+```vagrant plugin install vagrant-vbguest```
+```vagrant up```
+```vagrant ssh```
+2.     Install Package using Pip install (with VM running)
+2.1    Download edx_sga package from the following GitHub link.
+       https://github.com/mitodl/edx-sga
+2.2    Pip install
+       ```cd downloads```
+       ```pip install [name of edx_sga]```
+3      Add edx_sga to INSTALLED_APPS in Django settings
+3.1    Enable an XBlock for testing in your devstack
+3.1.1  In "edx-platform/lms/envs/common.py", uncomment:
+```# from xmodule.x_module import prefer_xmodules```
+```# XBLOCK_SELECT_FUNCTION = prefer_xmodules```
+3.1.2  In "edx-platform/cms/envs/common.py", uncomment:
+```# from xmodule.x_module import prefer_xmodules```
+```# XBLOCK_SELECT_FUNCTION = prefer_xmodules```
+3.1.3  In "edx-platform/cms/envs/common.py", change:
+```‘ALLOW_ALL_ADVANCED_COMPONENTS’: False,```
+to
+```‘ALLOW_ALL_ADVANCED_COMPONENTS’: True,```
+4.     Log in to studio (with VM running).
+4.1    Login
+```paver devstack studio```
+4.2    Open a browser and navigate to the following link.
+http://localhost:8001/
+4.3    Login through the user interface using one of the following accounts.
+```staff@example.com / edx```
+```verified@example.com / edx```
+```audit@example.com / edx```
+```honor@example.com / edx```
+5.     Change Advanced Settings
+5.1    Open a course you are authoring and select "Settings" ⇒ "Advanced Settings"
+5.2    Navigate to the section titled “Advanced Modules”
+5.3    Add “edx_sga” to module list.
+5.4    Now when you add an “Advanced” unit in Studio, “Staff Graded Assignment” will be an option.
