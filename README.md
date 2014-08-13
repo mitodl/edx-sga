@@ -26,10 +26,7 @@ Note that this package is both an XBlock and a Django application. For installat
 		- ```cd downloads```
 		- ```pip install [name of edx_sga]```
 
-3. Add edx_sga to INSTALLED_APPS in Django settings
-
-Enable an XBlock for testing in your devstack
-
+3. Add edx_sga to INSTALLED_APPS in Django settings. Enable an XBlock for testing in your devstack.
  	1. In "edx-platform/lms/envs/common.py", uncomment:
  		- ```# from xmodule.x_module import prefer_xmodules```
  		- ```# XBLOCK_SELECT_FUNCTION = prefer_xmodules```
