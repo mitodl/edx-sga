@@ -25,15 +25,15 @@ Note that this package is both an XBlock and a Django application. For installat
     - `pip install -e git+https://github.com/mitodl/edx-sga@master#egg=edx-sga`
 3. Add edx_sga to INSTALLED_APPS in Django settings. Enable an XBlock for testing in your devstack.
     - In `edx-platform/lms/envs/common.py`, uncomment:  
-    ```sh  
+    ```sh
     # from xmodule.x_module import prefer_xmodules  
     # XBLOCK_SELECT_FUNCTION = prefer_xmodules  
-    ```  
+    ```
     - In `edx-platform/cms/envs/common.py`, uncomment:  
-    ```sh  
+    ```sh
     # from xmodule.x_module import prefer_xmodules  
     # XBLOCK_SELECT_FUNCTION = prefer_xmodules  
-    ```  
+    ```
     - In `edx-platform/cms/envs/common.py`, change: 
     ```sh
     ‘ALLOW_ALL_ADVANCED_COMPONENTS’: False,
