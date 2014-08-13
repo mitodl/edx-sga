@@ -18,6 +18,7 @@ Note that this package is both an XBlock and a Django application. For installat
 			- ```vagrant plugin install vagrant-vbguest```
 			- ```vagrant up```
 			- ```vagrant ssh```
+
 2. Install Package using Pip install (with VM running)
 	1. Download edx_sga package from the following GitHub link.
 		- https://github.com/mitodl/edx-sga
@@ -37,6 +38,7 @@ Note that this package is both an XBlock and a Django application. For installat
 			- ```‘ALLOW_ALL_ADVANCED_COMPONENTS’: False,```
 			to
 			- ```‘ALLOW_ALL_ADVANCED_COMPONENTS’: True,```
+
 4. Log in to studio (with VM running).
 	1. Login
 		- ```paver devstack studio```
@@ -47,6 +49,7 @@ Note that this package is both an XBlock and a Django application. For installat
 		- ```verified@example.com / edx```
 		- ```audit@example.com / edx```
 		- ```honor@example.com / edx```
+
 5. Change Advanced Settings
 	1. Open a course you are authoring and select "Settings" ⇒ "Advanced Settings
 	2. Navigate to the section titled “Advanced Modules”
