@@ -20,36 +20,40 @@ vagrant plugin install vagrant-vbguest```
 vagrant up
 vagrant ssh
 ```
+
 2. Install Package using Pip install (with VM running)
 
-	- `pip install git+https://github.com/mitodl/edx-sga`
+`pip install git+https://github.com/mitodl/edx-sga`
 
 3. Add edx_sga to INSTALLED_APPS in Django settings. Enable an XBlock for testing in your devstack.
   1. In "edx-platform/lms/envs/common.py", uncomment:
+
 ```sh
 # from xmodule.x_module import prefer_xmodules
 # XBLOCK_SELECT_FUNCTION = prefer_xmodules
 ```
- 	2. In "edx-platform/cms/envs/common.py", uncomment:
+
+  2. In "edx-platform/cms/envs/common.py", uncomment:
+
 ```sh
 # from xmodule.x_module import prefer_xmodules
 # XBLOCK_SELECT_FUNCTION = prefer_xmodules
 ```
- 	3. In "edx-platform/cms/envs/common.py", change:
- 	  - `‘ALLOW_ALL_ADVANCED_COMPONENTS’: False,`
- 	  to
- 	  - `‘ALLOW_ALL_ADVANCED_COMPONENTS’: True,`
+
+  3. In "edx-platform/cms/envs/common.py", change:
+    - `‘ALLOW_ALL_ADVANCED_COMPONENTS’: False,`
+    to
+    - `‘ALLOW_ALL_ADVANCED_COMPONENTS’: True,`
 
 4. Log in to studio (with VM running).
-  1. Login
-    - ```paver devstack studio```
+  1. Login `paver devstack studio`
   2. Open a browser and navigate to the following link.
     - [http://localhost:8001/](http://localhost:8001/)
   3. Login through the user interface using one of the following accounts.
-		- ```staff@example.com / edx```
-		- ```verified@example.com / edx```
-		- ```audit@example.com / edx```
-		- ```honor@example.com / edx```
+    - `staff@example.com / edx`
+    - `verified@example.com / edx`
+    - `audit@example.com / edx`
+    - `honor@example.com / edx`
 
 5. Change Advanced Settings
   1. Open a course you are authoring and select "Settings" ⇒ "Advanced Settings
