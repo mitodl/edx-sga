@@ -5,7 +5,7 @@ This package provides an XBlock for use with the edX platform which provides a s
 
 Note that this package is both an XBlock and a Django application. For installation:
 
-1. edX Developer Stack Installation: Install Vagrant, Pip, & VirtualBox [edX Developer Stack](https://github.com/edx/configuration/wiki/edX-Developer-Stack)
+1.edX Developer Stack Installation: Install Vagrant, Pip, & VirtualBox [edX Developer Stack](https://github.com/edx/configuration/wiki/edX-Developer-Stack)
 	1. Install Virtual Box (Version 4.3.12).
 	2. Install Pip `sudo easy_install pip`
 	3. Install Vagrant (Version 1.6.3).
@@ -20,11 +20,11 @@ vagrant plugin install vagrant-vbguest```
 vagrant up
 vagrant ssh
 ```
-2. Install Package using Pip install (with VM running)
+2.Install Package using Pip install (with VM running)
 
-`pip install git+https://github.com/mitodl/edx-sga`
+	- `pip install git+https://github.com/mitodl/edx-sga`
 
-3. Add edx_sga to INSTALLED_APPS in Django settings. Enable an XBlock for testing in your devstack.
+3.Add edx_sga to INSTALLED_APPS in Django settings. Enable an XBlock for testing in your devstack.
  	1. In "edx-platform/lms/envs/common.py", uncomment:
  		- ```# from xmodule.x_module import prefer_xmodules```
  		- ```# XBLOCK_SELECT_FUNCTION = prefer_xmodules```
@@ -36,7 +36,7 @@ vagrant ssh
  		to
  		- ```‘ALLOW_ALL_ADVANCED_COMPONENTS’: True,```
 
-4. Log in to studio (with VM running).
+4.Log in to studio (with VM running).
 	1. Login
 		- ```paver devstack studio```
 	2. Open a browser and navigate to the following link.
@@ -47,7 +47,7 @@ vagrant ssh
 		- ```audit@example.com / edx```
 		- ```honor@example.com / edx```
 
-5. Change Advanced Settings
+5.Change Advanced Settings
 	1. Open a course you are authoring and select "Settings" ⇒ "Advanced Settings
 	2. Navigate to the section titled “Advanced Modules”
 	3. Add “edx_sga” to module list.
