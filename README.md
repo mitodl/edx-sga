@@ -24,15 +24,15 @@ vagrant ssh
     - `pip install git+https://github.com/mitodl/edx-sga`
 3. Add edx_sga to INSTALLED_APPS in Django settings. Enable an XBlock for testing in your devstack.
     1. In `edx-platform/lms/envs/common.py`, uncomment:
-```sh
-# from xmodule.x_module import prefer_xmodules
-# XBLOCK_SELECT_FUNCTION = prefer_xmodules
-```
+        ```sh
+        # from xmodule.x_module import prefer_xmodules
+        # XBLOCK_SELECT_FUNCTION = prefer_xmodules
+        ```
     2. In `edx-platform/cms/envs/common.py`, uncomment:
-```sh
-# from xmodule.x_module import prefer_xmodules
-# XBLOCK_SELECT_FUNCTION = prefer_xmodules
-```
+        ```sh
+        # from xmodule.x_module import prefer_xmodules
+        # XBLOCK_SELECT_FUNCTION = prefer_xmodules
+        ```
     3. In `edx-platform/cms/envs/common.py`, change:
         - `‘ALLOW_ALL_ADVANCED_COMPONENTS’: False,` to
         - `‘ALLOW_ALL_ADVANCED_COMPONENTS’: True,`
