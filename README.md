@@ -32,8 +32,10 @@ Note that this package is both an XBlock and a Django application. For installat
 			- ```# from xmodule.x_module import prefer_xmodules```
 			- ```# XBLOCK_SELECT_FUNCTION = prefer_xmodules```
 		2. In "edx-platform/cms/envs/common.py", uncomment:
-			- ```# from xmodule.x_module import prefer_xmodules```
-			- ```# XBLOCK_SELECT_FUNCTION = prefer_xmodules```
+```
+# from xmodule.x_module import prefer_xmodules
+# XBLOCK_SELECT_FUNCTION = prefer_xmodules
+```
 		3. In "edx-platform/cms/envs/common.py", change:
 			- ```‘ALLOW_ALL_ADVANCED_COMPONENTS’: False,```
 			to
