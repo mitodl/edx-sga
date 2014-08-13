@@ -37,7 +37,8 @@ Note that this package is both an XBlock and a Django application. For installat
     3. In `edx-platform/cms/envs/common.py`, change: 
     ```sh
     ‘ALLOW_ALL_ADVANCED_COMPONENTS’: False,
-    ``` to
+    ```
+        to
     ```sh
     ‘ALLOW_ALL_ADVANCED_COMPONENTS’: True,
     ```
