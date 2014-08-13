@@ -12,19 +12,17 @@ Note that this package is both an XBlock and a Django application. For installat
 	4. Install Vagrant plugin.
 		1. Download the Vagrantfile.
 		2. Get the virtual machine running.
-			- ```sh mkdir devstack```
-			- ```cd devstack```
-			- ```curl –L https://raw.githubusercontent.com/edx/configuration/master/vagrant/release/devstack/Vagrantfile > Vagrantfile```
-			- ```vagrant plugin install vagrant-vbguest```
-			- ```vagrant up```
-			- ```vagrant ssh```
-
+	```sh
+mkdir devstack
+cd devstack
+curl –L https://raw.githubusercontent.com/edx/configuration/master/vagrant/release/devstack/Vagrantfile > Vagrantfile
+vagrant plugin install vagrant-vbguest```
+vagrant up
+vagrant ssh
+```
 2. Install Package using Pip install (with VM running)
-	1. Download edx_sga package from the following GitHub link.
-		- https://github.com/mitodl/edx-sga
-	2. Pip install
-		- ```cd downloads```
-		- ```pip install [name of edx_sga]```
+
+`pip install git+https://github.com/mitodl/edx-sga`
 
 3. Add edx_sga to INSTALLED_APPS in Django settings. Enable an XBlock for testing in your devstack.
  	1. In "edx-platform/lms/envs/common.py", uncomment:
