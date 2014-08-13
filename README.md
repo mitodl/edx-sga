@@ -5,7 +5,7 @@ This package provides an XBlock for use with the edX platform which provides a s
 
 Note that this package is both an XBlock and a Django application. For installation:
 
-1. edX Developer Stack Installation: Install Vagrant, Pip, & VirtualBox [edX Developer Stack](https://github.com/edx/configuration/wiki/edX-Developer-Stack)
+1. [edX Developer Stack Installation](https://github.com/edx/configuration/wiki/edX-Developer-Stack): Install Vagrant, Pip, & VirtualBox
   1. Install Virtual Box (Version 4.3.12).
   2. Install Pip `sudo easy_install pip`
   3. Install Vagrant (Version 1.6.3).
