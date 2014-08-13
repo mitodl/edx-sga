@@ -16,7 +16,7 @@ Note that this package is both an XBlock and a Django application. For installat
 			- ```cd devstack```
 			- ```curl –L https://raw.githubusercontent.com/edx/configuration/master/vagrant/release/devstack/Vagrantfile > Vagrantfile```
 			- ```vagrant plugin install vagrant-vbguest```
-			- - ```vagrant up```
+			- ```vagrant up```
 			- ```vagrant ssh```
 2. Install Package using Pip install (with VM running)
 	1. Download edx_sga package from the following GitHub link.
