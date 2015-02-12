@@ -1,1 +1,1 @@
-from .edx_sga import StaffGradedAssignmentXBlock
+from .sga import StaffGradedAssignmentXBlock

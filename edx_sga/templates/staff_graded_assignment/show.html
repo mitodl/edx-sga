@@ -1,0 +1,180 @@
+{% load i18n %}
+
+<div class="sga-block" data-state="{{ student_state }}" 
+     data-staff="{{ is_course_staff }}">
+  <script type="text/template" id="sga-tmpl">
+    <% if (uploaded) { %>
+      <p><b>File uploaded</b> 
+        <a href="<%= downloadUrl %>"><%= uploaded.filename %></a></p>
+    <% } else { %>
+      <p>No file has been uploaded.</p>
+    <% } %>
+    <% if (graded) { %>
+      <p>Your score is <%= graded.score %> / <%= max_score %><br/>
+        <% if (graded.comment) { %>
+          <b>Instructor comment</b> <%= graded.comment %>
+        <% } %>
+        <% if (annotated) { %><br/>
+          <b>Annotated file from instructor</b>
+          <a href="<%= annotatedUrl %>"><%= annotated.filename %></a>
+        <% } %>
+      </p>
+    <% } else if (uploaded) { %>
+      {% trans "This assignment has not yet been graded." %}
+    <% } %>
+    <% if (upload_allowed) { %>
+    <p>
+      <% if (uploaded) { %>
+        {% trans "Upload a different file" %}
+      <% } else { %>
+        {% trans "Upload your assignment" %}
+      <% } %>
+      <div class="upload">
+        <input class="fileupload" type="file" name="assignment"/>
+        <button>Select a file</button>
+      </div>
+    </p>
+    <% } %>
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } %>
+  </script>
+
+  <div id="sga-content">
+  </div>
+
+  {% if is_course_staff %}
+  <script type="text/template" id="sga-grading-tmpl">
+    <table class="gridtable">
+      <tr>
+        <th>Username</th>
+        <th>Name</th>
+        <th>Filename</th>
+        <th>Uploaded</th>
+        <th>Grade</th>
+        <th>Instructor's comments</th>
+        <th>Annotated</th>
+      </tr>
+      <% for (var i = 0; i < assignments.length; i++) { %>
+      <%     var assignment = assignments[i]; %>
+        <tr id="row-<%= assignment.module_id %>">
+          <td><%= assignment.username %></td>
+          <td><%= assignment.fullname %></td>
+          <td>
+            <% if (assignment.filename) { %>
+              <a href="<%= downloadUrl %>?student_id=<%= assignment.student_id %>">
+                <%= assignment.filename %>
+              </a>
+            <% } %>
+          </td>
+          <td><%= assignment.timestamp %></td>
+          <td>
+            <% if (assignment.score !== null) { %>
+              <%= assignment.score %> /
+              <%= max_score %>
+              <% if (! assignment.approved) { %>
+                ({% trans "Awaiting instructor approval" %})
+              <% } %>
+            <% } %>
+          </td>
+          <td><%= assignment.comment %></td>
+          <td>
+            <% if (assignment.annotated) { %>
+              <a href="<%= annotatedUrl %>?module_id=<%= assignment.module_id %>">
+                <%= assignment.annotated %>
+              </a>
+            <% } %>
+          </td>
+          <td>
+            <% if (assignment.may_grade) { %>
+              <a class="enter-grade-button" href="#{{ id }}-enter-grade">
+                <% if (assignment.needs_approval) { %>
+                  {% trans "Approve grade" %}
+                <% } else { %>
+                  {% trans "Enter grade" %}
+                <% } %>
+              </a>
+            <% } %>
+          </td>
+          <td>
+            <div class="upload">
+              <input class="fileupload" type="file" name="annotated"/>
+              <button>Upload annotated file</button>
+            </div>
+          </td>
+        </tr>
+      <% } %>
+    </table>
+  </script>
+
+  <div aria-hidden="true" class="wrap-instructor-info">
+    <a class="instructor-info-action" id="grade-submissions-button"
+       href="#{{ id }}-grade">{% trans "Grade Submissions" %}</a>
+    <a class="instructor-info-action" id="staff-debug-info-button"
+       href="#{{ id }}-debug">{% trans "Staff Debug Info" %}</a>
+  </div>
+
+  <section aria-hidden="true" class="modal staff-modal" id="{{ id }}-grade" style="height: 75%">
+    <div class="inner-wrapper" style="color: black; overflow: auto;">
+      <header><h2>{% trans "Staff Graded Assignment" %}</h2></header>
+      <br/>
+      <div id="grade-info" style="display: block;">
+        Loading...
+      </div>
+    </div>
+  </section>
+
+  <section aria-hidden="true" class="modal staff-modal" 
+           style="height: 80%" id="{{ id }}-debug">
+    <div class="inner-wrapper" style="color: black">
+      <header><h2>{% trans "Staff Debug" %}</h2></header>
+      <br/>
+      <div class="staff_info" style="display: block; white-space: normal">
+        is_released = {{ is_released }}<br/>
+        location = {{ location }}<br/>
+        <br/>
+        <table summary="${_('Module Fields')}">
+          <tr><th>{% trans "Module Fields" %}</th></tr>
+          {% for name, field in fields %}
+          <tr>
+            <td>{{name}}</td>
+            <td>
+              <pre style="display:inline-block; margin: 0;">{{field}}</pre>
+            </td>
+          </tr>
+          {% endfor %}
+        </table><br/>
+        category = {{category}}
+      </div>
+    </div>
+  </section>
+
+  <section aria-hidden="true" class="modal grade-modal" id="{{ id }}-enter-grade">
+    <div class="inner-wrapper" style="color: black">
+      <header><h2>
+        {% trans "Enter Grade" %}
+      </h2></header>
+      <br/>
+      <div style="display: block;">
+        <form id="enter-grade-form">
+          <input id="module_id-input" type="hidden" name="module_id"/>
+          <input id="submission_id-input" type="hidden" name="submission_id"/>
+          <div>Grade for <span id="student-name"/></div>
+          <div>Grade: <input id="grade-input" name="grade"/>
+            <span class="error"></span></div>
+          <div>Comment: <textarea id="comment-input" name="comment" rows="4"></textarea></div>
+          <div>
+            <button type="submit">{% trans "Submit" %}</button>
+            <button type="button" id="enter-grade-cancel">
+              {% trans "Cancel" %}
+            </button>
+            <button type="button" id="remove-grade">
+              {% trans "Remove grade" %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+</div>

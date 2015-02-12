@@ -1,9 +1,62 @@
 /* CSS for StaffGradedAssignmentXBlock */
 
-.edx_sga_block .count {
-    font-weight: bold;
+.sga-block .staff-modal {
+    position: fixed;
+    z-index:100;
+    display: none;
+    width: 80%;
+    overflow:auto;
 }
 
-.edx_sga_block p {
-    cursor: pointer;
+.sga-block table.gridtable {
+    font-family: verdana,arial,sans-serif;
+    font-size:11px;
+    color:#333333;
+    border-width: 1px;
+    border-color: #666666;
+    border-collapse: collapse;
+}
+
+.sga-block table.gridtable th {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #dedede;
+}
+
+.sga-block table.gridtable td {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #ffffff;
+}
+
+.sga-block .upload {
+    position: relative;
+}
+
+.sga-block .upload button {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+}
+
+.sga-block .upload .fileupload {
+    position: relative;
+	-moz-opacity:0 ;
+	filter:alpha(opacity: 0);
+	opacity: 0;
+	z-index: 2;
+}
+
+.sga-block td .upload button {
+    padding: 3px;
+    width: 100%;
+}
+
+.sga-block .error {
+    color: red;
 }
