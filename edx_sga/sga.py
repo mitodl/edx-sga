@@ -10,7 +10,7 @@ import mimetypes
 import os
 import pkg_resources
 import pytz
-
+from django.utils.translation import ugettext as _
 from functools import partial
 
 from courseware.models import StudentModule
@@ -57,69 +57,69 @@ class StaffGradedAssignmentXBlock(XBlock):
     icon_class = 'problem'
 
     display_name = String(
-        default='Staff Graded Assignment', scope=Scope.settings,
-        help="This name appears in the horizontal navigation at the top of "
-             "the page."
+        default = "Staff Graded Assignment", scope=Scope.settings,
+        help = _("This name appears in the horizontal navigation at the top of "
+                 "the page.")
     )
 
     weight = Float(
-        display_name="Problem Weight",
-        help=("Defines the number of points each problem is worth. "
-              "If the value is not set, the problem is worth the sum of the "
-              "option point values."),
-        values={"min": 0, "step": .1},
-        scope=Scope.settings
+        display_name = _("Problem Weight"),
+        help = _("Defines the number of points each problem is worth. "
+                 "If the value is not set, the problem is worth the sum of the "
+                 "option point values."),
+        values = {"min": 0, "step": .1},
+        scope = Scope.settings
     )
 
     points = Integer(
-        display_name="Maximum score",
-        help=("Maximum grade score given to assignment by staff."),
-        default=100,
-        scope=Scope.settings
+        display_name = _("Maximum score"),
+        help = _("Maximum grade score given to assignment by staff."),
+        default = 100,
+        scope = Scope.settings
     )
 
     staff_score = Integer(
-        display_name="Score assigned by non-instructor staff",
-        help=("Score will need to be approved by instructor before being "
-              "published."),
-        default=None,
-        scope=Scope.settings
+        display_name = _("Score assigned by non-instructor staff"),
+        help = _("Score will need to be approved by instructor before being "
+                 "published."),
+        default = None,
+        scope = Scope.settings
     )
 
     comment = String(
-        display_name="Instructor comment",
-        default='',
-        scope=Scope.user_state,
-        help="Feedback given to student by instructor."
+        display_name = _("Instructor comment"),
+        default = '',
+        scope = Scope.user_state,
+        help = _("Feedback given to student by instructor.")
     )
 
     annotated_sha1 = String(
-        display_name="Annotated SHA1",
-        scope=Scope.user_state,
-        default=None,
-        help=("sha1 of the annotated file uploaded by the instructor for "
-              "this assignment.")
+        display_name = _("Annotated SHA1"),
+        scope = Scope.user_state,
+        default = None,
+        help = _("sha1 of the annotated file uploaded by the instructor for "
+                "this assignment.")
     )
 
     annotated_filename = String(
-        display_name="Annotated file name",
-        scope=Scope.user_state,
-        default=None,
-        help="The name of the annotated file uploaded for this assignment."
+        display_name = _("Annotated file name"),
+        scope = Scope.user_state,
+        default = None,
+        help = _("The name of the annotated file uploaded for this assignment.")
     )
 
     annotated_mimetype = String(
-        display_name="Mime type of annotated file",
-        scope=Scope.user_state,
-        default=None,
-        help="The mimetype of the annotated file uploaded for this assignment."
+        display_name = _("Mime type of annotated file"),
+        scope = Scope.user_state,
+        default = None,
+        help = _("The mimetype of the annotated file uploaded for this assignment.")
     )
 
     annotated_timestamp = DateTime(
-        display_name="Timestamp",
-        scope=Scope.user_state,
-        default=None,
-        help="When the annotated file was uploaded")
+        display_name = _("Timestamp"),
+        scope = Scope.user_state,
+        default = None,
+        help = _("When the annotated file was uploaded"))
 
     def max_score(self):
         return self.points
