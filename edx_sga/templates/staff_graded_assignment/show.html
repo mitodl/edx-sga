@@ -1,14 +1,15 @@
 {% load i18n %}
 
 <div class="sga-block" data-state="{{ student_state }}" data-max-size="{{ max_file_size }}"
-     data-staff="{{ is_course_staff }}">
+     data-staff="{{ is_course_staff }}" role="article" aria-describedby="title">
   <script type="text/template" id="sga-tmpl">
     <% if (display_name) { %>
-       <b><%= display_name %></b>
+       <b id="title"><%= display_name %></b>
     <% } %>
     <% if (uploaded) { %>
-      <p><b>File uploaded</b> 
-        <a href="<%= downloadUrl %>"><%= uploaded.filename %></a></p>
+      <br/>
+      <label for="file_uploaded"><b>File uploaded<span class="sr">&nbsp;download link</span></b></label>
+        <a href="<%= downloadUrl %>" id="file_uploaded"><%= uploaded.filename %></a>
     <% } else { %>
       <p>No file has been uploaded.</p>
     <% } %>
@@ -18,28 +19,28 @@
           <b>Instructor comment</b> <%= graded.comment %>
         <% } %>
         <% if (annotated) { %><br/>
-          <b>Annotated file from instructor</b>
-          <a href="<%= annotatedUrl %>"><%= annotated.filename %></a>
+          <b id="annotated_file">Annotated file from instructor</b>
+          <a href="<%= annotatedUrl %>" aria-describedby="annotated_file"><%= annotated.filename %></a>
         <% } %>
       </p>
     <% } else if (uploaded) { %>
-      {% trans "This assignment has not yet been graded." %}
+      <p>{% trans "This assignment has not yet been graded." %}</p>
     <% } %>
     <% if (upload_allowed) { %>
     <p>
       <% if (uploaded) { %>
-        {% trans "Upload a different file" %}
+        <span id="upload_label">{% trans "Upload a different file" %}</span>
       <% } else { %>
-        {% trans "Upload your assignment" %}
+        <span id="upload_label">{% trans "Upload your assignment" %}</span>
       <% } %>
-      <div class="upload">
+      <div class="upload" aria-describedby="upload_label" role="alert" aria-live="assertive" tabindex="-1">
         <input class="fileupload" type="file" name="assignment"/>
         <button>Select a file</button>
       </div>
     </p>
     <% } %>
     <% if (error) { %>
-      <p class="error"><%= error %></p>
+      <p class="error" role="alert" aria-live="assertive" tabindex="-1"><%= error %></p>
     <% } %>
   </script>
 
@@ -93,7 +94,7 @@
           </td>
           <td>
             <% if (assignment.may_grade) { %>
-              <a class="enter-grade-button button" href="#{{ id }}-enter-grade">
+              <a class="enter-grade-button button" href="#{{ id }}-enter-grade" role="button">
                 <% if (assignment.needs_approval) { %>
                   {% trans "Approve grade" %}
                 <% } else { %>
@@ -103,7 +104,7 @@
            <% } %>
           </td>
           <td>
-            <div class="upload">
+            <div class="upload" aria-live="assertive" role="alert" tabindex="-1">
               <input class="fileupload" type="file" name="annotated"/>
               <button>Upload annotated file</button>
             </div>
@@ -114,14 +115,14 @@
     </table>
   </script>
 
-  <div aria-hidden="true" class="wrap-instructor-info">
+  <div class="wrap-instructor-info">
     <a class="instructor-info-action" id="grade-submissions-button"
        href="#{{ id }}-grade">{% trans "Grade Submissions" %}</a>
     <a class="instructor-info-action" id="staff-debug-info-button"
        href="#{{ id }}-debug">{% trans "Staff Debug Info" %}</a>
   </div>
 
-  <section aria-hidden="true" class="modal staff-modal" id="{{ id }}-grade" style="height: 75%">
+  <section class="modal staff-modal" id="{{ id }}-grade" style="height: 75%">
     <div class="inner-wrapper" style="color: black; overflow: auto;">
       <header><h2><span class="display_name">{{ display_name }}</span> - {% trans "Staff Graded Assignment" %}</h2></header>
       <br/>
@@ -131,32 +132,39 @@
     </div>
   </section>
 
-  <section aria-hidden="true" class="modal staff-modal" 
+  <section class="modal staff-modal"
            style="height: 80%" id="{{ id }}-debug">
     <div class="inner-wrapper" style="color: black">
-      <header><h2>{% trans "Staff Debug" %}</h2></header>
+      <header role="banner"><h2>{% trans "Staff Debug" %}</h2></header>
       <br/>
       <div class="staff_info" style="display: block; white-space: normal">
-        is_released = {{ is_released }}<br/>
-        location = {{ location }}<br/>
+        <span>is_released = {{ is_released }}</span> <br/>
+        <span>location = {{ location }}</span><br/>
         <br/>
         <table summary="${_('Module Fields')}">
-          <tr><th>{% trans "Module Fields" %}</th></tr>
-          {% for name, field in fields %}
-          <tr>
-            <td>{{name}}</td>
-            <td>
-              <pre style="display:inline-block; margin: 0;">{{field}}</pre>
-            </td>
-          </tr>
+          <thead>
+            <tr>
+              <th>{% trans "Module Fields" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for name, field in fields %}
+              <tr>
+                <td>{{name}}</td>
+                <td>
+                  <pre style="display:inline-block; margin: 0;">{{field}}</pre>
+                </td>
+              </tr>
           {% endfor %}
-        </table><br/>
-        category = {{category}}
+          </tbody>
+        </table>
+        <br/>
+        <span>category = {{category}}</span>
       </div>
     </div>
   </section>
 
-  <section aria-hidden="true" class="modal grade-modal" id="{{ id }}-enter-grade">
+  <section  class="modal grade-modal" id="{{ id }}-enter-grade">
     <div class="inner-wrapper" style="color: black">
       <header><h2>
         {% trans "Enter Grade" %}
@@ -168,7 +176,7 @@
           <input id="submission_id-input" type="hidden" name="submission_id"/>
           <div>Grade for <span id="student-name"/></div>
           <div>Grade: <input id="grade-input" name="grade"/>
-            <span class="error"></span></div>
+            <span class="error" role="alert" aria-live="assertive" tabindex="-1"></span></div>
           <div>Comment: <textarea id="comment-input" name="comment" rows="4"></textarea></div>
           <div>
             <button type="submit">{% trans "Submit" %}</button>
