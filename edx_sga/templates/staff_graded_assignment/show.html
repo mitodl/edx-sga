@@ -7,18 +7,18 @@
        <b><%= display_name %></b>
     <% } %>
     <% if (uploaded) { %>
-      <p><b>File uploaded</b> 
+      <p><b>{% trans "File uploaded" %}</b>
         <a href="<%= downloadUrl %>"><%= uploaded.filename %></a></p>
     <% } else { %>
-      <p>No file has been uploaded.</p>
+      <p>{% trans "No file has been uploaded." %}</p>
     <% } %>
     <% if (graded) { %>
       <p>Your score is <%= graded.score %> / <%= max_score %><br/>
         <% if (graded.comment) { %>
-          <b>Instructor comment</b> <%= graded.comment %>
+          <b>{% trans "Instructor comment" %}</b> <%= graded.comment %>
         <% } %>
         <% if (annotated) { %><br/>
-          <b>Annotated file from instructor</b>
+          <b>{% trans "Annotated file from instructor" %}</b>
           <a href="<%= annotatedUrl %>"><%= annotated.filename %></a>
         <% } %>
       </p>
@@ -34,7 +34,7 @@
       <% } %>
       <div class="upload">
         <input class="fileupload" type="file" name="assignment"/>
-        <button>Select a file</button>
+        <button>{% trans "Select a file" %}</button>
       </div>
     </p>
     <% } %>
@@ -50,13 +50,13 @@
   <script type="text/template" id="sga-grading-tmpl">
     <table class="gridtable">
       <tr>
-        <th>Username</th>
-        <th>Name</th>
-        <th>Filename</th>
-        <th>Uploaded</th>
-        <th>Grade</th>
-        <th>Instructor's comments</th>
-        <th>Annotated</th>
+        <th>{% trans "Username" %}</th>
+        <th>{% trans "Name" %}</th>
+        <th>{% trans "Filename" %}</th>
+        <th>{% trans "Uploaded" %}</th>
+        <th>{% trans "Grade" %}</th>
+        <th>{% trans "Instructor's comments" %}</th>
+        <th>{% trans "Annotated" %}</th>
       </tr>
       <% for (var i = 0; i < assignments.length; i++) { %>
       <%     var assignment = assignments[i]; %>
@@ -102,7 +102,7 @@
           <td>
             <div class="upload">
               <input class="fileupload" type="file" name="annotated"/>
-              <button>Upload annotated file</button>
+              <button>{% trans "Upload annotated file" %}</button>
             </div>
           </td>
         </tr>
@@ -162,10 +162,10 @@
         <form id="enter-grade-form">
           <input id="module_id-input" type="hidden" name="module_id"/>
           <input id="submission_id-input" type="hidden" name="submission_id"/>
-          <div>Grade for <span id="student-name"/></div>
-          <div>Grade: <input id="grade-input" name="grade"/>
+          <div>{% trans "Grade for" %} <span id="student-name"/></div>
+          <div>{% trans "Grade:" %} <input id="grade-input" name="grade"/>
             <span class="error"></span></div>
-          <div>Comment: <textarea id="comment-input" name="comment" rows="4"></textarea></div>
+          <div>{% trans "Comment:" %} <textarea id="comment-input" name="comment" rows="4"></textarea></div>
           <div>
             <button type="submit">{% trans "Submit" %}</button>
             <button type="button" id="enter-grade-cancel">

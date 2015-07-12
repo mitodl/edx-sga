@@ -2,4 +2,4 @@
 .*.swp
 *.egg-info
 .coverage
-dist/
+
