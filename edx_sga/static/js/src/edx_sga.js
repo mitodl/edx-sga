@@ -233,6 +233,8 @@ function StaffGradedAssignmentXBlock(runtime, element) {
             form.find('#submission_id-input').val(row.data('submission_id'));
             form.find('#grade-input').val(row.data('score'));
             form.find('#comment-input').text(row.data('comment'));
+            form.find('#remove-grade').prop('disabled', false);
+            form.find('.ccx-enter-grade-spinner').hide();
             form.off('submit').on('submit', function(event) {
                 var max_score = row.parents('#grade-info').data('max_score');
                 var score = Number(form.find('#grade-input').val());
@@ -247,20 +249,29 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                     gradeFormError('<br/>'+interpolate(gettext('Maximum score is %(max_score)s'), {max_score:max_score}, true));
                 } else {
                     // No errors
+                    form.find('.ccx-enter-grade-spinner').show();
                     $.post(enterGradeUrl, form.serialize())
-                        .success(renderStaffGrading);
+                        .success(renderStaffGrading)
+                        .fail(function() {
+                            form.find('.ccx-enter-grade-spinner').hide();
+                        });
                 }
             });
-            form.find('#remove-grade').on('click', function(event) {
+            form.find('#remove-grade').off('click').on('click', function(event) {
+                $(this).prop('disabled', true);
+                form.find('.ccx-enter-grade-spinner').show();
                 var url = removeGradeUrl + '?module_id=' +
                     row.data('module_id') + '&student_id=' +
                     row.data('student_id');
                 event.preventDefault();
                 if (row.data('score')) {
                   // if there is no grade then it is pointless to call api.
-                  $.get(url).success(renderStaffGrading);
+                  $.get(url).success(renderStaffGrading).fail(function() {
+                    $(this).prop('disabled', false);
+                    form.find('.ccx-enter-grade-spinner').hide();
+                  });
                 } else {
-                    gradeFormError('<br/>'+gettext('No grade to remove.'));
+                  gradeFormError('<br/>'+gettext('No grade to remove.'));
                 }
             });
             form.find('#enter-grade-cancel').on('click', function() {
