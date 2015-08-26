@@ -252,7 +252,7 @@ Staff Grading
 Testing
 -------
 
-Assuming ``edx-sga`` is installed as above, you can run tests like so::
+Assuming ``edx-sga`` is installed as above, you can run Python tests like so::
     
     $ python manage.py lms --settings=test test edx_sga
 
@@ -260,3 +260,10 @@ To get statement coverage::
 
     $ coverage run --source edx_sga manage.py lms --settings=test test edx_sga
     $ coverage report -m
+
+To run JavaScript tests, install js-test-tool_ and run::
+
+    $ js-test-tool run ./edx_sga/static/js_test.yml --use-firefox
+
+.. _js-test-tool: https://github.com/edx/js-test-tool
+    
