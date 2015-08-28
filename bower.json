@@ -1,0 +1,13 @@
+{
+  "name": "edx-sga",
+  "version": "0.0.0",
+  "homepage": "https://github.com/mitodl/edx-sga",
+  "authors": [
+    "ODL Engineering <odl-engineering@mit.edu>"
+  ],
+  "license": "AGPLv3",
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "URIjs": "~1.16.0"
+  }
+}
