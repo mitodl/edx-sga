@@ -44,7 +44,7 @@ prepend_path: static
 
 # Paths to library JavaScript files (optional)
 lib_paths:
-    - js/lib
+    - js/bower
 
 # Paths to source JavaScript files
 src_paths:

@@ -1,10 +1,13 @@
 (function(requirejs, define) {
     requirejs.config({
         paths: {
-            'jquery': 'lib/jquery-2.1.4',
-            'sinon': 'js/lib/sinon-1.16.1',
-            'URI': 'js/lib/URI',
-            'underscore': 'js/lib/underscore'
+            'jquery': 'js/bower/jquery/dist/jquery',
+            'sinon': 'js/bower/sinon/lib/sinon',
+            'URI': 'js/bower/URIjs/src/URI',
+            'underscore': 'js/bower/underscore/underscore',
+            'IPv6': 'js/bower/URIjs/src/IPv6',
+            'punycode': 'js/bower/URIjs/src/punycode',
+            'SecondLevelDomains': 'js/bower/URIjs/src/SecondLevelDomains'
         },
         shim: {
             'underscore': {
