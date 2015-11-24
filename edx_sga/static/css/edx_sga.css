@@ -172,6 +172,6 @@
  	cursor: pointer;
 }
 
-.sga-block table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+.sga-block table.tablesorter thead tr .tablesorter-headerDesc, table.tablesorter thead tr .tablesorter-headerAsc {
     background-color: #8dbdd8;
 }
