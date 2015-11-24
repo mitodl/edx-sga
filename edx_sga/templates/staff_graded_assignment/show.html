@@ -74,7 +74,7 @@
               </a>
             <% } %>
           </td>
-          <td data-sort-value="<%= assignment.timestamp %>"><%= assignment.timestamp_formatted %></td>
+          <td data-text="<%= assignment.timestamp %>"><%= assignment.timestamp_formatted %></td>
           <td>
             <% if (assignment.score !== null) { %>
               <%= assignment.score %> /
