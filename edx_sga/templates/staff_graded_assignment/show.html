@@ -7,10 +7,10 @@
        <b><%= display_name %></b>
     <% } %>
     <% if (uploaded) { %>
-      <p><b>File uploaded</b> 
+      <p><b>{% trans "File uploaded" %}</b> 
         <a href="<%= downloadUrl %>"><%= uploaded.filename %></a></p>
     <% } else { %>
-      <p>No file has been uploaded.</p>
+      <p>{% trans "No file has been uploaded." %}</p>
     <% } %>
     <% if (graded) { %>
       <p>Your score is <%= graded.score %> / <%= max_score %><br/>
@@ -34,7 +34,7 @@
       <% } %>
       <div class="upload">
         <input class="fileupload" type="file" name="assignment"/>
-        <button>Select a file</button>
+        <button>{% trans "Select a file" %}</button>
       </div>
     </p>
     <% } %>
@@ -106,7 +106,7 @@
           <td>
             <div class="upload">
               <input class="fileupload" type="file" name="annotated"/>
-              <button>Upload annotated file</button>
+              <button>{% trans "Upload annotated file" %}</button>
             </div>
           </td>
         </tr>
