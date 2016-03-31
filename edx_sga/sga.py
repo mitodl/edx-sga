@@ -589,7 +589,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         """
         require(self.is_course_staff())
         student_id = request.params['student_id']
-        submissions_api.reset_score(student_id, self.course_id, self.block_id)
+        submissions_api.reset_score(student_id, unicode(self.course_id), self.block_id)
         module = StudentModule.objects.get(pk=request.params['module_id'])
         state = json.loads(module.state)
         state['staff_score'] = None
