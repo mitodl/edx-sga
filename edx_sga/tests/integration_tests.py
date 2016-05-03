@@ -8,6 +8,7 @@ import json
 import os
 import shutil
 import tempfile
+import urllib
 
 from ddt import ddt, data, unpack
 import mock
@@ -589,6 +590,21 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
                 )
             )
             self.assertEqual(response.status_code, 404)
+
+    @data("my,assignment.txt", "my,1,1,assignment.txt")
+    def test_file_download_comma_in_name(self, file_name):
+        """
+        Tests download assignment with comma in filename.
+        """
+        block = self.make_one()
+        student = self.make_student(block, 'fred')
+        self.personalize(block, **student)
+        with self.dummy_upload(file_name) as (upload, expected):
+            block.upload_assignment(mock.Mock(params={'assignment': upload}))
+        response = block.staff_download(mock.Mock(params={
+            'student_id': student['item'].student_id}))
+        self.assertEqual(response.body, expected)
+        assert urllib.quote(file_name.encode('utf-8')) in response.content_disposition
 
     def test_get_staff_grading_data_not_staff(self):
         """

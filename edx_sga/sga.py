@@ -6,6 +6,7 @@ import json
 import logging
 import mimetypes
 import os
+import urllib
 
 import pkg_resources
 import pytz
@@ -862,7 +863,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
             return Response(
                 app_iter=file_contents_iter(path),
                 content_type=mime_type,
-                content_disposition="attachment; filename=" + filename.encode('utf-8')
+                content_disposition="attachment; filename*=UTF-8''" + urllib.quote(filename.encode('utf-8'))
             )
         except IOError:
             if require_staff:
