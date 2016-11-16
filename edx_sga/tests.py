@@ -228,8 +228,6 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         self.assertEqual(student_state['graded'], None)
         fragment.add_css.assert_called_once_with(
             DummyResource("static/css/edx_sga.css"))
-        # fragment.add_javascript.assert_called_once_with(
-        #     DummyResource("static/js/src/edx_sga.js"))
         fragment.initialize_js.assert_called_once_with(
             "StaffGradedAssignmentXBlock")
 
@@ -299,8 +297,6 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
                          {u'comment': '', u'score': 10})
         fragment.add_css.assert_called_once_with(
             DummyResource("static/css/edx_sga.css"))
-        # fragment.add_javascript.assert_called_once_with(
-        #     DummyResource("static/js/src/edx_sga.js"))
         fragment.initialize_js.assert_called_once_with(
             "StaffGradedAssignmentXBlock")
 
