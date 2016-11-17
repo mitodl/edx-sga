@@ -8,19 +8,19 @@ function StaffGradedAssignmentXBlock(runtime, element, server) {
         'string': function(x) {
             return !x ? null : x;
         }
-    }
+    };
 
     function save() {
         var view = this;
         view.runtime.notify('save', {state: 'start'});
 
         var data = {};
-        $(element).find("input").each(function(index, input) {
+        $(element).find('input').each(function(index, input) {
             data[input.name] = input.value;
         });
 
         $.ajax({
-            type: "POST",
+            type: 'POST',
             url: saveUrl,
             data: JSON.stringify(data),
             success: function() {
@@ -31,5 +31,5 @@ function StaffGradedAssignmentXBlock(runtime, element, server) {
 
     return {
         save: save
-    }
+    };
 }

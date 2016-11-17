@@ -37,7 +37,7 @@ Try Out on devstack/fullstack
 
 	 .. code:: javascript
 
-          "ALLOW_ALL_ADVANCED_COMPONENTS": True,
+          "ALLOW_ALL_ADVANCED_COMPONENTS": true,
 
      to the list of ``FEATURES``
 

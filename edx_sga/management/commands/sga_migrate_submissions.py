@@ -1,3 +1,8 @@
+"""
+Django command which migrates existing SGA submissions for a course from all
+old SGA implementation before v0.4.0 to newer version that uses the
+'submissions' application.
+"""
 import json
 
 from django.core.management.base import BaseCommand, CommandError
@@ -27,8 +32,10 @@ class Command(BaseCommand):
         course = get_course_by_id(course_key)
 
         student_modules = StudentModule.objects.filter(
-            course_id=course.id).filter(
-            module_state_key__contains='edx_sga')
+            course_id=course.id
+        ).filter(
+            module_state_key__contains='edx_sga'
+        )
 
         blocks = {}
         for student_module in student_modules:

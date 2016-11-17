@@ -18,6 +18,7 @@ from courseware.models import StudentModule
 from django.core.exceptions import PermissionDenied
 from django.core.files import File
 from django.core.files.storage import default_storage
+from django.conf import settings
 from django.template import Context, Template
 
 from student.models import user_by_anonymous_id
@@ -35,13 +36,19 @@ from xmodule.util.duedate import get_extended_due_date
 
 
 log = logging.getLogger(__name__)
+BLOCK_SIZE = 8 * 1024
 
 
 def reify(meth):
     """
-    Property which caches value so it is only computed once.
+    Decorator which caches value so it is only computed once.
+    Keyword arguments:
+    inst
     """
     def getter(inst):
+        """
+        Set value to meth name in dict and returns value.
+        """
         value = meth(inst)
         inst.__dict__[meth.__name__] = value
         return value
@@ -55,6 +62,7 @@ class StaffGradedAssignmentXBlock(XBlock):
     """
     has_score = True
     icon_class = 'problem'
+    STUDENT_FILEUPLOAD_MAX_SIZE = 4 * 1000 * 1000  # 4 MB
 
     display_name = String(
         default='Staff Graded Assignment', scope=Scope.settings,
@@ -122,59 +130,77 @@ class StaffGradedAssignmentXBlock(XBlock):
         help="When the annotated file was uploaded")
 
     def max_score(self):
+        """
+        Return the maximum score possible.
+        """
         return self.points
 
     @reify
     def block_id(self):
-        # cargo culted gibberish
+        """
+        Return the usage_id of the block.
+        """
         return self.scope_ids.usage_id
 
-    def student_submission_id(self, id=None):
+    def student_submission_id(self, submission_id=None):
+        # pylint: disable=no-member
         """
         Returns dict required by the submissions app for creating and
         retrieving submissions for a particular student.
         """
-        if id is None:
-            id = self.xmodule_runtime.anonymous_student_id
-            assert id != 'MOCK', "Forgot to call 'personalize' in test."
+        if submission_id is None:
+            submission_id = self.xmodule_runtime.anonymous_student_id
+            assert submission_id != (
+                'MOCK', "Forgot to call 'personalize' in test."
+            )
         return {
-            "student_id": id,
+            "student_id": submission_id,
             "course_id": self.course_id,
             "item_id": self.block_id,
             "item_type": 'sga',  # ???
         }
 
-    def get_submission(self, id=None):
+    def get_submission(self, submission_id=None):
         """
         Get student's most recent submission.
         """
         submissions = submissions_api.get_submissions(
-            self.student_submission_id(id))
+            self.student_submission_id(submission_id))
         if submissions:
             # If I understand docs correctly, most recent submission should
             # be first
             return submissions[0]
 
-    def get_score(self, id=None):
+    def get_score(self, submission_id=None):
         """
-        Get student's current score.
+        Return student's current score.
         """
-        score = submissions_api.get_score(self.student_submission_id(id))
+        score = submissions_api.get_score(
+            self.student_submission_id(submission_id)
+        )
         if score:
             return score['points_earned']
 
     @reify
     def score(self):
+        """
+        Return score from submissions.
+        """
         return self.get_score()
 
     def student_view(self, context=None):
+        # pylint: disable=no-member
         """
         The primary view of the StaffGradedAssignmentXBlock, shown to students
         when viewing courses.
         """
         context = {
             "student_state": json.dumps(self.student_state()),
-            "id": self.location.name.replace('.', '_')
+            "id": self.location.name.replace('.', '_'),
+            "max_file_size": getattr(
+                settings, "STUDENT_FILEUPLOAD_MAX_SIZE",
+                self.STUDENT_FILEUPLOAD_MAX_SIZE
+            )
         }
         if self.show_staff_grading_interface():
             context['is_course_staff'] = True
@@ -189,10 +215,15 @@ class StaffGradedAssignmentXBlock(XBlock):
         )
         fragment.add_css(_resource("static/css/edx_sga.css"))
         fragment.add_javascript(_resource("static/js/src/edx_sga.js"))
+        fragment.add_javascript(_resource("static/js/src/jquery.tablesorter.min.js"))
         fragment.initialize_js('StaffGradedAssignmentXBlock')
         return fragment
 
     def update_staff_debug_context(self, context):
+        # pylint: disable=no-member
+        """
+        Add context info for the Staff Debug interface.
+        """
         published = self.start
         context['is_released'] = published and published < _now()
         context['location'] = self.location
@@ -224,6 +255,7 @@ class StaffGradedAssignmentXBlock(XBlock):
             graded = None
 
         return {
+            "display_name": self.display_name,
             "uploaded": uploaded,
             "annotated": annotated,
             "graded": graded,
@@ -232,8 +264,18 @@ class StaffGradedAssignmentXBlock(XBlock):
         }
 
     def staff_grading_data(self):
+        """
+        Return student assignment information for display on the
+        grading screen.
+        """
         def get_student_data():
-            # Submissions doesn't have API for this, just use model directly
+            # pylint: disable=no-member
+            """
+            Returns a dict of student assignment information along with
+            annotated file name, student id and module id, this
+            information will be used on grading screen
+            """
+            # Submissions doesn't have API for this, just use model directly.
             students = SubmissionsStudent.objects.filter(
                 course_id=self.course_id,
                 item_id=self.block_id)
@@ -242,7 +284,7 @@ class StaffGradedAssignmentXBlock(XBlock):
                 if not submission:
                     continue
                 user = user_by_anonymous_id(student.student_id)
-                module, _ = StudentModule.objects.get_or_create(
+                module, created = StudentModule.objects.get_or_create(
                     course_id=self.course_id,
                     module_state_key=self.location,
                     student=user,
@@ -250,6 +292,14 @@ class StaffGradedAssignmentXBlock(XBlock):
                         'state': '{}',
                         'module_type': self.category,
                     })
+                if created:
+                    log.info(
+                        "Init for course:%s module:%s student:%s  ",
+                        module.course_id,
+                        module.module_state_key,
+                        module.student.username
+                    )
+
                 state = json.loads(module.state)
                 score = self.get_score(student.student_id)
                 approved = score is not None
@@ -280,14 +330,21 @@ class StaffGradedAssignmentXBlock(XBlock):
         return {
             'assignments': list(get_student_data()),
             'max_score': self.max_score(),
+            'display_name': self.display_name
         }
 
     def studio_view(self, context=None):
+        """
+        Return fragment for editing block in studio.
+        """
         try:
             cls = type(self)
 
-            def none_to_empty(x):
-                return x if x is not None else ''
+            def none_to_empty(data):
+                """
+                Return empty string if data is None else return data.
+                """
+                return data if data is not None else ''
             edit_fields = (
                 (field, none_to_empty(getattr(self, field.name)), validator)
                 for field, validator in (
@@ -315,8 +372,11 @@ class StaffGradedAssignmentXBlock(XBlock):
 
     @XBlock.json_handler
     def save_sga(self, data, suffix=''):
+        # pylint: disable=unused-argument
+        """
+        Persist block data when updating settings in studio.
+        """
         self.display_name = data.get('display_name', self.display_name)
-        self.weight = data.get('weight', self.weight)
 
         # Validate points before saving
         points = data.get('points', self.points)
@@ -330,8 +390,27 @@ class StaffGradedAssignmentXBlock(XBlock):
             raise JsonHandlerError(400, 'Points must be a positive integer')
         self.points = points
 
+        # Validate weight before saving
+        weight = data.get('weight', self.weight)
+        # Check that weight is a float.
+        if weight:
+            try:
+                weight = float(weight)
+            except ValueError:
+                raise JsonHandlerError(400, 'Weight must be a decimal number')
+            # Check that we are positive
+            if weight < 0:
+                raise JsonHandlerError(
+                    400, 'Weight must be a positive decimal number'
+                )
+        self.weight = weight
+
     @XBlock.handler
     def upload_assignment(self, request, suffix=''):
+        # pylint: disable=unused-argument
+        """
+        Save a students submission file.
+        """
         require(self.upload_allowed())
         upload = request.params['assignment']
         sha1 = _get_sha1(upload.file)
@@ -349,6 +428,10 @@ class StaffGradedAssignmentXBlock(XBlock):
 
     @XBlock.handler
     def staff_upload_annotated(self, request, suffix=''):
+        # pylint: disable=unused-argument
+        """
+        Save annotated assignment from staff.
+        """
         require(self.is_course_staff())
         upload = request.params['annotated']
         module = StudentModule.objects.get(pk=request.params['module_id'])
@@ -364,16 +447,30 @@ class StaffGradedAssignmentXBlock(XBlock):
             default_storage.save(path, File(upload.file))
         module.state = json.dumps(state)
         module.save()
+        log.info(
+            "staff_upload_annotated for course:%s module:%s student:%s ",
+            module.course_id,
+            module.module_state_key,
+            module.student.username
+        )
         return Response(json_body=self.staff_grading_data())
 
     @XBlock.handler
     def download_assignment(self, request, suffix=''):
+        # pylint: disable=unused-argument
+        """
+        Fetch student assignment from storage and return it.
+        """
         answer = self.get_submission()['answer']
         path = self._file_storage_path(answer['sha1'], answer['filename'])
         return self.download(path, answer['mimetype'], answer['filename'])
 
     @XBlock.handler
     def download_annotated(self, request, suffix=''):
+        # pylint: disable=unused-argument
+        """
+        Fetch assignment with staff annotations from storage and return it.
+        """
         path = self._file_storage_path(
             self.annotated_sha1,
             self.annotated_filename,
@@ -386,14 +483,27 @@ class StaffGradedAssignmentXBlock(XBlock):
 
     @XBlock.handler
     def staff_download(self, request, suffix=''):
+        # pylint: disable=unused-argument
+        """
+        Return an assignment file requested by staff.
+        """
         require(self.is_course_staff())
         submission = self.get_submission(request.params['student_id'])
         answer = submission['answer']
         path = self._file_storage_path(answer['sha1'], answer['filename'])
-        return self.download(path, answer['mimetype'], answer['filename'])
+        return self.download(
+            path,
+            answer['mimetype'],
+            answer['filename'],
+            require_staff=True
+        )
 
     @XBlock.handler
     def staff_download_annotated(self, request, suffix=''):
+        # pylint: disable=unused-argument
+        """
+        Return annotated assignment file requested by staff.
+        """
         require(self.is_course_staff())
         module = StudentModule.objects.get(pk=request.params['module_id'])
         state = json.loads(module.state)
@@ -404,25 +514,52 @@ class StaffGradedAssignmentXBlock(XBlock):
         return self.download(
             path,
             state['annotated_mimetype'],
-            state['annotated_filename']
+            state['annotated_filename'],
+            require_staff=True
         )
 
-    def download(self, path, mimetype, filename):
-        BLOCK_SIZE = (1 << 10) * 8  # 8kb
-        file = default_storage.open(path)
-        app_iter = iter(partial(file.read, BLOCK_SIZE), '')
-        return Response(
-            app_iter=app_iter,
-            content_type=mimetype,
-            content_disposition="attachment; filename=" + filename)
+    def download(self, path, mime_type, filename, require_staff=False):
+        """
+        Return a file from storage and return in a Response.
+        """
+        try:
+            file_descriptor = default_storage.open(path)
+            app_iter = iter(partial(file_descriptor.read, BLOCK_SIZE), '')
+            return Response(
+                app_iter=app_iter,
+                content_type=mime_type,
+                content_disposition="attachment; filename=" + filename.encode('utf-8'))
+        except IOError:
+            if require_staff:
+                return Response(
+                    "Sorry, assignment {} cannot be found at"
+                    " {}. Please contact {}".format(
+                        filename.encode('utf-8'), path, settings.TECH_SUPPORT_EMAIL
+                    ),
+                    status_code=404
+                )
+            return Response(
+                "Sorry, the file you uploaded, {}, cannot be"
+                " found. Please try uploading it again or contact"
+                " course staff".format(filename.encode('utf-8')),
+                status_code=404
+            )
 
     @XBlock.handler
     def get_staff_grading_data(self, request, suffix=''):
+        # pylint: disable=unused-argument
+        """
+        Return the html for the staff grading view
+        """
         require(self.is_course_staff())
         return Response(json_body=self.staff_grading_data())
 
     @XBlock.handler
     def enter_grade(self, request, suffix=''):
+        # pylint: disable=unused-argument
+        """
+        Persist a score for a student given by staff.
+        """
         require(self.is_course_staff())
         module = StudentModule.objects.get(pk=request.params['module_id'])
         state = json.loads(module.state)
@@ -435,14 +572,24 @@ class StaffGradedAssignmentXBlock(XBlock):
         state['comment'] = request.params.get('comment', '')
         module.state = json.dumps(state)
         module.save()
+        log.info(
+            "enter_grade for course:%s module:%s student:%s",
+            module.course_id,
+            module.module_state_key,
+            module.student.username
+        )
 
         return Response(json_body=self.staff_grading_data())
 
     @XBlock.handler
     def remove_grade(self, request, suffix=''):
+        # pylint: disable=unused-argument
+        """
+        Reset a students score request by staff.
+        """
         require(self.is_course_staff())
         student_id = request.params['student_id']
-        submissions_api.reset_score(student_id, self.course_id, self.block_id)
+        submissions_api.reset_score(student_id, unicode(self.course_id), self.block_id)
         module = StudentModule.objects.get(pk=request.params['module_id'])
         state = json.loads(module.state)
         state['staff_score'] = None
@@ -453,28 +600,55 @@ class StaffGradedAssignmentXBlock(XBlock):
         state['annotated_timestamp'] = None
         module.state = json.dumps(state)
         module.save()
+        log.info(
+            "remove_grade for course:%s module:%s student:%s",
+            module.course_id,
+            module.module_state_key,
+            module.student.username
+        )
         return Response(json_body=self.staff_grading_data())
 
     def is_course_staff(self):
+        # pylint: disable=no-member
+        """
+         Check if user is course staff.
+        """
         return getattr(self.xmodule_runtime, 'user_is_staff', False)
 
     def is_instructor(self):
+        # pylint: disable=no-member
+        """
+        Check if user role is instructor.
+        """
         return self.xmodule_runtime.get_user_role() == 'instructor'
 
     def show_staff_grading_interface(self):
+        """
+        Return if current user is staff and not in studio.
+        """
         in_studio_preview = self.scope_ids.user_id is None
         return self.is_course_staff() and not in_studio_preview
 
     def past_due(self):
+        """
+        Return whether due date has passed.
+        """
         due = get_extended_due_date(self)
         if due is not None:
             return _now() > due
         return False
 
     def upload_allowed(self):
+        """
+        Return whether student is allowed to submit an assignment.
+        """
         return not self.past_due() and self.score is None
 
     def _file_storage_path(self, sha1, filename):
+        # pylint: disable=no-member
+        """
+        Get file path of storage.
+        """
         path = (
             '{loc.org}/{loc.course}/{loc.block_type}/{loc.block_id}'
             '/{sha1}{ext}'.format(
@@ -486,22 +660,29 @@ class StaffGradedAssignmentXBlock(XBlock):
         return path
 
 
-def _get_sha1(file):
-    BLOCK_SIZE = 2**10 * 8  # 8kb
+def _get_sha1(file_descriptor):
+    """
+    Get file hex digest (fingerprint).
+    """
     sha1 = hashlib.sha1()
-    for block in iter(partial(file.read, BLOCK_SIZE), ''):
+    for block in iter(partial(file_descriptor.read, BLOCK_SIZE), ''):
         sha1.update(block)
-    file.seek(0)
+    file_descriptor.seek(0)
     return sha1.hexdigest()
 
 
 def _resource(path):  # pragma: NO COVER
-    """Handy helper for getting resources from our kit."""
+    """
+    Handy helper for getting resources from our kit.
+    """
     data = pkg_resources.resource_string(__name__, path)
     return data.decode("utf8")
 
 
 def _now():
+    """
+    Get current date and time.
+    """
     return datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
 
 
@@ -513,10 +694,13 @@ def load_resource(resource_path):  # pragma: NO COVER
     return unicode(resource_content)
 
 
-def render_template(template_path, context={}):  # pragma: NO COVER
+def render_template(template_path, context=None):  # pragma: NO COVER
     """
-    Evaluate a template by resource path, applying the provided context
+    Evaluate a template by resource path, applying the provided context.
     """
+    if context is None:
+        context = {}
+
     template_str = load_resource(template_path)
     template = Template(template_str)
     return template.render(Context(context))
