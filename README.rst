@@ -33,7 +33,7 @@ Try Out on devstack/fullstack
 
      on the second line right after ``{``
 
-   - In ``/edx/app/edxapp/cms.envs.json``, add
+   - In ``/edx/app/edxapp/cms.env.json``, add
 
 	 .. code:: javascript
 
