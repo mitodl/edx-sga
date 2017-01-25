@@ -16,6 +16,7 @@ function StaffGradedAssignmentXBlock(runtime, element) {
         var removeGradeUrl = runtime.handlerUrl(element, 'remove_grade');
         var template = _.template($(element).find("#sga-tmpl").text());
         var gradingTemplate;
+        var studentAssignments;
 
         function render(state) {
             // Add download urls to template context
@@ -104,7 +105,30 @@ function StaffGradedAssignmentXBlock(runtime, element) {
             updateChangeEvent(fileUpload);
         }
 
-        function renderStaffGrading(data) {
+        // function to replace the entire content of the global variable
+        // containing all the assignments
+        function replaceStudentsAssignments (data) {
+          studentAssignments = data;
+          renderStaffGrading();
+        }
+
+        // function to update one student assignment
+        function updateStudentAssignment (data) {
+          _.map(data.assignments, function (assignment) {
+            studentAssignments.assignments = studentAssignments.assignments.map(
+              function(obj) {
+                if (obj.submission_id === assignment.submission_id) {
+                  return assignment;
+                }
+                return obj;
+              }
+            );
+          });
+          renderStaffGrading();
+        }
+
+        function renderStaffGrading() {
+            var data = studentAssignments;
             $('.grade-modal').hide();
 
             if (data.display_name !== '') {
@@ -145,7 +169,7 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                         // Add a time delay so user will notice upload finishing
                         // for small files
                         setTimeout(
-                            function() { renderStaffGrading(data.result); },
+                            function() { updateStudentAssignment(data.result); },
                             3000);
                     }
                 });
@@ -207,34 +231,21 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                 } else {
                     // No errors
                     $.post(enterGradeUrl, form.serialize())
-                        .success(renderStaffGrading);
+                        .success(updateStudentAssignment);
                 }
             });
-            form.find('#remove-grade').on('click', function() {
+            form.find('#remove-grade').off('click').on('click', function() {
                 var url = removeGradeUrl + '?module_id=' +
                     row.data('module_id') + '&student_id=' +
                     row.data('student_id');
-                $.get(url).success(renderStaffGrading);
+                $.get(url).success(updateStudentAssignment);
             });
-            form.find('#enter-grade-cancel').on('click', function() {
-                /* We're kind of stretching the limits of leanModal, here,
-                 * by nesting modals one on top of the other.  One side effect
-                 * is that when the enter grade modal is closed, it hides
-                 * the overlay for itself and for the staff grading modal,
-                 * so the overlay is no longer present to click on to close
-                 * the staff grading modal.  Since leanModal uses a fade out
-                 * time of 200ms to hide the overlay, our work around is to
-                 * wait 225ms and then just "click" the 'Grade Submissions'
-                 * button again.  It would also probably be pretty
-                 * straightforward to submit a patch to leanModal so that it
-                 * would work properly with nested modals.
-                 *
-                 * See: https://github.com/mitodl/edx-sga/issues/13
-                 */
-                setTimeout(function() {
-                    $('#grade-submissions-button').click();
-                }, 225);
-            });
+            form.find('#enter-grade-cancel').off('click').on(
+                'click',
+                function() {
+                  renderStaffGrading();
+                }
+            );
         }
 
         function updateChangeEvent(fileUploadObj) {
@@ -269,7 +280,7 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                     .on('click', function() {
                         $.ajax({
                             url: getStaffGradingUrl,
-                            success: renderStaffGrading
+                            success: replaceStudentsAssignments
                         });
                     });
                 block.find('#staff-debug-info-button')

@@ -567,6 +567,35 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         self.assertEqual(assignments[1]['annotated'], None)
         self.assertEqual(assignments[1]['comment'], u'')
 
+    def test_staff_grading_data(self):
+        """
+        Test it can return all students or one student
+        """
+        block = self.make_one()
+        barney = self.make_student(
+            block, "barney",
+            filename="foo.txt",
+            score=10,
+            annotated_filename="foo_corrected.txt",
+            comment="Good work!")['module']
+        fred = self.make_student(
+            block, "fred",
+            filename="bar.txt")['module']
+        data = block.staff_grading_data()
+        assignments = data.get('assignments')
+        self.assertIsNotNone(assignments)
+        self.assertEqual(len(assignments), 2)
+        user_fred = User.objects.get(username='fred')
+        data = block.staff_grading_data(student_user=user_fred)
+        assignments = data.get('assignments')
+        self.assertIsNotNone(assignments)
+        self.assertEqual(len(assignments), 1)
+        self.assertEqual(assignments[0]['module_id'], fred.id)
+        self.assertEqual(assignments[0]['username'], 'fred')
+        self.assertEqual(assignments[0]['fullname'], 'fred')
+        self.assertEqual(assignments[0]['filename'], 'bar.txt')
+        
+
     @mock.patch('edx_sga.sga.log')
     def test_assert_logging_when_student_module_created(self, mocked_log):
         """
