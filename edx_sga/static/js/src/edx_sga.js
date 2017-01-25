@@ -48,13 +48,19 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                                     return;
                                 }
                             }
+                            var uploadElement = $(content).find(".upload");
+                            uploadElement.attr("role", "progressbar");
+                            uploadElement.attr("aria-valuemax", "100");
+                            uploadElement.attr("aria-valuemin", "0");
                             data.submit();
                         });
                 },
                 progressall: function(e, data) {
                     var percent = parseInt(data.loaded / data.total * 100, 10);
-                    $(content).find('.upload').text(
-                        'Uploading... ' + percent + '%');
+                    var uploadElement = $(content).find(".upload");
+                    uploadElement.text("Uploading... " + percent + "%");
+                    uploadElement.attr("aria-valuenow" , percent);
+                    uploadElement.attr("aria-valuetext" , "Uploading... " + percent + "%");
                 },
                 fail: function(e, data) {
                     /**
@@ -100,8 +106,10 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                     }
                 }
             });
-
             updateChangeEvent(fileUpload);
+            if (!_.isUndefined(state.error)) {
+                $(content).find('p.error').focus();
+            }
         }
 
         function renderStaffGrading(data) {
@@ -198,10 +206,13 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                 event.preventDefault();
                 if (isNaN(score)) {
                     form.find('.error').html('<br/>Grade must be a number.');
+                    form.find('.error').focus();
                 } else if (score !== parseInt(score)) {
                     form.find('.error').html('<br/>Grade must be an integer.');
+                    form.find('.error').focus();
                 } else if (score < 0) {
                     form.find('.error').html('<br/>Grade must be positive.');
+                    form.find('.error').focus();
                 } else if (score > max_score) {
                     form.find('.error').html('<br/>Maximum score is ' + max_score);
                 } else {
