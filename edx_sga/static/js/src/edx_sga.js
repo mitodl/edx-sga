@@ -105,8 +105,12 @@ function StaffGradedAssignmentXBlock(runtime, element) {
         }
 
         function renderStaffGrading(data) {
-            gradeFormError('');
-            $('.grade-modal').hide();
+            if (data.hasOwnProperty('error')) {
+              gradeFormError(data['error']);
+            } else {
+              gradeFormError('');
+              $('.grade-modal').hide();
+            }
 
             if (data.display_name !== '') {
                 $('.sga-block .display_name').html(data.display_name);

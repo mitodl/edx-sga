@@ -554,6 +554,17 @@ class StaffGradedAssignmentXBlock(XBlock):
         require(self.is_course_staff())
         return Response(json_body=self.staff_grading_data())
 
+    def validat_score_message(self, course_id, username):
+        log.error(
+            "enter_grade: invalid grade submitted for course:%s module:%s student:%s",
+            course_id,
+            self.location,
+            username
+        )
+        return {
+            "error": "Please enter valid grade"
+        }
+
     @XBlock.handler
     def enter_grade(self, request, suffix=''):
         # pylint: disable=unused-argument
@@ -561,9 +572,27 @@ class StaffGradedAssignmentXBlock(XBlock):
         Persist a score for a student given by staff.
         """
         require(self.is_course_staff())
+        score = request.params.get('grade', None)
         module = StudentModule.objects.get(pk=request.params['module_id'])
+        if not score:
+            return Response(
+                json_body=self.validat_score_message(
+                    module.course_id,
+                    module.student.username
+                )
+            )
+
         state = json.loads(module.state)
-        score = int(request.params['grade'])
+        try:
+            score = int(score)
+        except ValueError:
+            return Response(
+                json_body=self.validat_score_message(
+                    module.course_id,
+                    module.student.username
+                )
+            )
+
         if self.is_instructor():
             uuid = request.params['submission_id']
             submissions_api.set_score(uuid, score, self.max_score())
@@ -589,7 +618,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         """
         require(self.is_course_staff())
         student_id = request.params['student_id']
-        submissions_api.reset_score(student_id, unicode(self.course_id), self.block_id)
+        submissions_api.reset_score(student_id, unicode(self.course_id), unicode(self.block_id))
         module = StudentModule.objects.get(pk=request.params['module_id'])
         state = json.loads(module.state)
         state['staff_score'] = None

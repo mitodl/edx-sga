@@ -3,6 +3,7 @@
 Tests for SGA
 """
 import datetime
+from ddt import ddt, data
 import json
 import mock
 import os
@@ -59,6 +60,7 @@ class DummyUpload(object):
         return self.stream.seek(offset)
 
 
+@ddt
 class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
     """
     Create a SGA block with mock data.
@@ -625,18 +627,26 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         self.assertEqual(state['comment'], 'Good!')
         self.assertEqual(state['staff_score'], 9)
 
-    def test_enter_grade_float(self):
+    @data(None, "", '9.24', "second")
+    def test_enter_grade_fail(self, grade):
         # pylint: disable=no-member
         """
-        Tests grade enter is float.
+        Tests grade enter fail.
         """
         block = self.make_one()
         fred = self.make_student(block, "fred5", filename='foo.txt')
-        with self.assertRaises(ValueError):
+        with patch('edx_sga.sga.log') as mocked_log:
             block.enter_grade(mock.Mock(params={
                 'module_id': fred['module'].id,
                 'submission_id': fred['submission']['uuid'],
-                'grade': '9.24'}))
+                'grade': grade}
+            ))
+        mocked_log.error.assert_called_with(
+            "enter_grade: invalid grade submitted for course:%s module:%s student:%s",
+            block.course_id,
+            block.location,
+            "fred5"
+        )
 
     def test_remove_grade(self):
         # pylint: disable=no-member
