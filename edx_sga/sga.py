@@ -561,9 +561,20 @@ class StaffGradedAssignmentXBlock(XBlock):
         Persist a score for a student given by staff.
         """
         require(self.is_course_staff())
+        score = request.params.get('grade', None)
+        if not score:
+            log.error(
+                "[enter_grade] Please enter valid grade for course:%s module:%s student:%s",
+                module.course_id,
+                module.module_state_key,
+                module.student.username
+            )
+            return Response(json_body= {
+                "error": "Please enter valid grade"
+            })
         module = StudentModule.objects.get(pk=request.params['module_id'])
         state = json.loads(module.state)
-        score = int(request.params['grade'])
+        score = int(score)
         if self.is_instructor():
             uuid = request.params['submission_id']
             submissions_api.set_score(uuid, score, self.max_score())
@@ -588,6 +599,18 @@ class StaffGradedAssignmentXBlock(XBlock):
         Reset a students score request by staff.
         """
         require(self.is_course_staff())
+        score = request.params.get('grade', None)
+        if not score:
+            log.error(
+                "[remove_grade] Please enter valid grade for course:%s module:%s student:%s",
+                module.course_id,
+                module.module_state_key,
+                module.student.username
+            )
+            return Response(json_body= {
+                "error": "To remove grade, you must have a valid grade submitted first"
+            })
+
         student_id = request.params['student_id']
         submissions_api.reset_score(student_id, unicode(self.course_id), self.block_id)
         module = StudentModule.objects.get(pk=request.params['module_id'])

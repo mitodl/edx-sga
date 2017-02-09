@@ -105,7 +105,11 @@ function StaffGradedAssignmentXBlock(runtime, element) {
         }
 
         function renderStaffGrading(data) {
-            $('.grade-modal').hide();
+            if 'error' in data.keys():
+               var form = $(element).find("#enter-grade-form");
+               form.find('.error').html(data['error']);
+            else:
+                $('.grade-modal').hide();
 
             if (data.display_name !== '') {
                 $('.sga-block .display_name').html(data.display_name);
