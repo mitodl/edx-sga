@@ -229,6 +229,8 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                 if (row.data('score')) {
                   // if there is no grade then it is pointless to call api.
                   $.get(url).success(renderStaffGrading);
+                } else {
+                    gradeFormError('<br/>No grade to remove.');
                 }
             });
             form.find('#enter-grade-cancel').on('click', function() {
