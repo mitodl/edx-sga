@@ -554,7 +554,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         require(self.is_course_staff())
         return Response(json_body=self.staff_grading_data())
 
-    def validat_score_message(self, course_id, username):
+    def validate_score_message(self, course_id, username):
         log.error(
             "enter_grade: invalid grade submitted for course:%s module:%s student:%s",
             course_id,
@@ -576,7 +576,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         module = StudentModule.objects.get(pk=request.params['module_id'])
         if not score:
             return Response(
-                json_body=self.validat_score_message(
+                json_body=self.validate_score_message(
                     module.course_id,
                     module.student.username
                 )
@@ -587,7 +587,7 @@ class StaffGradedAssignmentXBlock(XBlock):
             score = int(score)
         except ValueError:
             return Response(
-                json_body=self.validat_score_message(
+                json_body=self.validate_score_message(
                     module.course_id,
                     module.student.username
                 )
