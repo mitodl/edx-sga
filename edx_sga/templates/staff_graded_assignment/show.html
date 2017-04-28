@@ -94,7 +94,7 @@
           </td>
           <td>
             <% if (assignment.may_grade) { %>
-              <a class="enter-grade-button button" href="#{{ id }}-enter-grade">
+              <a class="enter-grade-button button" href="#enter-grade-{{ id }}">
                 <% if (assignment.needs_approval) { %>
                   {% trans "Approve grade" %}
                 <% } else { %>
@@ -117,12 +117,12 @@
 
   <div aria-hidden="true" class="wrap-instructor-info">
     <a class="instructor-info-action" id="grade-submissions-button"
-       href="#{{ id }}-grade">{% trans "Grade Submissions" %}</a>
+       href="#grade-{{ id }}">{% trans "Grade Submissions" %}</a>
     <a class="instructor-info-action" id="staff-debug-info-button"
-       href="#{{ id }}-debug">{% trans "Staff Debug Info" %}</a>
+       href="#debug-{{ id }}">{% trans "Staff Debug Info" %}</a>
   </div>
 
-  <section aria-hidden="true" class="modal staff-modal" id="{{ id }}-grade" style="height: 75%">
+  <section aria-hidden="true" class="modal staff-modal" id="grade-{{ id }}" style="height: 75%" tabindex="-1">
     <div class="inner-wrapper" style="color: black; overflow: auto;">
       <header><h2><span class="display_name">{{ display_name }}</span> - {% trans "Staff Graded Assignment" %}</h2></header>
       <br/>
@@ -132,8 +132,8 @@
     </div>
   </section>
 
-  <section aria-hidden="true" class="modal staff-modal" 
-           style="height: 80%" id="{{ id }}-debug">
+  <section aria-hidden="true" class="modal staff-modal"
+           style="height: 80%" id="debug-{{ id }}" tabindex="-1">
     <div class="inner-wrapper" style="color: black">
       <header><h2>{% trans "Staff Debug" %}</h2></header>
       <br/>
@@ -157,7 +157,7 @@
     </div>
   </section>
 
-  <section aria-hidden="true" class="modal grade-modal" id="{{ id }}-enter-grade">
+  <section aria-hidden="true" class="modal grade-modal" id="enter-grade-{{ id }}" tabindex="-1">
     <div class="inner-wrapper" style="color: black">
       <header><h2>
         {% trans "Enter Grade" %}
