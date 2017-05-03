@@ -317,8 +317,9 @@ class StaffGradedAssignmentXBlock(XBlock):
                     'fullname': module.student.profile.name,
                     'filename': submission['answer']["filename"],
                     'timestamp': submission['created_at'].strftime(
-                        DateTime.DATETIME_FORMAT
-                    ),
+                         DateTime.DATETIME_FORMAT
+                     ),
+                    'timestamp_formatted': formatDateTime(submission['created_at']),
                     'score': score,
                     'approved': approved,
                     'needs_approval': instructor and needs_approval,
@@ -734,6 +735,12 @@ def render_template(template_path, context=None):  # pragma: NO COVER
     template = Template(template_str)
     return template.render(Context(context))
 
+
+def formatDateTime(dateTime):
+    context = Context(dict(value = dateTime))
+    template = Template("{{ value|date:'DATETIME_FORMAT' }}")
+    formatted = template.render(context)
+    return formatted
 
 def require(assertion):
     """
