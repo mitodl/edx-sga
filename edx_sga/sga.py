@@ -135,36 +135,19 @@ class StaffGradedAssignmentXBlock(XBlock):
         """
         return self.points
 
-    def _serialize_opaque_key(self, key):
-        """
-        Gracefully handle opaque keys, both before and after the transition.
-        https://github.com/edx/edx-platform/wiki/Opaque-Keys-(Locators)
-
-        Args:
-            key (unicode or OpaqueKey subclass): The key to serialize.
-
-        Returns:
-            unicode
-
-        """
-        if hasattr(key, 'to_deprecated_string'):
-            return key.to_deprecated_string()
-        else:
-            return unicode(key)
-
     @reify
     def block_id(self):
         """
         Return the usage_id of the block.
         """
-        return self._serialize_opaque_key(self.scope_ids.usage_id)
+        return unicode(self.scope_ids.usage_id)
 
     @reify
     def block_course_id(self):
         """
         Return the course_id of the block.
         """
-        return self._serialize_opaque_key(self.course_id)
+        return unicode(self.course_id)
 
     def student_submission_id(self, submission_id=None):
         # pylint: disable=no-member
