@@ -719,7 +719,7 @@ def _now():
     """
     Get current date and time.
     """
-    return datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
+    return datetime.datetime.utcnow().replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
 
 
 def load_resource(resource_path):  # pragma: NO COVER
