@@ -21,7 +21,6 @@ from submissions.models import StudentItem
 from student.models import anonymous_id_for_user, UserProfile
 from student.tests.factories import AdminFactory
 from xblock.field_data import DictFieldData
-from xmodule.modulestore.tests.factories import CourseFactory
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from opaque_keys.edx.locations import Location
@@ -70,6 +69,7 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         Creates a test course ID, mocks the runtime, and creates a fake storage
         engine for use in all tests
         """
+        from xmodule.modulestore.tests.factories import CourseFactory
         super(StaffGradedAssignmentXblockTests, self).setUp()
         course = CourseFactory.create(org='foo', number='bar', display_name='baz')
         self.course_id = course.id
