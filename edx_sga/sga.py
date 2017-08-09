@@ -13,7 +13,10 @@ import pytz
 
 from functools import partial  # lint-amnesty, pylint: disable=wrong-import-order
 
-from courseware.models import StudentModule  # lint-amnesty, pylint: disable=import-error
+try:
+    from courseware.models import StudentModule  # lint-amnesty, pylint: disable=import-error
+except ImportError:
+    pass
 
 from django.core.exceptions import PermissionDenied  # lint-amnesty, pylint: disable=import-error
 from django.core.files import File  # lint-amnesty, pylint: disable=import-error
@@ -23,18 +26,25 @@ from django.template import Context, Template  # lint-amnesty, pylint: disable=i
 from django.utils.encoding import force_text  # pylint: disable=import-error
 from django.utils.translation import ugettext_lazy as _  # pylint: disable=import-error
 
-from student.models import user_by_anonymous_id  # lint-amnesty, pylint: disable=import-error
+try:
+    from student.models import user_by_anonymous_id  # lint-amnesty, pylint: disable=import-error
+except ImportError:
+    pass
+
 from submissions import api as submissions_api  # lint-amnesty, pylint: disable=import-error
 from submissions.models import StudentItem as SubmissionsStudent  # lint-amnesty, pylint: disable=import-error
 
 from webob.response import Response
 
-from xblock.core import XBlock
-from xblock.exceptions import JsonHandlerError
-from xblock.fields import DateTime, Scope, String, Float, Integer
-from xblock.fragment import Fragment
+try:
+    from xblock.core import XBlock
+    from xblock.exceptions import JsonHandlerError
+    from xblock.fields import DateTime, Scope, String, Float, Integer
+    from xblock.fragment import Fragment
 
-from xmodule.util.duedate import get_extended_due_date  # lint-amnesty, pylint: disable=import-error
+    from xmodule.util.duedate import get_extended_due_date  # lint-amnesty, pylint: disable=import-error
+except ImportError:
+    pass
 
 
 log = logging.getLogger(__name__)
@@ -242,6 +252,20 @@ class StaffGradedAssignmentXBlock(XBlock):
             (name, field.read_from(self))
             for name, field in self.fields.items()]
 
+    def get_module_by_id(self, module_id):
+        """
+        returns student mode object
+        """
+        student_module = None
+        try:
+            student_module = StudentModule.objects.get(pk=module_id)
+        except StudentModule.DoesNotExist:
+            log.info(
+                "No student module object found for module_id:%s",
+                module_id
+            )
+        return student_module
+
     def student_state(self):
         """
         Returns a JSON serializable representation of student's state for
@@ -431,7 +455,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         }
         student_id = self.student_submission_id()
         submissions_api.create_submission(student_id, answer)
-        path = self._file_storage_path(sha1, upload.file.name)
+        path = self.file_storage_path(sha1, upload.file.name)
         if not default_storage.exists(path):
             default_storage.save(path, File(upload.file))
         return Response(json_body=self.student_state())
@@ -444,7 +468,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         """
         require(self.is_course_staff())
         upload = request.params['annotated']
-        module = StudentModule.objects.get(pk=request.params['module_id'])
+        module = self.get_module_by_id(request.params['module_id'])
         state = json.loads(module.state)
         state['annotated_sha1'] = sha1 = _get_sha1(upload.file)
         state['annotated_filename'] = filename = upload.file.name
@@ -452,7 +476,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         state['annotated_timestamp'] = _now().strftime(
             DateTime.DATETIME_FORMAT
         )
-        path = self._file_storage_path(sha1, filename)
+        path = self.file_storage_path(sha1, filename)
         if not default_storage.exists(path):
             default_storage.save(path, File(upload.file))
         module.state = json.dumps(state)
@@ -472,7 +496,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         Fetch student assignment from storage and return it.
         """
         answer = self.get_submission()['answer']
-        path = self._file_storage_path(answer['sha1'], answer['filename'])
+        path = self.file_storage_path(answer['sha1'], answer['filename'])
         return self.download(path, answer['mimetype'], answer['filename'])
 
     @XBlock.handler
@@ -481,7 +505,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         """
         Fetch assignment with staff annotations from storage and return it.
         """
-        path = self._file_storage_path(
+        path = self.file_storage_path(
             self.annotated_sha1,
             self.annotated_filename,
         )
@@ -500,7 +524,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         require(self.is_course_staff())
         submission = self.get_submission(request.params['student_id'])
         answer = submission['answer']
-        path = self._file_storage_path(answer['sha1'], answer['filename'])
+        path = self.file_storage_path(answer['sha1'], answer['filename'])
         return self.download(
             path,
             answer['mimetype'],
@@ -515,9 +539,9 @@ class StaffGradedAssignmentXBlock(XBlock):
         Return annotated assignment file requested by staff.
         """
         require(self.is_course_staff())
-        module = StudentModule.objects.get(pk=request.params['module_id'])
+        module = self.get_module_by_id(request.params['module_id'])
         state = json.loads(module.state)
-        path = self._file_storage_path(
+        path = self.file_storage_path(
             state['annotated_sha1'],
             state['annotated_filename']
         )
@@ -583,7 +607,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         """
         require(self.is_course_staff())
         score = request.params.get('grade', None)
-        module = StudentModule.objects.get(pk=request.params['module_id'])
+        module = self.get_module_by_id(request.params['module_id'])
         if not score:
             return Response(
                 json_body=self.validate_score_message(
@@ -629,7 +653,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         require(self.is_course_staff())
         student_id = request.params['student_id']
         submissions_api.reset_score(student_id, unicode(self.course_id), unicode(self.block_id))
-        module = StudentModule.objects.get(pk=request.params['module_id'])
+        module = self.get_module_by_id(request.params['module_id'])
         state = json.loads(module.state)
         state['staff_score'] = None
         state['comment'] = ''
@@ -683,13 +707,13 @@ class StaffGradedAssignmentXBlock(XBlock):
         """
         return not self.past_due() and self.score is None
 
-    def _file_storage_path(self, sha1, filename):
+    def file_storage_path(self, sha1, filename):
         # pylint: disable=no-member
         """
         Get file path of storage.
         """
         path = (
-            '{loc.org}/{loc.course}/{loc.block_type}/{loc.block_id}'
+            u'{loc.org}/{loc.course}/{loc.block_type}/{loc.block_id}'
             '/{sha1}{ext}'.format(
                 loc=self.location,
                 sha1=sha1,

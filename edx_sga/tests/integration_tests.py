@@ -4,7 +4,6 @@ Tests for SGA
 """
 import datetime
 import json
-import os
 import tempfile
 from ddt import ddt, data  # pylint: disable=import-error
 import mock
@@ -24,38 +23,7 @@ from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disa
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase  # lint-amnesty, pylint: disable=import-error
 from opaque_keys.edx.locations import Location  # lint-amnesty, pylint: disable=import-error
 
-
-class DummyResource(object):
-    """
-     A Resource class for use in tests
-    """
-    def __init__(self, path):
-        self.path = path
-
-    def __eq__(self, other):
-        return isinstance(other, DummyResource) and self.path == other.path
-
-
-class DummyUpload(object):
-    """
-    Upload and read file.
-    """
-    def __init__(self, path, name):
-        self.stream = open(path, 'rb')
-        self.name = name
-        self.size = os.path.getsize(path)
-
-    def read(self, number_of_bytes=None):
-        """
-        Read data from file.
-        """
-        return self.stream.read(number_of_bytes)
-
-    def seek(self, offset):
-        """
-        Move to specified byte location in file
-        """
-        return self.stream.seek(offset)
+from edx_sga.tests.common import DummyResource, DummyUpload
 
 
 @ddt
@@ -402,8 +370,8 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         self.assertEqual(response.body, expected)
 
         with mock.patch(
-            "edx_sga.sga.StaffGradedAssignmentXBlock._file_storage_path",
-            return_value=block._file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+            "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
+            return_value=block.file_storage_path(  # lint-amnesty, pylint: disable=protected-access
                 "", "test_notfound.txt"
             )  # lint-amnesty, pylint: disable=protected-access
         ):
@@ -428,8 +396,8 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         self.assertEqual(response.body, expected)
 
         with mock.patch(
-            "edx_sga.sga.StaffGradedAssignmentXBlock._file_storage_path",
-            return_value=block._file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+            "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
+            return_value=block.file_storage_path(  # lint-amnesty, pylint: disable=protected-access
                 "", "test_notfound.txt"
             )  # lint-amnesty, pylint: disable=protected-access
         ):
@@ -460,8 +428,8 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         self.assertEqual(response.body, expected)
 
         with mock.patch(
-            "edx_sga.sga.StaffGradedAssignmentXBlock._file_storage_path",
-            return_value=block._file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+            "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
+            return_value=block.file_storage_path(  # lint-amnesty, pylint: disable=protected-access
                 "",
                 "test_notfound.txt"
             )  # lint-amnesty, pylint: disable=protected-access
@@ -485,8 +453,8 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         self.assertEqual(response.body, expected)
 
         with mock.patch(
-            "edx_sga.sga.StaffGradedAssignmentXBlock._file_storage_path",
-            return_value=block._file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+            "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
+            return_value=block.file_storage_path(  # lint-amnesty, pylint: disable=protected-access
                 "",
                 "test_notfound.txt"
             )  # lint-amnesty, pylint: disable=protected-access
@@ -518,8 +486,8 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         self.assertEqual(response.body, expected)
 
         with mock.patch(
-            "edx_sga.sga.StaffGradedAssignmentXBlock._file_storage_path",
-            return_value=block._file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+            "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
+            return_value=block.file_storage_path(  # lint-amnesty, pylint: disable=protected-access
                 "",
                 "test_notfound.txt"
             )  # lint-amnesty, pylint: disable=protected-access
@@ -542,8 +510,8 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
             'student_id': student['item'].student_id}))
         self.assertEqual(response.body, expected)
         with mock.patch(
-            "edx_sga.sga.StaffGradedAssignmentXBlock._file_storage_path",
-            return_value=block._file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+            "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
+            return_value=block.file_storage_path(  # lint-amnesty, pylint: disable=protected-access
                 "",
                 "test_notfound.txt"
             )  # lint-amnesty, pylint: disable=protected-access
