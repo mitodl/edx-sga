@@ -11,19 +11,19 @@ import os
 import pkg_resources
 import pytz
 
-from functools import partial
+from functools import partial  # lint-amnesty, pylint: disable=wrong-import-order
 
-from courseware.models import StudentModule
+from courseware.models import StudentModule  # lint-amnesty, pylint: disable=import-error
 
-from django.core.exceptions import PermissionDenied
-from django.core.files import File
-from django.core.files.storage import default_storage
-from django.conf import settings
-from django.template import Context, Template
+from django.core.exceptions import PermissionDenied  # lint-amnesty, pylint: disable=import-error
+from django.core.files import File  # lint-amnesty, pylint: disable=import-error
+from django.core.files.storage import default_storage  # lint-amnesty, pylint: disable=import-error
+from django.conf import settings  # lint-amnesty, pylint: disable=import-error
+from django.template import Context, Template  # lint-amnesty, pylint: disable=import-error
 
-from student.models import user_by_anonymous_id
-from submissions import api as submissions_api
-from submissions.models import StudentItem as SubmissionsStudent
+from student.models import user_by_anonymous_id  # lint-amnesty, pylint: disable=import-error
+from submissions import api as submissions_api  # lint-amnesty, pylint: disable=import-error
+from submissions.models import StudentItem as SubmissionsStudent  # lint-amnesty, pylint: disable=import-error
 
 from webob.response import Response
 
@@ -32,7 +32,7 @@ from xblock.exceptions import JsonHandlerError
 from xblock.fields import DateTime, Scope, String, Float, Integer
 from xblock.fragment import Fragment
 
-from xmodule.util.duedate import get_extended_due_date
+from xmodule.util.duedate import get_extended_due_date  # lint-amnesty, pylint: disable=import-error
 
 
 log = logging.getLogger(__name__)
@@ -561,7 +561,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         require(self.is_course_staff())
         return Response(json_body=self.staff_grading_data())
 
-    def validate_score_message(self, course_id, username):
+    def validate_score_message(self, course_id, username):  # lint-amnesty, pylint: disable=missing-docstring
         log.error(
             "enter_grade: invalid grade submitted for course:%s module:%s student:%s",
             course_id,

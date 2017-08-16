@@ -252,11 +252,14 @@ Staff Grading
 Testing
 -------
 
-Assuming ``edx-sga`` is installed as above, you can run tests like so::
-    
-    $ python manage.py lms --settings=test test edx_sga
+Assuming ``edx-sga`` is installed as above, you can run intigration tests like so:
+
+    $ python manage.py lms --settings=test test edx_sga.integration_tests
 
 To get statement coverage::
 
-    $ coverage run --source edx_sga manage.py lms --settings=test test edx_sga
+    $ coverage run --source edx_sga manage.py lms --settings=test test edx_sga.integration_tests
     $ coverage report -m
+
+To run tests on different versions of django with mocking edX platform use:
+    $ tox

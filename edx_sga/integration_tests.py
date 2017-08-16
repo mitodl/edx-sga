@@ -3,27 +3,26 @@
 Tests for SGA
 """
 import datetime
-from ddt import ddt, data
 import json
-import mock
 import os
+import tempfile
+from ddt import ddt, data  # pylint: disable=import-error
+import mock
 import pkg_resources
 import pytz
-import tempfile
-from mock import patch
 
-from courseware.models import StudentModule
-from django.contrib.auth.models import User
-from django.core.exceptions import PermissionDenied
-from django.core.files.storage import FileSystemStorage
-from submissions import api as submissions_api
-from submissions.models import StudentItem
-from student.models import anonymous_id_for_user, UserProfile
-from student.tests.factories import AdminFactory
+from courseware.models import StudentModule  # lint-amnesty, pylint: disable=import-error
+from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=import-error
+from django.core.exceptions import PermissionDenied  # lint-amnesty, pylint: disable=import-error
+from django.core.files.storage import FileSystemStorage  # lint-amnesty, pylint: disable=import-error
+from submissions import api as submissions_api  # lint-amnesty, pylint: disable=import-error
+from submissions.models import StudentItem  # lint-amnesty, pylint: disable=import-error
+from student.models import anonymous_id_for_user, UserProfile  # lint-amnesty, pylint: disable=import-error
+from student.tests.factories import AdminFactory  # lint-amnesty, pylint: disable=import-error
 from xblock.field_data import DictFieldData
-from xmodule.modulestore.django import modulestore
-from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
-from opaque_keys.edx.locations import Location
+from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disable=import-error
+from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase  # lint-amnesty, pylint: disable=import-error
+from opaque_keys.edx.locations import Location  # lint-amnesty, pylint: disable=import-error
 
 
 class DummyResource(object):
@@ -69,7 +68,7 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         Creates a test course ID, mocks the runtime, and creates a fake storage
         engine for use in all tests
         """
-        from xmodule.modulestore.tests.factories import CourseFactory
+        from xmodule.modulestore.tests.factories import CourseFactory  # lint-amnesty, pylint: disable=import-error
         super(StaffGradedAssignmentXblockTests, self).setUp()
         course = CourseFactory.create(org='foo', number='bar', display_name='baz')
         self.course_id = course.id
@@ -393,7 +392,7 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         """
         Tests upload and download assignment for non staff.
         """
-        path = pkg_resources.resource_filename(__package__, 'tests.py')
+        path = pkg_resources.resource_filename(__package__, 'integration_tests.py')
         expected = open(path, 'rb').read()
         upload = mock.Mock(file=DummyUpload(path, 'test.txt'))
         block = self.make_one()
@@ -402,9 +401,11 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         response = block.download_assignment(None)
         self.assertEqual(response.body, expected)
 
-        with patch(
+        with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock._file_storage_path",
-            return_value=block._file_storage_path("", "test_notfound.txt")
+            return_value=block._file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+                "", "test_notfound.txt"
+            )  # lint-amnesty, pylint: disable=protected-access
         ):
             response = block.download_assignment(None)
             self.assertEqual(response.status_code, 404)
@@ -414,7 +415,7 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         """
         Tests upload and download of annotated staff files.
         """
-        path = pkg_resources.resource_filename(__package__, 'tests.py')
+        path = pkg_resources.resource_filename(__package__, 'integration_tests.py')
         expected = open(path, 'rb').read()
         upload = mock.Mock(file=DummyUpload(path, 'test.txt'))
         block = self.make_one()
@@ -426,9 +427,11 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
             'module_id': fred.id}))
         self.assertEqual(response.body, expected)
 
-        with patch(
+        with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock._file_storage_path",
-            return_value=block._file_storage_path("", "test_notfound.txt")
+            return_value=block._file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+                "", "test_notfound.txt"
+            )  # lint-amnesty, pylint: disable=protected-access
         ):
             response = block.staff_download_annotated(
                 mock.Mock(
@@ -444,7 +447,7 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         """
         Test download annotated assignment for non staff.
         """
-        path = pkg_resources.resource_filename(__package__, 'tests.py')
+        path = pkg_resources.resource_filename(__package__, 'integration_tests.py')
         expected = open(path, 'rb').read()
         upload = mock.Mock(file=DummyUpload(path, 'test.txt'))
         block = self.make_one()
@@ -456,9 +459,12 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         response = block.download_annotated(None)
         self.assertEqual(response.body, expected)
 
-        with patch(
+        with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock._file_storage_path",
-            return_value=block._file_storage_path("", "test_notfound.txt")
+            return_value=block._file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+                "",
+                "test_notfound.txt"
+            )  # lint-amnesty, pylint: disable=protected-access
         ):
             response = block.download_annotated(None)
             self.assertEqual(response.status_code, 404)
@@ -467,7 +473,7 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         """
         Test download for staff.
         """
-        path = pkg_resources.resource_filename(__package__, 'tests.py')
+        path = pkg_resources.resource_filename(__package__, 'integration_tests.py')
         expected = open(path, 'rb').read()
         upload = mock.Mock(file=DummyUpload(path, 'test.txt'))
         block = self.make_one()
@@ -478,9 +484,12 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
             'student_id': student['item'].student_id}))
         self.assertEqual(response.body, expected)
 
-        with patch(
+        with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock._file_storage_path",
-            return_value=block._file_storage_path("", "test_notfound.txt")
+            return_value=block._file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+                "",
+                "test_notfound.txt"
+            )  # lint-amnesty, pylint: disable=protected-access
         ):
             response = block.staff_download(
                 mock.Mock(
@@ -496,7 +505,7 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         Tests download annotated assignment
         with filename in unicode for non staff member.
         """
-        path = pkg_resources.resource_filename(__package__, 'tests.py')
+        path = pkg_resources.resource_filename(__package__, 'integration_tests.py')
         expected = open(path, 'rb').read()
         upload = mock.Mock(file=DummyUpload(path, 'файл.txt'))
         block = self.make_one()
@@ -508,9 +517,12 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         response = block.download_annotated(None)
         self.assertEqual(response.body, expected)
 
-        with patch(
+        with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock._file_storage_path",
-            return_value=block._file_storage_path("", "test_notfound.txt")
+            return_value=block._file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+                "",
+                "test_notfound.txt"
+            )  # lint-amnesty, pylint: disable=protected-access
         ):
             response = block.download_annotated(None)
             self.assertEqual(response.status_code, 404)
@@ -519,7 +531,7 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         """
         Tests download assignment with filename in unicode for staff.
         """
-        path = pkg_resources.resource_filename(__package__, 'tests.py')
+        path = pkg_resources.resource_filename(__package__, 'integration_tests.py')
         expected = open(path, 'rb').read()
         upload = mock.Mock(file=DummyUpload(path, 'файл.txt'))
         block = self.make_one()
@@ -529,9 +541,12 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         response = block.staff_download(mock.Mock(params={
             'student_id': student['item'].student_id}))
         self.assertEqual(response.body, expected)
-        with patch(
+        with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock._file_storage_path",
-            return_value=block._file_storage_path("", "test_notfound.txt")
+            return_value=block._file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+                "",
+                "test_notfound.txt"
+            )  # lint-amnesty, pylint: disable=protected-access
         ):
             response = block.staff_download(
                 mock.Mock(
@@ -566,7 +581,7 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         fred = self.make_student(
             block, "fred",
             filename="bar.txt")['module']
-        data = block.get_staff_grading_data(None).json_body
+        data = block.get_staff_grading_data(None).json_body  # lint-amnesty, pylint: disable=redefined-outer-name
         assignments = sorted(data['assignments'], key=lambda x: x['username'])
         self.assertEqual(assignments[0]['module_id'], barney.id)
         self.assertEqual(assignments[0]['username'], 'barney')
@@ -650,7 +665,7 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         """
         block = self.make_one()
         fred = self.make_student(block, "fred5", filename='foo.txt')
-        with patch('edx_sga.sga.log') as mocked_log:
+        with mock.patch('edx_sga.sga.log') as mocked_log:
             block.enter_grade(
                 mock.Mock(
                     params={
