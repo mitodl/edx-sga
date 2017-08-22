@@ -33,17 +33,17 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                     var do_upload = $(content).find('.upload').html('');
                     $(content).find('p.error').html('');
                     $('<button/>')
-                        .text('Upload ' + data.files[0].name)
+                        .text(interpolate(gettext('Upload %(file_name)s'), {file_name: data.files[0].name}, true))
                         .appendTo(do_upload)
                         .click(function() {
-                            do_upload.text('Uploading...');
+                            do_upload.text(gettext('Uploading...'));
                             var block = $(element).find(".sga-block");
                             var data_max_size = block.attr("data-max-size");
                             var size = data.files[0].size;
                             if (!_.isUndefined(size)) {
                                 //if file size is larger max file size define in env(django)
                                 if (size >= data_max_size) {
-                                    state.error = 'The file you are trying to upload is too large.';
+                                    state.error = gettext('The file you are trying to upload is too large.');
                                     render(state);
                                     return;
                                 }
@@ -68,10 +68,10 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                          * here, so no good way to inform the user of what the
                          * limit is.
                          */
-                        state.error = 'The file you are trying to upload is too large.';
+                        state.error = gettext('The file you are trying to upload is too large.');
                     } else {
                         // Suitably vague
-                        state.error = 'There was an error uploading your file.';
+                        state.error = gettext('There was an error uploading your file.');
 
                         // Dump some information to the console to help someone
                         // debug.
@@ -144,7 +144,7 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                     url: url,
                     progressall: function(e, data) {
                         var percent = parseInt(data.loaded / data.total * 100, 10);
-                        row.find('.upload').text('Uploading... ' + percent + '%');
+                        row.find('.upload').text(interpolate(gettext('Uploading... %(percent)s %'), {percent: percent}, true));
                     },
                     done: function(e, data) {
                         // Add a time delay so user will notice upload finishing
@@ -208,13 +208,13 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                 var score = Number(form.find('#grade-input').val());
                 event.preventDefault();
                 if (!score) {
-                    gradeFormError('<br/>Grade must be a number.');
+                    gradeFormError('<br/>'+gettext('Grade must be a number.'));
                 } else if (score !== parseInt(score)) {
-                    gradeFormError('<br/>Grade must be an integer.');
+                    gradeFormError('<br/>'+gettext('Grade must be an integer.'));
                 } else if (score < 0) {
-                    gradeFormError('<br/>Grade must be positive.');
+                    gradeFormError('<br/>'+gettext('Grade must be positive.'));
                 } else if (score > max_score) {
-                    gradeFormError('<br/>Maximum score is ' + max_score);
+                    gradeFormError('<br/>'+interpolate(gettext('Maximum score is %(max_score)s'), {max_score:max_score}, true));
                 } else {
                     // No errors
                     $.post(enterGradeUrl, form.serialize())
@@ -230,7 +230,7 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                   // if there is no grade then it is pointless to call api.
                   $.get(url).success(renderStaffGrading);
                 } else {
-                    gradeFormError('<br/>No grade to remove.');
+                    gradeFormError('<br/>'+gettext('No grade to remove.'));
                 }
             });
             form.find('#enter-grade-cancel').on('click', function() {

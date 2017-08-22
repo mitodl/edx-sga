@@ -1,0 +1,62 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-09-10 13:09+0430\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Upload %(file_name)s"
+msgstr "Ûplöäd %(file_name)s Ⱡ'σяєм ιρѕυм ∂σłσ#"
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Uploading..."
+msgstr "Ûplöädïng... Ⱡ'σяєм ιρѕυм ∂σłσя ѕ#"
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "The file you are trying to upload is too large."
+msgstr ""
+"Thé fïlé ýöü äré trýïng tö üplöäd ïs töö lärgé. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт,"
+" ¢σηѕє¢тєтυя α#"
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "There was an error uploading your file."
+msgstr ""
+"Théré wäs än érrör üplöädïng ýöür fïlé. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυя#"
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Uploading... %(percent)s %"
+msgstr "Ûplöädïng... %(percent)s % Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт#"
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Grade must be a number."
+msgstr "Grädé müst ßé ä nümßér. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σ#"
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Grade must be an integer."
+msgstr "Grädé müst ßé än ïntégér. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕ#"
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Grade must be positive."
+msgstr "Grädé müst ßé pösïtïvé. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σ#"
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Maximum score is %(max_score)s"
+msgstr "Mäxïmüm sçöré ïs %(max_score)s Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, #"
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "No grade to remove."
+msgstr "Nö grädé tö rémövé. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт,#"

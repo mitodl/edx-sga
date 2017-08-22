@@ -3,3 +3,15 @@
 *.egg-info
 .coverage
 dist/
+.tox/
+
+### Internationalization artifacts
+*.mo
+*.po
+*.prob
+*.dup
+!django.po
+!django.mo
+!djangojs.po
+!djangojs.mo
+

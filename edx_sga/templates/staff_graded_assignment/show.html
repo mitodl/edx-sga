@@ -7,18 +7,18 @@
        <b><%= display_name %></b>
     <% } %>
     <% if (uploaded) { %>
-      <p><b>File uploaded</b> 
+      <p><b>{% trans "File uploaded" %}</b> 
         <a href="<%= downloadUrl %>"><%= uploaded.filename %></a></p>
     <% } else { %>
-      <p>No file has been uploaded.</p>
+      <p>{% trans "No file has been uploaded." %}</p>
     <% } %>
     <% if (graded) { %>
-      <p>Your score is <%= graded.score %> / <%= max_score %><br/>
+      <p>{% blocktrans with graded_score=graded.score %}Your score is {{ graded_score }} / {{ max_score }}{% endblocktrans %}<br/>
         <% if (graded.comment) { %>
-          <b>Instructor comment</b> <%= graded.comment %>
+          <b>{% trans "Instructor comment" %}</b> <%= graded.comment %>
         <% } %>
         <% if (annotated) { %><br/>
-          <b>Annotated file from instructor</b>
+          <b>{% trans "Annotated file from instructor" %}</b>
           <a href="<%= annotatedUrl %>"><%= annotated.filename %></a>
         <% } %>
       </p>
@@ -33,8 +33,9 @@
         {% trans "Upload your assignment" %}
       <% } %>
       <div class="upload">
-        <input class="fileupload" type="file" name="assignment"/>
-        <button>Select a file</button>
+        <label>{% trans "Select a file" %}
+          <input class="fileupload" type="file" name="assignment"/>
+        </label>
       </div>
     </p>
     <% } %>
@@ -51,14 +52,14 @@
     <table class="gridtable tablesorter" id="submissions">
       <thead>
       <tr>
-        <th class="header">Username <i class="icon fa fa-sort"/></th>
-        <th class="header">Name <i class="icon fa fa-sort"/></th>
-        <th class="header">Filename <i class="icon fa fa-sort"/></th>
-        <th class="header">Uploaded <i class="icon fa fa-sort"/></th>
-        <th class="header">Grade <i class="icon fa fa-sort"/></th>
-        <th class="header">Instructor's comments <i class="icon fa fa-sort"/></th>
-        <th class="header">Annotated <i class="icon fa fa-sort"/></th>
-        <th class="header" colspan="2">Actions</th>
+        <th class="header">{% trans "Username" %} <i class="icon fa fa-sort"/></th>
+        <th class="header">{% trans "Name" %} <i class="icon fa fa-sort"/></th>
+        <th class="header">{% trans "Filename" %} <i class="icon fa fa-sort"/></th>
+        <th class="header">{% trans "Uploaded" %} <i class="icon fa fa-sort"/></th>
+        <th class="header">{% trans "Grade" %} <i class="icon fa fa-sort"/></th>
+        <th class="header">{% trans "Instructor's comments" %} <i class="icon fa fa-sort"/></th>
+        <th class="header">{% trans "Annotated" %} <i class="icon fa fa-sort"/></th>
+        <th class="header" colspan="2">{% trans "Actions" %}</th>
       </tr>
       </thead>
       <tbody>
@@ -105,8 +106,9 @@
           </td>
           <td>
             <div class="upload">
-              <input class="fileupload" type="file" name="annotated"/>
-              <button>Upload annotated file</button>
+              <label>{% trans "Upload annotated file" %}
+                <input class="fileupload" type="file" name="annotated"/>
+              </label>
             </div>
           </td>
         </tr>
@@ -127,7 +129,7 @@
       <header><h2><span class="display_name">{{ display_name }}</span> - {% trans "Staff Graded Assignment" %}</h2></header>
       <br/>
       <div id="grade-info" style="display: block;">
-        Loading...
+        {% trans "Loading..." %}
       </div>
     </div>
   </section>
@@ -138,8 +140,8 @@
       <header><h2>{% trans "Staff Debug" %}</h2></header>
       <br/>
       <div class="staff_info" style="display: block; white-space: normal">
-        is_released = {{ is_released }}<br/>
-        location = {{ location }}<br/>
+        {% trans "is_released" %} = {{ is_released }}<br/>
+        {% trans "location" %} = {{ location }}<br/>
         <br/>
         <table summary="${_('Module Fields')}">
           <tr><th>{% trans "Module Fields" %}</th></tr>
@@ -152,7 +154,7 @@
           </tr>
           {% endfor %}
         </table><br/>
-        category = {{category}}
+        {% trans "category" %} = {{category}}
       </div>
     </div>
   </section>
@@ -167,10 +169,10 @@
         <form id="enter-grade-form">
           <input id="module_id-input" type="hidden" name="module_id"/>
           <input id="submission_id-input" type="hidden" name="submission_id"/>
-          <div>Grade for <span id="student-name"/></div>
-          <div>Grade: <input id="grade-input" name="grade"/>
+          <div>{% blocktrans with student_name="<span id='student-name'/>" %}Grade for {{student_name}}{% endblocktrans %}</div>
+          <div>{% trans "Grade:" %} <input id="grade-input" name="grade"/>
             <span class="error"></span></div>
-          <div>Comment: <textarea id="comment-input" name="comment" rows="4"></textarea></div>
+          <div>{% trans "Comment:" %} <textarea id="comment-input" name="comment" rows="4"></textarea></div>
           <div>
             <button type="submit">{% trans "Submit" %}</button>
             <button type="button" id="enter-grade-cancel">

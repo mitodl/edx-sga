@@ -1,0 +1,58 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-09-10 13:09+0430\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Upload %(file_name)s"
+msgstr "عحمخشي %(file_name)s"
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Uploading..."
+msgstr "عحمخشيهرل..."
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "The file you are trying to upload is too large."
+msgstr "فاث بهمث غخع شقث فقغهرل فخ عحمخشي هس فخخ مشقلث."
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "There was an error uploading your file."
+msgstr "فاثقث صشس شر ثققخق عحمخشيهرل غخعق بهمث."
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Uploading... %(percent)s %"
+msgstr "عحمخشيهرل... %(percent)s %"
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Grade must be a number."
+msgstr "لقشيث وعسف زث ش رعوزثق."
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Grade must be an integer."
+msgstr "لقشيث وعسف زث شر هرفثلثق."
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Grade must be positive."
+msgstr "لقشيث وعسف زث حخسهفهدث."
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Maximum score is %(max_score)s"
+msgstr "وشطهوعو سذخقث هس %(max_score)s"
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "No grade to remove."
+msgstr "رخ لقشيث فخ قثوخدث."

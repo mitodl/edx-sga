@@ -1,0 +1,243 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-09-10 13:09+0430\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: edx_sga/sga.py edx_sga/templates/staff_graded_assignment/show.html
+msgid "Staff Graded Assignment"
+msgstr "سفشبب لقشيثي شسسهلروثرف"
+
+#: edx_sga/sga.py
+msgid "This name appears in the horizontal navigation at the top of the page."
+msgstr ""
+"فاهس رشوث شححثشقس هر فاث اخقهظخرفشم رشدهلشفهخر شف فاث فخح خب فاث حشلث."
+
+#: edx_sga/sga.py
+msgid "Problem Weight"
+msgstr "حقخزمثو صثهلاف"
+
+#: edx_sga/sga.py
+msgid ""
+"Defines the number of points each problem is worth. If the value is not set,"
+" the problem is worth the sum of the option point values."
+msgstr ""
+"يثبهرثس فاث رعوزثق خب حخهرفس ثشذا حقخزمثو هس صخقفا. هب فاث دشمعث هس رخف سثف,"
+" فاث حقخزمثو هس صخقفا فاث سعو خب فاث خحفهخر حخهرف دشمعثس."
+
+#: edx_sga/sga.py
+msgid "Maximum score"
+msgstr "وشطهوعو سذخقث"
+
+#: edx_sga/sga.py
+msgid "Maximum grade score given to assignment by staff."
+msgstr "وشطهوعو لقشيث سذخقث لهدثر فخ شسسهلروثرف زغ سفشبب."
+
+#: edx_sga/sga.py
+msgid "Score assigned by non-instructor staff"
+msgstr "سذخقث شسسهلرثي زغ رخر-هرسفقعذفخق سفشبب"
+
+#: edx_sga/sga.py
+msgid "Score will need to be approved by instructor before being published."
+msgstr "سذخقث صهمم رثثي فخ زث شححقخدثي زغ هرسفقعذفخق زثبخقث زثهرل حعزمهساثي."
+
+#: edx_sga/sga.py edx_sga/templates/staff_graded_assignment/show.html
+msgid "Instructor comment"
+msgstr "هرسفقعذفخق ذخووثرف"
+
+#: edx_sga/sga.py
+msgid "Feedback given to student by instructor."
+msgstr "بثثيزشذن لهدثر فخ سفعيثرف زغ هرسفقعذفخق."
+
+#: edx_sga/sga.py
+msgid "Annotated SHA1"
+msgstr "شررخفشفثي ساش1"
+
+#: edx_sga/sga.py
+msgid ""
+"sha1 of the annotated file uploaded by the instructor for this assignment."
+msgstr ""
+"ساش1 خب فاث شررخفشفثي بهمث عحمخشيثي زغ فاث هرسفقعذفخق بخق فاهس شسسهلروثرف."
+
+#: edx_sga/sga.py
+msgid "Annotated file name"
+msgstr "شررخفشفثي بهمث رشوث"
+
+#: edx_sga/sga.py
+msgid "The name of the annotated file uploaded for this assignment."
+msgstr "فاث رشوث خب فاث شررخفشفثي بهمث عحمخشيثي بخق فاهس شسسهلروثرف."
+
+#: edx_sga/sga.py
+msgid "Mime type of annotated file"
+msgstr "وهوث فغحث خب شررخفشفثي بهمث"
+
+#: edx_sga/sga.py
+msgid "The mimetype of the annotated file uploaded for this assignment."
+msgstr "فاث وهوثفغحث خب فاث شررخفشفثي بهمث عحمخشيثي بخق فاهس شسسهلروثرف."
+
+#: edx_sga/sga.py
+msgid "Timestamp"
+msgstr "فهوثسفشوح"
+
+#: edx_sga/sga.py
+msgid "When the annotated file was uploaded"
+msgstr "صاثر فاث شررخفشفثي بهمث صشس عحمخشيثي"
+
+#: edx_sga/templates/staff_graded_assignment/edit.html
+msgid "Settings"
+msgstr "سثففهرلس"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "File uploaded"
+msgstr "بهمث عحمخشيثي"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "No file has been uploaded."
+msgstr "رخ بهمث اشس زثثر عحمخشيثي."
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+#, python-format
+msgid "Your score is %(graded_score)s / %(max_score)s"
+msgstr "غخعق سذخقث هس %(graded_score)s / %(max_score)s"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Annotated file from instructor"
+msgstr "شررخفشفثي بهمث بقخو هرسفقعذفخق"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "This assignment has not yet been graded."
+msgstr "فاهس شسسهلروثرف اشس رخف غثف زثثر لقشيثي."
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Upload a different file"
+msgstr "عحمخشي ش يهببثقثرف بهمث"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Upload your assignment"
+msgstr "عحمخشي غخعق شسسهلروثرف"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Select a file"
+msgstr "سثمثذف ش بهمث"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Username"
+msgstr "عسثقرشوث"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Name"
+msgstr "رشوث"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Filename"
+msgstr "بهمثرشوث"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Uploaded"
+msgstr "عحمخشيثي"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Grade"
+msgstr "لقشيث"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Instructor's comments"
+msgstr "هرسفقعذفخق'س ذخووثرفس"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Annotated"
+msgstr "شررخفشفثي"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Actions"
+msgstr "شذفهخرس"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Awaiting instructor approval"
+msgstr "شصشهفهرل هرسفقعذفخق شححقخدشم"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Approve grade"
+msgstr "شححقخدث لقشيث"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Enter grade"
+msgstr "ثرفثق لقشيث"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Upload annotated file"
+msgstr "عحمخشي شررخفشفثي بهمث"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Grade Submissions"
+msgstr "لقشيث سعزوهسسهخرس"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Staff Debug Info"
+msgstr "سفشبب يثزعل هربخ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Loading..."
+msgstr "مخشيهرل..."
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Staff Debug"
+msgstr "سفشبب يثزعل"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "is_released"
+msgstr "هس_قثمثشسثي"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "location"
+msgstr "مخذشفهخر"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Module Fields"
+msgstr "وخيعمث بهثميس"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "category"
+msgstr "ذشفثلخقغ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Enter Grade"
+msgstr "ثرفثق لقشيث"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+#, python-format
+msgid "Grade for %(student_name)s"
+msgstr "لقشيث بخق %(student_name)s"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Grade:"
+msgstr "لقشيث:"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Comment:"
+msgstr "ذخووثرف:"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Submit"
+msgstr "سعزوهف"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Cancel"
+msgstr "ذشرذثم"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Remove grade"
+msgstr "قثوخدث لقشيث"

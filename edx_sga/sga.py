@@ -20,6 +20,7 @@ from django.core.files import File  # lint-amnesty, pylint: disable=import-error
 from django.core.files.storage import default_storage  # lint-amnesty, pylint: disable=import-error
 from django.conf import settings  # lint-amnesty, pylint: disable=import-error
 from django.template import Context, Template  # lint-amnesty, pylint: disable=import-error
+from django.utils.translation import ugettext as _  # pylint: disable=import-error
 
 from student.models import user_by_anonymous_id  # lint-amnesty, pylint: disable=import-error
 from submissions import api as submissions_api  # lint-amnesty, pylint: disable=import-error
@@ -65,69 +66,70 @@ class StaffGradedAssignmentXBlock(XBlock):
     STUDENT_FILEUPLOAD_MAX_SIZE = 4 * 1000 * 1000  # 4 MB
 
     display_name = String(
-        default='Staff Graded Assignment', scope=Scope.settings,
-        help="This name appears in the horizontal navigation at the top of "
-             "the page."
+        default=_('Staff Graded Assignment'), scope=Scope.settings,
+        help=_("This name appears in the horizontal navigation at the top of "
+               "the page.")
     )
 
     weight = Float(
-        display_name="Problem Weight",
-        help=("Defines the number of points each problem is worth. "
-              "If the value is not set, the problem is worth the sum of the "
-              "option point values."),
+        display_name=_("Problem Weight"),
+        help=_("Defines the number of points each problem is worth. "
+               "If the value is not set, the problem is worth the sum of the "
+               "option point values."),
         values={"min": 0, "step": .1},
         scope=Scope.settings
     )
 
     points = Integer(
-        display_name="Maximum score",
-        help=("Maximum grade score given to assignment by staff."),
+        display_name=_("Maximum score"),
+        help=_("Maximum grade score given to assignment by staff."),
         default=100,
         scope=Scope.settings
     )
 
     staff_score = Integer(
-        display_name="Score assigned by non-instructor staff",
-        help=("Score will need to be approved by instructor before being "
-              "published."),
+        display_name=_("Score assigned by non-instructor staff"),
+        help=_("Score will need to be approved by instructor before being "
+               "published."),
         default=None,
         scope=Scope.settings
     )
 
     comment = String(
-        display_name="Instructor comment",
+        display_name=_("Instructor comment"),
         default='',
         scope=Scope.user_state,
-        help="Feedback given to student by instructor."
+        help=_("Feedback given to student by instructor.")
     )
 
     annotated_sha1 = String(
-        display_name="Annotated SHA1",
+        display_name=_("Annotated SHA1"),
         scope=Scope.user_state,
         default=None,
-        help=("sha1 of the annotated file uploaded by the instructor for "
-              "this assignment.")
+        help=_("sha1 of the annotated file uploaded by the instructor for "
+               "this assignment.")
     )
 
     annotated_filename = String(
-        display_name="Annotated file name",
+        display_name=_("Annotated file name"),
         scope=Scope.user_state,
         default=None,
-        help="The name of the annotated file uploaded for this assignment."
+        help=_("The name of the annotated file uploaded for this assignment.")
     )
 
     annotated_mimetype = String(
-        display_name="Mime type of annotated file",
+        display_name=_("Mime type of annotated file"),
         scope=Scope.user_state,
         default=None,
-        help="The mimetype of the annotated file uploaded for this assignment."
+        help=_("The mimetype of the annotated file uploaded for this assignment.")
     )
 
     annotated_timestamp = DateTime(
-        display_name="Timestamp",
+        display_name=_("Timestamp"),
         scope=Scope.user_state,
         default=None,
-        help="When the annotated file was uploaded")
+        help=_("When the annotated file was uploaded")
+    )
 
     def max_score(self):
         """
@@ -720,7 +722,6 @@ def _now():
     Get current date and time.
     """
     return datetime.datetime.utcnow().replace(tzinfo=pytz.timezone(getattr(settings, "TIME_ZONE", pytz.utc.zone)))
-
 
 
 def load_resource(resource_path):  # pragma: NO COVER

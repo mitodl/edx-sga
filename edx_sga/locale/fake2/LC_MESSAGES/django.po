@@ -1,0 +1,243 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-09-10 13:09+0430\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: edx_sga/sga.py edx_sga/templates/staff_graded_assignment/show.html
+msgid "Staff Graded Assignment"
+msgstr "Sʇɐɟɟ Ǥɹɐdǝd Ⱥssᴉƃnɯǝnʇ"
+
+#: edx_sga/sga.py
+msgid "This name appears in the horizontal navigation at the top of the page."
+msgstr ""
+"Ŧɥᴉs nɐɯǝ ɐddǝɐɹs ᴉn ʇɥǝ ɥøɹᴉzønʇɐl nɐʌᴉƃɐʇᴉøn ɐʇ ʇɥǝ ʇød øɟ ʇɥǝ dɐƃǝ."
+
+#: edx_sga/sga.py
+msgid "Problem Weight"
+msgstr "Ᵽɹøblǝɯ Wǝᴉƃɥʇ"
+
+#: edx_sga/sga.py
+msgid ""
+"Defines the number of points each problem is worth. If the value is not set,"
+" the problem is worth the sum of the option point values."
+msgstr ""
+"Đǝɟᴉnǝs ʇɥǝ nnɯbǝɹ øɟ døᴉnʇs ǝɐɔɥ dɹøblǝɯ ᴉs ʍøɹʇɥ. Ɨɟ ʇɥǝ ʌɐlnǝ ᴉs nøʇ sǝʇ,"
+" ʇɥǝ dɹøblǝɯ ᴉs ʍøɹʇɥ ʇɥǝ snɯ øɟ ʇɥǝ ødʇᴉøn døᴉnʇ ʌɐlnǝs."
+
+#: edx_sga/sga.py
+msgid "Maximum score"
+msgstr "Mɐxᴉɯnɯ sɔøɹǝ"
+
+#: edx_sga/sga.py
+msgid "Maximum grade score given to assignment by staff."
+msgstr "Mɐxᴉɯnɯ ƃɹɐdǝ sɔøɹǝ ƃᴉʌǝn ʇø ɐssᴉƃnɯǝnʇ bʎ sʇɐɟɟ."
+
+#: edx_sga/sga.py
+msgid "Score assigned by non-instructor staff"
+msgstr "Sɔøɹǝ ɐssᴉƃnǝd bʎ nøn-ᴉnsʇɹnɔʇøɹ sʇɐɟɟ"
+
+#: edx_sga/sga.py
+msgid "Score will need to be approved by instructor before being published."
+msgstr "Sɔøɹǝ ʍᴉll nǝǝd ʇø bǝ ɐddɹøʌǝd bʎ ᴉnsʇɹnɔʇøɹ bǝɟøɹǝ bǝᴉnƃ dnblᴉsɥǝd."
+
+#: edx_sga/sga.py edx_sga/templates/staff_graded_assignment/show.html
+msgid "Instructor comment"
+msgstr "Ɨnsʇɹnɔʇøɹ ɔøɯɯǝnʇ"
+
+#: edx_sga/sga.py
+msgid "Feedback given to student by instructor."
+msgstr "Fǝǝdbɐɔʞ ƃᴉʌǝn ʇø sʇndǝnʇ bʎ ᴉnsʇɹnɔʇøɹ."
+
+#: edx_sga/sga.py
+msgid "Annotated SHA1"
+msgstr "Ⱥnnøʇɐʇǝd SĦȺ1"
+
+#: edx_sga/sga.py
+msgid ""
+"sha1 of the annotated file uploaded by the instructor for this assignment."
+msgstr ""
+"sɥɐ1 øɟ ʇɥǝ ɐnnøʇɐʇǝd ɟᴉlǝ ndløɐdǝd bʎ ʇɥǝ ᴉnsʇɹnɔʇøɹ ɟøɹ ʇɥᴉs ɐssᴉƃnɯǝnʇ."
+
+#: edx_sga/sga.py
+msgid "Annotated file name"
+msgstr "Ⱥnnøʇɐʇǝd ɟᴉlǝ nɐɯǝ"
+
+#: edx_sga/sga.py
+msgid "The name of the annotated file uploaded for this assignment."
+msgstr "Ŧɥǝ nɐɯǝ øɟ ʇɥǝ ɐnnøʇɐʇǝd ɟᴉlǝ ndløɐdǝd ɟøɹ ʇɥᴉs ɐssᴉƃnɯǝnʇ."
+
+#: edx_sga/sga.py
+msgid "Mime type of annotated file"
+msgstr "Mᴉɯǝ ʇʎdǝ øɟ ɐnnøʇɐʇǝd ɟᴉlǝ"
+
+#: edx_sga/sga.py
+msgid "The mimetype of the annotated file uploaded for this assignment."
+msgstr "Ŧɥǝ ɯᴉɯǝʇʎdǝ øɟ ʇɥǝ ɐnnøʇɐʇǝd ɟᴉlǝ ndløɐdǝd ɟøɹ ʇɥᴉs ɐssᴉƃnɯǝnʇ."
+
+#: edx_sga/sga.py
+msgid "Timestamp"
+msgstr "Ŧᴉɯǝsʇɐɯd"
+
+#: edx_sga/sga.py
+msgid "When the annotated file was uploaded"
+msgstr "Wɥǝn ʇɥǝ ɐnnøʇɐʇǝd ɟᴉlǝ ʍɐs ndløɐdǝd"
+
+#: edx_sga/templates/staff_graded_assignment/edit.html
+msgid "Settings"
+msgstr "Sǝʇʇᴉnƃs"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "File uploaded"
+msgstr "Fᴉlǝ ndløɐdǝd"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "No file has been uploaded."
+msgstr "Nø ɟᴉlǝ ɥɐs bǝǝn ndløɐdǝd."
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+#, python-format
+msgid "Your score is %(graded_score)s / %(max_score)s"
+msgstr "Ɏønɹ sɔøɹǝ ᴉs %(graded_score)s / %(max_score)s"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Annotated file from instructor"
+msgstr "Ⱥnnøʇɐʇǝd ɟᴉlǝ ɟɹøɯ ᴉnsʇɹnɔʇøɹ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "This assignment has not yet been graded."
+msgstr "Ŧɥᴉs ɐssᴉƃnɯǝnʇ ɥɐs nøʇ ʎǝʇ bǝǝn ƃɹɐdǝd."
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Upload a different file"
+msgstr "Ʉdløɐd ɐ dᴉɟɟǝɹǝnʇ ɟᴉlǝ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Upload your assignment"
+msgstr "Ʉdløɐd ʎønɹ ɐssᴉƃnɯǝnʇ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Select a file"
+msgstr "Sǝlǝɔʇ ɐ ɟᴉlǝ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Username"
+msgstr "Ʉsǝɹnɐɯǝ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Name"
+msgstr "Nɐɯǝ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Filename"
+msgstr "Fᴉlǝnɐɯǝ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Uploaded"
+msgstr "Ʉdløɐdǝd"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Grade"
+msgstr "Ǥɹɐdǝ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Instructor's comments"
+msgstr "Ɨnsʇɹnɔʇøɹ's ɔøɯɯǝnʇs"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Annotated"
+msgstr "Ⱥnnøʇɐʇǝd"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Actions"
+msgstr "Ⱥɔʇᴉøns"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Awaiting instructor approval"
+msgstr "Ⱥʍɐᴉʇᴉnƃ ᴉnsʇɹnɔʇøɹ ɐddɹøʌɐl"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Approve grade"
+msgstr "Ⱥddɹøʌǝ ƃɹɐdǝ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Enter grade"
+msgstr "Ɇnʇǝɹ ƃɹɐdǝ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Upload annotated file"
+msgstr "Ʉdløɐd ɐnnøʇɐʇǝd ɟᴉlǝ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Grade Submissions"
+msgstr "Ǥɹɐdǝ Snbɯᴉssᴉøns"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Staff Debug Info"
+msgstr "Sʇɐɟɟ Đǝbnƃ Ɨnɟø"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Loading..."
+msgstr "Łøɐdᴉnƃ..."
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Staff Debug"
+msgstr "Sʇɐɟɟ Đǝbnƃ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "is_released"
+msgstr "ᴉs_ɹǝlǝɐsǝd"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "location"
+msgstr "løɔɐʇᴉøn"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Module Fields"
+msgstr "Mødnlǝ Fᴉǝlds"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "category"
+msgstr "ɔɐʇǝƃøɹʎ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Enter Grade"
+msgstr "Ɇnʇǝɹ Ǥɹɐdǝ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+#, python-format
+msgid "Grade for %(student_name)s"
+msgstr "Ǥɹɐdǝ ɟøɹ %(student_name)s"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Grade:"
+msgstr "Ǥɹɐdǝ:"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Comment:"
+msgstr "Ȼøɯɯǝnʇ:"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Submit"
+msgstr "Snbɯᴉʇ"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Cancel"
+msgstr "Ȼɐnɔǝl"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Remove grade"
+msgstr "Ɍǝɯøʌǝ ƃɹɐdǝ"
