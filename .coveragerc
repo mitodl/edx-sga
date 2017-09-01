@@ -1,5 +1,5 @@
 [run]
 branch = True
+omit = ./.tox/*
 data_file = .coverage
 source = edx_sga
-omit = ./.tox/*
