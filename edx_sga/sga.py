@@ -20,6 +20,7 @@ from django.core.files import File  # lint-amnesty, pylint: disable=import-error
 from django.core.files.storage import default_storage  # lint-amnesty, pylint: disable=import-error
 from django.conf import settings  # lint-amnesty, pylint: disable=import-error
 from django.template import Context, Template  # lint-amnesty, pylint: disable=import-error
+from django.utils.encoding import force_text  # pylint: disable=import-error
 from django.utils.translation import ugettext_lazy as _  # pylint: disable=import-error
 
 from student.models import user_by_anonymous_id  # lint-amnesty, pylint: disable=import-error
@@ -253,18 +254,18 @@ class StaffGradedAssignmentXBlock(XBlock):
             uploaded = None
 
         if self.annotated_sha1:
-            annotated = {"filename": unicode(self.annotated_filename)}
+            annotated = {"filename": force_text(self.annotated_filename)}
         else:
             annotated = None
 
         score = self.score
         if score is not None:
-            graded = {'score': score, 'comment': unicode(self.comment)}
+            graded = {'score': score, 'comment': force_text(self.comment)}
         else:
             graded = None
 
         return {
-            "display_name": unicode(self.display_name),
+            "display_name": force_text(self.display_name),
             "uploaded": uploaded,
             "annotated": annotated,
             "graded": graded,
@@ -332,14 +333,14 @@ class StaffGradedAssignmentXBlock(XBlock):
                     'approved': approved,
                     'needs_approval': instructor and needs_approval,
                     'may_grade': instructor or not approved,
-                    'annotated': unicode(state.get("annotated_filename")),
-                    'comment': unicode(state.get("comment", '')),
+                    'annotated': force_text(state.get("annotated_filename")),
+                    'comment': force_text(state.get("comment", '')),
                 }
 
         return {
             'assignments': list(get_student_data()),
             'max_score': self.max_score(),
-            'display_name': unicode(self.display_name)
+            'display_name': force_text(self.display_name)
         }
 
     def studio_view(self, context=None):

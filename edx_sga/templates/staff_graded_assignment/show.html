@@ -13,7 +13,8 @@
       <p>{% trans "No file has been uploaded." %}</p>
     <% } %>
     <% if (graded) { %>
-      <p>{% blocktrans with graded_score=graded.score %}Your score is {{ graded_score }} / {{ max_score }}{% endblocktrans %}<br/>
+      <p>
+        {% blocktrans with max_score=max_score score=graded.score %}Your score is <%= score %> / <%= max_score %>{% endblocktrans %}<br/>
         <% if (graded.comment) { %>
           <b>{% trans "Instructor comment" %}</b> <%= graded.comment %>
         <% } %>
