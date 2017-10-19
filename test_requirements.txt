@@ -1,5 +1,6 @@
 coverage==4.0.3
 ddt==1.1.1
+djangorestframework==3.6.4
 edx-lint==0.5.4
 edx-opaque-keys==0.4
 edx-submissions==2.0.12
@@ -13,5 +14,5 @@ pytest-django
 pytest-mock
 pytest-pep8
 pytest-pylint==0.6.0
-djangorestframework==3.6.4
+six==1.11.0
 tox

@@ -27,7 +27,7 @@ SHA1 = 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
 
 
 def fake_get_submission(upload):
-    """retrurns fake submission"""
+    """returns fake submission"""
     return {
         "answer": {
             "sha1": SHA1,
@@ -47,7 +47,6 @@ class MockedStudentModule(object):
 
     def save(self):
         """save method do nothing"""
-        pass
 
 
 @ddt
@@ -76,12 +75,12 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
             "is_staff": True
         })
 
-    def make_one(self, display_name=None, **kw):
+    def make_xblock(self, display_name=None, **kwargs):
         """
         Creates a XBlock SGA for testing purpose.
         """
         from edx_sga.sga import StaffGradedAssignmentXBlock as cls
-        field_data = DictFieldData(kw)
+        field_data = DictFieldData(kwargs)
         block = cls(self.runtime, field_data, self.scope_ids)
         block.location = Location(
             'foo', 'bar', 'baz', 'category', 'name', 'revision'
@@ -102,22 +101,22 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         """
         Test points are set correctly.
         """
-        block = self.make_one(points=10)
-        self.assertEqual(block.display_name, "Staff Graded Assignment")
-        self.assertEqual(block.points, 10)
+        block = self.make_xblock(points=10)
+        assert block.display_name == "Staff Graded Assignment"
+        assert block.points == 10
 
     def test_max_score(self):
         """
         Text max score is set correctly.
         """
-        block = self.make_one(points=20)
+        block = self.make_xblock(points=20)
         self.assertEqual(block.max_score(), 20)
 
     def test_max_score_integer(self):
         """
         Test assigning a float max score is rounded to nearest integer.
         """
-        block = self.make_one(points=20.4)
+        block = self.make_xblock(points=20.4)
         self.assertEqual(block.max_score(), 20)
 
     def personalize_upload(self, block, upload):
@@ -145,7 +144,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         """
         Test student view renders correctly.
         """
-        block = self.make_one("Custom name")
+        block = self.make_xblock("Custom name")
 
         with mock.patch(
             'edx_sga.sga.StaffGradedAssignmentXBlock.get_submission',
@@ -193,7 +192,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         """
         path = pkg_resources.resource_filename(__package__, 'test_sga.py')
         upload = mock.Mock(file=DummyUpload(path, 'foo.txt'))
-        block = self.make_one()
+        block = self.make_xblock()
         get_score.return_value = 10
         upload_allowed.return_value = True
         block.comment = "ok"
@@ -244,7 +243,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         """
         Test studio view is displayed correctly.
         """
-        block = self.make_one()
+        block = self.make_xblock()
         fragment = block.studio_view()
         assert render_template.called is True
         template_arg = render_template.call_args[0][0]
@@ -307,7 +306,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
             self.assertEqual(block.points, orig_score)
 
         orig_score = 23
-        block = self.make_one()
+        block = self.make_xblock()
         block.save_sga(mock.Mock(body='{}'))
         self.assertEqual(block.display_name, "Staff Graded Assignment")
         self.assertEqual(block.points, 100)
@@ -334,7 +333,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         expected = open(path, 'rb').read()
         file_name = 'test.txt'
         upload = mock.Mock(file=DummyUpload(path, file_name))
-        block = self.make_one()
+        block = self.make_xblock()
         student_submission_id.return_value = {
             "student_id": 1,
             "course_id": block.block_course_id,
@@ -387,7 +386,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         path = pkg_resources.resource_filename(__package__, 'test_sga.py')
         expected = open(path, 'rb').read()
         upload = mock.Mock(file=DummyUpload(path, file_name))
-        block = self.make_one()
+        block = self.make_xblock()
 
         with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.staff_grading_data",
@@ -427,7 +426,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         expected = open(path, 'rb').read()
         file_name = 'test.txt'
         upload = mock.Mock(file=DummyUpload(path, file_name))
-        block = self.make_one()
+        block = self.make_xblock()
 
         with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.staff_grading_data",
@@ -468,7 +467,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         path = pkg_resources.resource_filename(__package__, 'test_sga.py')
         expected = open(path, 'rb').read()
         upload = mock.Mock(file=DummyUpload(path, 'test.txt'))
-        block = self.make_one()
+        block = self.make_xblock()
 
         with mock.patch(
             'edx_sga.sga.StaffGradedAssignmentXBlock.student_state', return_value={}
@@ -502,7 +501,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         test staff grading data for non staff members.
         """
         self.runtime.user_is_staff = False
-        block = self.make_one()
+        block = self.make_xblock()
         with self.assertRaises(PermissionDenied):
             block.get_staff_grading_data(None)
 
@@ -513,7 +512,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         Test enter grade by instructors.
         """
         get_module_by_id.return_value = MockedStudentModule()
-        block = self.make_one()
+        block = self.make_xblock()
         block.is_instructor = lambda: True
         with mock.patch("submissions.api.set_score") as mocked_set_score, mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.staff_grading_data",
@@ -545,7 +544,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         is_course_staff.return_value = True
         module = MockedStudentModule()
         get_module_by_id.return_value = module
-        block = self.make_one()
+        block = self.make_xblock()
         with mock.patch("edx_sga.sga.log") as mocked_log, mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.staff_grading_data",
             return_value={}
@@ -573,7 +572,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         is_course_staff.return_value = True
         module = MockedStudentModule()
         get_module_by_id.return_value = module
-        block = self.make_one()
+        block = self.make_xblock()
         with mock.patch('edx_sga.sga.log') as mocked_log, mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.staff_grading_data",
             return_value={}
@@ -597,7 +596,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         """
         Test remove grade.
         """
-        block = self.make_one()
+        block = self.make_xblock()
         is_course_staff.return_value = True
         get_module_by_id.return_value = MockedStudentModule()
         request = mock.Mock(params={

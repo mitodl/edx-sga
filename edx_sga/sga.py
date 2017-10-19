@@ -10,6 +10,7 @@ import mimetypes
 import os
 import pkg_resources
 import pytz
+import six
 
 from functools import partial  # lint-amnesty, pylint: disable=wrong-import-order
 
@@ -705,8 +706,10 @@ class StaffGradedAssignmentXBlock(XBlock):
         Get file path of storage.
         """
         path = (
-            u'{loc.org}/{loc.course}/{loc.block_type}/{loc.block_id}'
-            '/{sha1}{ext}'.format(
+            six.u(
+                '{loc.org}/{loc.course}/{loc.block_type}/{loc.block_id}/'
+                '{sha1}{ext}'
+            ).format(
                 loc=self.location,
                 sha1=sha1,
                 ext=os.path.splitext(filename)[1]
