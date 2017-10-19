@@ -256,15 +256,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         """
         returns student mode object
         """
-        student_module = None
-        try:
-            student_module = StudentModule.objects.get(pk=module_id)
-        except StudentModule.DoesNotExist:
-            log.info(
-                "No student module object found for module_id:%s",
-                module_id
-            )
-        return student_module
+        return StudentModule.objects.get(pk=module_id)
 
     def student_state(self):
         """
