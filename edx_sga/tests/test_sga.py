@@ -110,30 +110,25 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         Text max score is set correctly.
         """
         block = self.make_xblock(points=20)
-        self.assertEqual(block.max_score(), 20)
+        assert block.max_score() == 20
 
     def test_max_score_integer(self):
         """
         Test assigning a float max score is rounded to nearest integer.
         """
         block = self.make_xblock(points=20.4)
-        self.assertEqual(block.max_score(), 20)
+        assert block.max_score() == 20
 
     def personalize_upload(self, block, upload):
-        # pylint: disable=unused-argument
         """
         Set values on block from file upload.
         """
         now = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone(getattr(settings, "TIME_ZONE", pytz.utc.zone)))
-        setattr(block, "annotated_mimetype", mimetypes.guess_type(upload.file.name.encode('utf-8'))[0])
-        setattr(block, "annotated_filename", upload.file.name.encode('utf-8'))
-        setattr(block, "annotated_sha1", SHA1)
-        setattr(
-            block,
-            "annotated_timestamp",
-            now.strftime(
-                DateTime.DATETIME_FORMAT
-            )
+        block.annotated_mimetype = mimetypes.guess_type(upload.file.name.encode('utf-8'))[0]
+        block.annotated_filename = upload.file.name.encode('utf-8')
+        block.annotated_sha1 = SHA1
+        block.annotated_timestamp = now.strftime(
+            DateTime.DATETIME_FORMAT
         )
 
     @mock.patch('edx_sga.sga._resource', DummyResource)
@@ -162,19 +157,16 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
             fragment = block.student_view()
             assert render_template.called is True
             template_arg = render_template.call_args[0][0]
-            self.assertEqual(
-                template_arg,
-                'templates/staff_graded_assignment/show.html'
-            )
+            assert template_arg == 'templates/staff_graded_assignment/show.html'
             context = render_template.call_args[0][1]
-            self.assertEqual(context['is_course_staff'], True)
-            self.assertEqual(context['id'], 'name')
+            assert context['is_course_staff'] is True
+            assert context['id'] == 'name'
             student_state = json.loads(context['student_state'])
-            self.assertEqual(student_state['uploaded'], None)
-            self.assertEqual(student_state['annotated'], None)
-            self.assertEqual(student_state['upload_allowed'], True)
-            self.assertEqual(student_state['max_score'], 100)
-            self.assertEqual(student_state['graded'], None)
+            assert student_state['uploaded'] is None
+            assert student_state['annotated'] is None
+            assert student_state['upload_allowed'] is True
+            assert student_state['max_score'] == 100
+            assert student_state['graded'] is None
             fragment.add_css.assert_called_once_with(
                 DummyResource("static/css/edx_sga.css"))
             fragment.initialize_js.assert_called_once_with(
@@ -211,25 +203,22 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         ), mock.patch(
             'edx_sga.sga.StaffGradedAssignmentXBlock.student_state',
             return_value={
-                'graded': {u'comment': 'ok', u'score': 10},
-                'uploaded': {u'filename': u'foo.txt'},
+                'graded': {'comment': 'ok', 'score': 10},
+                'uploaded': {'filename': 'foo.txt'},
                 'max_score': 100
             }
         ):
             fragment = block.student_view()
             assert render_template.called is True
             template_arg = render_template.call_args[0][0]
-            self.assertEqual(
-                template_arg,
-                'templates/staff_graded_assignment/show.html'
-            )
+            assert template_arg == 'templates/staff_graded_assignment/show.html'
             context = render_template.call_args[0][1]
-            self.assertEqual(context['is_course_staff'], True)
-            self.assertEqual(context['id'], 'name')
+            assert context['is_course_staff'] is True
+            assert context['id'] == 'name'
             student_state = json.loads(context['student_state'])
-            self.assertEqual(student_state['uploaded'], {u'filename': u'foo.txt'})
-            self.assertEqual(student_state['graded'], {u'comment': 'ok', u'score': 10})
-            self.assertEqual(student_state['max_score'], 100)
+            assert student_state['uploaded'] == {'filename': 'foo.txt'}
+            assert student_state['graded'] == {'comment': 'ok', 'score': 10}
+            assert student_state['max_score'] == 100
             fragment.add_css.assert_called_once_with(
                 DummyResource("static/css/edx_sga.css"))
             fragment.initialize_js.assert_called_once_with(
@@ -247,17 +236,14 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         fragment = block.studio_view()
         assert render_template.called is True
         template_arg = render_template.call_args[0][0]
-        self.assertEqual(
-            template_arg,
-            'templates/staff_graded_assignment/edit.html'
-        )
+        assert template_arg == 'templates/staff_graded_assignment/edit.html'
         cls = type(block)
         context = render_template.call_args[0][1]
-        self.assertEqual(tuple(context['fields']), (
+        assert tuple(context['fields']) == (
             (cls.display_name, 'Staff Graded Assignment', 'string'),
             (cls.points, 100, 'number'),
             (cls.weight, '', 'number')
-        ))
+        )
         fragment.add_javascript.assert_called_once_with(
             DummyResource("static/js/src/studio.js"))
         fragment.initialize_js.assert_called_once_with(
@@ -278,14 +264,14 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
                 "display_name": "Test Block",
                 "points": '100',
                 "weight": -10.0})))
-            self.assertEqual(block.weight, orig_weight)
+            assert block.weight == orig_weight
 
             # Test string weight doesn't work
             block.save_sga(mock.Mock(method="POST", body=json.dumps({
                 "display_name": "Test Block",
                 "points": '100',
                 "weight": "a"})))
-            self.assertEqual(block.weight, orig_weight)
+            assert block.weight == orig_weight
 
         def point_positive_int_test():
             """
@@ -296,28 +282,28 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
                 "display_name": "Test Block",
                 "points": '-10',
                 "weight": 11})))
-            self.assertEqual(block.points, orig_score)
+            assert block.points == orig_score
 
             # Test float doesn't work
             block.save_sga(mock.Mock(method="POST", body=json.dumps({
                 "display_name": "Test Block",
                 "points": '24.5',
                 "weight": 11})))
-            self.assertEqual(block.points, orig_score)
+            assert block.points == orig_score
 
         orig_score = 23
         block = self.make_xblock()
         block.save_sga(mock.Mock(body='{}'))
-        self.assertEqual(block.display_name, "Staff Graded Assignment")
-        self.assertEqual(block.points, 100)
-        self.assertEqual(block.weight, None)
+        assert block.display_name == "Staff Graded Assignment"
+        assert block.points == 100
+        assert block.weight is None
         block.save_sga(mock.Mock(method="POST", body=json.dumps({
             "display_name": "Test Block",
             "points": str(orig_score),
             "weight": 11})))
-        self.assertEqual(block.display_name, "Test Block")
-        self.assertEqual(block.points, orig_score)
-        self.assertEqual(block.weight, 11)
+        assert block.display_name == "Test Block"
+        assert block.points == orig_score
+        assert block.weight == 11
 
         point_positive_int_test()
         weights_positive_float_test()
@@ -359,7 +345,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
             return_value=block.file_storage_path(SHA1, file_name)
         ):
             response = block.download_assignment(None)
-            self.assertEqual(response.body, expected)
+            assert response.body == expected
 
         with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
@@ -369,7 +355,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
             return_value=fake_get_submission(upload)
         ):
             response = block.download_assignment(None)
-            self.assertEqual(response.status_code, 404)
+            assert response.status_code == 404
 
     @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.get_module_by_id')
     @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.is_course_staff')
@@ -400,7 +386,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
             return_value=block.file_storage_path(SHA1, file_name)
         ):
             response = block.staff_download_annotated(mock.Mock(params={'module_id': 1}))
-            self.assertEqual(response.body, expected)
+            assert response.body == expected
 
         with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
@@ -409,7 +395,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
             response = block.staff_download_annotated(
                 mock.Mock(params={'module_id': 1})
             )
-            self.assertEqual(response.status_code, 404)
+            assert response.status_code == 404
 
     @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.get_module_by_id')
     @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.is_course_staff')
@@ -443,14 +429,14 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
             return_value=block.file_storage_path(SHA1, file_name)
         ):
             response = block.download_annotated(None)
-            self.assertEqual(response.body, expected)
+            assert response.body == expected
 
         with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
             return_value=block.file_storage_path("", "test_notfound.txt")
         ):
             response = block.download_annotated(None)
-            self.assertEqual(response.status_code, 404)
+            assert response.status_code == 404
 
     @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.upload_allowed')
     @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.get_module_by_id')
@@ -482,7 +468,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         ):
             response = block.staff_download(mock.Mock(params={
                 'student_id': 1}))
-            self.assertEqual(response.body, expected)
+            assert response.body == expected
 
         with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
@@ -494,7 +480,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
             response = block.staff_download(
                 mock.Mock(params={'student_id': 1})
             )
-            self.assertEqual(response.status_code, 404)
+            assert response.status_code == 404
 
     def test_get_staff_grading_data_not_staff(self):
         """
