@@ -56,16 +56,15 @@ def fake_get_submission(upload):
     }
 
 
-class MockedStudentModule(object):
+def mocked_student_module():
     """dummy representation of xblock class"""
-    def __init__(self):
-        self.course_id = CourseLocator(org='foo', course='baz', run='bar')
-        self.module_state_key = "foo"
-        self.student = mock.Mock(username="fred6", is_staff=False, password="test")
-        self.state = '{"display_name": "Staff Graded Assignment"}'
-
-    def save(self):
-        """save method do nothing"""
+    return mock.Mock(
+        course_id=CourseLocator(org='foo', course='baz', run='bar'),
+        module_state_key="foo",
+        student=mock.Mock(username="fred6", is_staff=False, password="test"),
+        state='{"display_name": "Staff Graded Assignment"}',
+        save=mock.Mock()
+    )
 
 
 @ddt
@@ -387,7 +386,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         """
         Tests upload and download of annotated staff files.
         """
-        get_module_by_id.return_value = MockedStudentModule()
+        get_module_by_id.return_value = mocked_student_module()
         is_course_staff.return_value = True
         _get_sha1.return_value = SHA1
         file_name = 'test.txt'
@@ -427,7 +426,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         """
         Test download annotated assignment for non staff.
         """
-        get_module_by_id.return_value = MockedStudentModule()
+        get_module_by_id.return_value = mocked_student_module()
         is_course_staff.return_value = True
         _get_sha1.return_value = SHA1
         path = pkg_resources.resource_filename(__package__, 'test_sga.py')
@@ -468,7 +467,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         """
         Test download for staff.
         """
-        get_module_by_id.return_value = MockedStudentModule()
+        get_module_by_id.return_value = mocked_student_module()
         is_course_staff.return_value = True
         upload_allowed.return_value = True
         _get_sha1.return_value = SHA1
@@ -519,7 +518,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         """
         Test enter grade by instructors.
         """
-        get_module_by_id.return_value = MockedStudentModule()
+        get_module_by_id.return_value = mocked_student_module()
         block = self.make_xblock()
         block.is_instructor = lambda: True
         with mock.patch("submissions.api.set_score") as mocked_set_score, mock.patch(
@@ -550,7 +549,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         Test grade enter by staff.
         """
         is_course_staff.return_value = True
-        module = MockedStudentModule()
+        module = mocked_student_module()
         get_module_by_id.return_value = module
         block = self.make_xblock()
         with mock.patch("edx_sga.sga.log") as mocked_log, mock.patch(
@@ -578,7 +577,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         Tests grade enter fail.
         """
         is_course_staff.return_value = True
-        module = MockedStudentModule()
+        module = mocked_student_module()
         get_module_by_id.return_value = module
         block = self.make_xblock()
         with mock.patch('edx_sga.sga.log') as mocked_log, mock.patch(
@@ -606,7 +605,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         """
         block = self.make_xblock()
         is_course_staff.return_value = True
-        get_module_by_id.return_value = MockedStudentModule()
+        get_module_by_id.return_value = mocked_student_module()
         request = mock.Mock(params={
             'module_id': 1,
             'student_id': 1,
