@@ -14,11 +14,6 @@ import six
 
 from functools import partial  # lint-amnesty, pylint: disable=wrong-import-order
 
-try:
-    from courseware.models import StudentModule  # lint-amnesty, pylint: disable=import-error
-except ImportError:
-    pass
-
 from django.core.exceptions import PermissionDenied  # lint-amnesty, pylint: disable=import-error
 from django.core.files import File  # lint-amnesty, pylint: disable=import-error
 from django.core.files.storage import default_storage  # lint-amnesty, pylint: disable=import-error
@@ -27,25 +22,18 @@ from django.template import Context, Template  # lint-amnesty, pylint: disable=i
 from django.utils.encoding import force_text  # pylint: disable=import-error
 from django.utils.translation import ugettext_lazy as _  # pylint: disable=import-error
 
-try:
-    from student.models import user_by_anonymous_id  # lint-amnesty, pylint: disable=import-error
-except ImportError:
-    pass
-
+from courseware.models import StudentModule  # lint-amnesty, pylint: disable=import-error
+from student.models import user_by_anonymous_id  # lint-amnesty, pylint: disable=import-error
 from submissions import api as submissions_api  # lint-amnesty, pylint: disable=import-error
 from submissions.models import StudentItem as SubmissionsStudent  # lint-amnesty, pylint: disable=import-error
 
 from webob.response import Response
+from xblock.core import XBlock  # lint-amnesty, pylint: disable=import-error
+from xblock.exceptions import JsonHandlerError  # lint-amnesty, pylint: disable=import-error
+from xblock.fields import DateTime, Scope, String, Float, Integer  # lint-amnesty, pylint: disable=import-error
+from xblock.fragment import Fragment  # lint-amnesty, pylint: disable=import-error
 
-try:
-    from xblock.core import XBlock
-    from xblock.exceptions import JsonHandlerError
-    from xblock.fields import DateTime, Scope, String, Float, Integer
-    from xblock.fragment import Fragment
-
-    from xmodule.util.duedate import get_extended_due_date  # lint-amnesty, pylint: disable=import-error
-except ImportError:
-    pass
+from xmodule.util.duedate import get_extended_due_date  # lint-amnesty, pylint: disable=import-error
 
 
 log = logging.getLogger(__name__)

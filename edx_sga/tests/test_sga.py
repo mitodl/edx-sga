@@ -11,6 +11,11 @@ import mock
 import pkg_resources
 import pytz
 
+try:
+    import builtins
+except ImportError:
+    import __builtin__ as builtins
+
 from ddt import ddt, data  # pylint: disable=import-error
 from django.conf import settings  # lint-amnesty, pylint: disable=import-error
 from django.core.exceptions import PermissionDenied
@@ -24,6 +29,20 @@ from edx_sga.tests.common import DummyResource, DummyUpload
 
 
 SHA1 = 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
+REAL_IMPORT = builtins.__import__
+
+
+def fake_import(*args, **kwargs):
+    """mock imported object if not it is not available"""
+    try:
+        return REAL_IMPORT(*args, **kwargs)
+    except ImportError:
+        return mock.Mock()
+
+
+def restore_import():
+    """restore builtin importer"""
+    builtins.__import__ = REAL_IMPORT
 
 
 def fake_get_submission(upload):
@@ -60,6 +79,9 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         engine for use in all tests
         """
         super(StaffGradedAssignmentMockedTests, self).setUp()
+        # fakes imports
+        builtins.__import__ = fake_import
+        self.addCleanup(restore_import)
         self.course_id = CourseLocator(org='foo', course='baz', run='bar')
         self.runtime = mock.Mock(anonymous_student_id='MOCK')
         self.scope_ids = mock.Mock()
