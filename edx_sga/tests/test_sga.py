@@ -535,6 +535,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
                     }
                 )
             )
+        assert get_module_by_id().save.called is True
         mocked_set_score.assert_called_with(
             "70be63e7-3fec-4dbf-b39c-1c05a5749410",
             9,
@@ -561,6 +562,8 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
                 'submission_id': "70be63e7-3fec-4dbf-b39c-1c05a5749410",
                 'grade': 9,
                 'comment': "Good!"}))
+
+        assert get_module_by_id().save.called is True
         mocked_log.info.assert_called_with(
             "enter_grade for course:%s module:%s student:%s",
             block.course_id,
@@ -589,6 +592,8 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
                 'submission_id': '70be63e7-3fec-4dbf-b39c-1c05a5749410',
                 'grade': grade
             }))
+
+        assert get_module_by_id().save.called is False
         mocked_log.error.assert_called_with(
             "enter_grade: invalid grade submitted for course:%s module:%s student:%s",
             block.course_id,
@@ -616,6 +621,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         ):
             block.remove_grade(request)
 
+        assert get_module_by_id().save.called is True
         mocked_reset_score.assert_called_with(
             1,
             unicode(block.course_id),
