@@ -12,9 +12,11 @@ import pkg_resources
 import pytz
 
 try:
-    import builtins
-except ImportError:
+    # Python 2
     import __builtin__ as builtins
+except ImportError:
+    # Python 3
+    import builtins
 
 from ddt import ddt, data  # pylint: disable=import-error
 from django.conf import settings  # lint-amnesty, pylint: disable=import-error
