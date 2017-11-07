@@ -1,6 +1,18 @@
 Release Notes
 =============
 
+Version 0.7.1
+-------------
+
+- Reference __init__ version (#180)
+- Release 0.7.0
+- Added new tests with mocking data (#174)
+- Changed ugettext to ugettext_lazy (#178)
+- Replace hard coded strings to be translatable in the future (i10n) (#175)
+- Converted SGA into django app and added tox base testing (#170)
+- Use the timezone of the platform as opposed to UTC for submissions&#39; dates (#169)
+- Increase the height of the &quot;Select a File&quot; element (#165)
+
 Version 0.7.0
 -------------
 
