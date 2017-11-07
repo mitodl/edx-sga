@@ -543,7 +543,7 @@ class StaffGradedAssignmentXBlock(XBlock):
             return Response(
                 app_iter=app_iter,
                 content_type=mime_type,
-                content_disposition="attachment; filename=" + filename.encode('utf-8'))
+                content_disposition="attachment; filename=\"" + filename.encode('utf-8') + "\"")
         except IOError:
             if require_staff:
                 return Response(
