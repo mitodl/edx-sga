@@ -2,12 +2,14 @@
 This block defines a Staff Graded Assignment.  Students are shown a rubric
 and invited to upload a file which is then graded by staff.
 """
+import datetime
 import hashlib
 import json
 import logging
 import mimetypes
 import os
 import pkg_resources
+import pytz
 import six
 
 from functools import partial  # lint-amnesty, pylint: disable=wrong-import-order
@@ -37,11 +39,20 @@ from xblock.fragment import Fragment  # lint-amnesty, pylint: disable=import-err
 
 from xmodule.util.duedate import get_extended_due_date  # lint-amnesty, pylint: disable=import-error
 
-from edx_sga.utils import tznow, is_finalized_submission
+from edx_sga.tasks import (
+    get_zip_file_path,
+    zip_student_submissions
+)
+from edx_sga.utils import (
+    get_time_zone,
+    tznow,
+    is_finalized_submission
+)
 
 
 log = logging.getLogger(__name__)
 BLOCK_SIZE = 8 * 1024
+ITEM_TYPE = 'sga'
 
 
 def reify(meth):
@@ -170,7 +181,7 @@ class StaffGradedAssignmentXBlock(XBlock):
             "student_id": submission_id,
             "course_id": self.block_course_id,
             "item_id": self.block_id,
-            "item_type": 'sga',
+            "item_type": ITEM_TYPE,
         }
 
     def get_submission(self, submission_id=None):
@@ -343,7 +354,7 @@ class StaffGradedAssignmentXBlock(XBlock):
                     'approved': approved,
                     'needs_approval': instructor and needs_approval,
                     'may_grade': instructor or not approved,
-                    'annotated': force_text(state.get("annotated_filename")),
+                    'annotated': force_text(state.get("annotated_filename", '')),
                     'comment': force_text(state.get("comment", '')),
                     'finalized': is_finalized_submission(submission_data=submission)
                 }
@@ -353,6 +364,33 @@ class StaffGradedAssignmentXBlock(XBlock):
             'max_score': self.max_score(),
             'display_name': force_text(self.display_name)
         }
+
+    def get_sorted_submissions(self):
+        """returns student recent assignments sorted on date"""
+        assignments = []
+        submissions = submissions_api.get_all_submissions(
+            self.course_id,
+            self.block_id,
+            ITEM_TYPE
+        )
+
+        for submission in submissions:
+            assignments.append({
+                'submission_id': submission['uuid'],
+                'filename': submission['answer']["filename"],
+                'timestamp': submission['created_at'].strftime(
+                    DateTime.DATETIME_FORMAT
+                )
+            })
+
+        assignments.sort(
+            key=lambda assignment: datetime.datetime.strptime(
+                assignment['timestamp'],
+                DateTime.DATETIME_FORMAT
+            ),
+            reverse=True
+        )
+        return assignments
 
     def studio_view(self, context=None):
         """
@@ -584,6 +622,34 @@ class StaffGradedAssignmentXBlock(XBlock):
                 status_code=404
             )
 
+    def download_all_submissions(self):
+        """
+        Return a file from storage and return in a Response.
+        """
+        try:
+            user = self.runtime.get_real_user(self.xmodule_runtime.anonymous_student_id)
+            require(user)
+            destination_path = get_zip_file_path(
+                user.username,
+                self.block_course_id,
+                unicode(self.block_id),
+                self.location
+            )
+            zip_file_name = os.path.basename(destination_path)
+            file_descriptor = open(destination_path, 'rb')
+            app_iter = iter(partial(file_descriptor.read, BLOCK_SIZE), '')
+            return Response(
+                app_iter=app_iter,
+                content_type='application/zip',
+                content_disposition="attachment; filename=" + zip_file_name.encode('utf-8'))
+
+        except IOError:
+            return Response(
+                "Sorry, submissions cannot be found. Press Collect ALL Submissions button or"
+                " contact {} if you issue is consistent".format(settings.TECH_SUPPORT_EMAIL),
+                status_code=404
+            )
+
     @XBlock.handler
     def get_staff_grading_data(self, request, suffix=''):
         # pylint: disable=unused-argument
@@ -676,6 +742,69 @@ class StaffGradedAssignmentXBlock(XBlock):
         )
         return Response(json_body=self.staff_grading_data())
 
+    @XBlock.handler
+    def prepare_download_submissions(self, request, suffix=''):  # pylint: disable=unused-argument
+        """
+        Runs a async task that collects submissions in background and zip them.
+        """
+        require(self.is_course_staff())
+        user = self.runtime.get_real_user(self.xmodule_runtime.anonymous_student_id)
+        require(user)
+        zip_file_ready = False
+
+        if self.is_zip_file_available():
+            assignments = self.get_sorted_submissions()
+            if assignments:
+                locale_zone = get_time_zone()
+                last_assignment_data = datetime.datetime.strptime(
+                    assignments[0]['timestamp'],
+                    DateTime.DATETIME_FORMAT
+                )
+                last_assignment_data_locale = locale_zone.localize(last_assignment_data)
+                last_assignment_data = last_assignment_data_locale.astimezone(pytz.utc)
+                zip_loc = get_zip_file_path(
+                    user.username,
+                    self.block_course_id,
+                    unicode(self.block_id),
+                    self.location
+                )
+                zip_file_time = datetime.datetime.fromtimestamp(os.path.getmtime(zip_loc))
+                # if last zip file is older the last submission then recreate task
+                if zip_file_time >= last_assignment_data.replace(tzinfo=None):
+                    zip_file_ready = True
+
+        if not zip_file_ready:
+            zip_student_submissions.delay(
+                self.block_course_id,
+                self.block_id,
+                self.location,
+                user
+            )
+
+        return Response(json_body={
+            "downloadable": zip_file_ready
+        })
+
+    @XBlock.handler
+    def download_submissions(self, request, suffix=''):  # pylint: disable=unused-argument
+        """
+        Api for downloading zip file which consist of all students submissions.
+        """
+        require(self.is_course_staff())
+        return self.download_all_submissions()
+
+    @XBlock.handler
+    def download_submissions_status(self, request, suffix=''):  # pylint: disable=unused-argument
+        """
+        returns True if zip file is available for download
+        """
+        require(self.is_course_staff())
+        return Response(
+            json_body={
+                "zip_available": self.is_zip_file_available()
+            }
+        )
+
     def is_course_staff(self):
         # pylint: disable=no-member
         """
@@ -733,6 +862,20 @@ class StaffGradedAssignmentXBlock(XBlock):
             )
         )
         return path
+
+    def is_zip_file_available(self):
+        """
+        returns True if zip file available.
+        """
+        user = self.runtime.get_real_user(self.xmodule_runtime.anonymous_student_id)
+        require(user)
+        zip_file_path = get_zip_file_path(
+            user.username,
+            self.block_course_id,
+            unicode(self.block_id),
+            self.location
+        )
+        return True if os.path.exists(zip_file_path) else False
 
 
 def _get_sha1(file_descriptor):

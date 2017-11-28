@@ -578,7 +578,7 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         self.assertEqual(assignments[1]['fullname'], 'fred')
         self.assertEqual(assignments[1]['filename'], 'bar.txt')
         self.assertEqual(assignments[1]['score'], None)
-        self.assertEqual(assignments[1]['annotated'], None)
+        self.assertEqual(assignments[1]['annotated'], u'')
         self.assertEqual(assignments[1]['comment'], u'')
 
     @mock.patch('edx_sga.sga.log')

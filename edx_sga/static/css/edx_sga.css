@@ -168,3 +168,15 @@
 .sga-block table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
     background-color: #8dbdd8;
 }
+
+.sga-block .submissions-download-link >  p {
+  color: #0075b4;
+}
+
+.inner-wrapper .task-message {
+  margin-top: 10px;
+  font-size: 11px;
+  font-family:'Open Sans', sans-serif;
+  color: #4c4c4c;
+  padding-bottom: 5px;
+}

@@ -7,12 +7,19 @@ import pytz
 from django.conf import settings
 
 
+def get_time_zone():
+    """
+    returns user preferred time zone
+    """
+    return pytz.timezone(getattr(settings, "TIME_ZONE", pytz.utc.zone))
+
+
 def tznow():
     """
     Get current date and time.
     """
     return datetime.datetime.utcnow().replace(
-        tzinfo=pytz.timezone(getattr(settings, "TIME_ZONE", pytz.utc.zone))
+        tzinfo=get_time_zone()
     )
 
 
