@@ -28,6 +28,10 @@ setup(
     include_package_data=True,
     install_requires=[
         'XBlock',
+        'mitodl_xblock_utils==1.0.5',
+    ],
+    dependency_links=[
+        'git+https://github.com/mitodl/xblock-utils.git#egg=mitodl_xblock_utils-1.0.5'
     ],
     entry_points={
         'xblock.v1': [
