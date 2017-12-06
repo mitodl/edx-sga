@@ -6,6 +6,7 @@ dist/
 .tox/
 .idea/
 .cache/
+build/
 
 ### Internationalization artifacts
 *.mo

@@ -264,30 +264,15 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
             fragment.initialize_js.assert_called_once_with(
                 "StaffGradedAssignmentXBlock")
 
-    @mock.patch('edx_sga.sga._resource', DummyResource)
-    @mock.patch('edx_sga.sga.render_template')
-    @mock.patch('edx_sga.sga.Fragment')
-    def test_studio_view(self, fragment, render_template):
+    def test_studio_view(self):
         # pylint: disable=unused-argument
         """
-        Test studio view is displayed correctly.
+        Test studio view is using the StudioEditableXBlockMixin function
         """
-        block = self.make_xblock()
-        fragment = block.studio_view()
-        assert render_template.called is True
-        template_arg = render_template.call_args[0][0]
-        assert template_arg == 'templates/staff_graded_assignment/edit.html'
-        cls = type(block)
-        context = render_template.call_args[0][1]
-        assert tuple(context['fields']) == (
-            (cls.display_name, 'Staff Graded Assignment', 'string'),
-            (cls.points, 100, 'number'),
-            (cls.weight, '', 'number')
-        )
-        fragment.add_javascript.assert_called_once_with(
-            DummyResource("static/js/src/studio.js"))
-        fragment.initialize_js.assert_called_once_with(
-            "StaffGradedAssignmentXBlock")
+        with mock.patch('edx_sga.sga.StudioEditableXBlockMixin.studio_view') as studio_view_mock:
+            block = self.make_xblock()
+            block.studio_view()
+        studio_view_mock.assert_called_once_with(None)
 
     def test_save_sga(self):
         """

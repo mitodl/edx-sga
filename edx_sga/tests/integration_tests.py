@@ -10,7 +10,9 @@ import mock
 import pkg_resources
 import pytz
 
+from courseware import module_render as render  # lint-amnesty, pylint: disable=import-error
 from courseware.models import StudentModule  # lint-amnesty, pylint: disable=import-error
+from courseware.tests.factories import StaffFactory  # lint-amnesty, pylint: disable=import-error
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=import-error
 from django.core.exceptions import PermissionDenied  # lint-amnesty, pylint: disable=import-error
 from django.core.files.storage import FileSystemStorage  # lint-amnesty, pylint: disable=import-error
@@ -20,9 +22,11 @@ from student.models import anonymous_id_for_user, UserProfile  # lint-amnesty, p
 from student.tests.factories import AdminFactory  # lint-amnesty, pylint: disable=import-error
 from xblock.field_data import DictFieldData
 from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disable=import-error
+from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory  # lint-amnesty, pylint: disable=import-error
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase  # lint-amnesty, pylint: disable=import-error
 from opaque_keys.edx.locations import Location  # lint-amnesty, pylint: disable=import-error
 
+from edx_sga.sga import StaffGradedAssignmentXBlock
 from edx_sga.tests.common import DummyResource, DummyUpload
 
 
@@ -36,16 +40,29 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         Creates a test course ID, mocks the runtime, and creates a fake storage
         engine for use in all tests
         """
-        from xmodule.modulestore.tests.factories import CourseFactory  # lint-amnesty, pylint: disable=import-error
         super(StaffGradedAssignmentXblockTests, self).setUp()
         course = CourseFactory.create(org='foo', number='bar', display_name='baz')
+        descriptor = ItemFactory(category="pure", parent=course)
         self.course_id = course.id
-        self.runtime = mock.Mock(anonymous_student_id='MOCK')
+        self.instructor = StaffFactory.create(course_key=self.course_id)
+        self.student_data = mock.Mock()
+        self.runtime, _ = render.get_module_system_for_user(
+            self.instructor,
+            self.student_data,
+            descriptor,
+            course.id,
+            mock.Mock(),
+            mock.Mock(),
+            mock.Mock(),
+            course=course
+        )
+
         self.scope_ids = mock.Mock()
         tmp = tempfile.mkdtemp()
         patcher = mock.patch(
             "edx_sga.sga.default_storage",
-            FileSystemStorage(tmp))
+            FileSystemStorage(tmp)
+        )
         patcher.start()
         self.addCleanup(patcher.stop)
         self.staff = AdminFactory.create(password="test")
@@ -54,9 +71,8 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         """
         Creates a XBlock SGA for testing purpose.
         """
-        from edx_sga.sga import StaffGradedAssignmentXBlock as cls
         field_data = DictFieldData(kw)
-        block = cls(self.runtime, field_data, self.scope_ids)
+        block = StaffGradedAssignmentXBlock(self.runtime, field_data, self.scope_ids)
         block.location = Location(
             'foo', 'bar', 'baz', 'category', 'name', 'revision'
         )
@@ -269,33 +285,15 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         fragment.initialize_js.assert_called_once_with(
             "StaffGradedAssignmentXBlock")
 
-    @mock.patch('edx_sga.sga._resource', DummyResource)
-    @mock.patch('edx_sga.sga.render_template')
-    @mock.patch('edx_sga.sga.Fragment')
-    def test_studio_view(self, fragment, render_template):
+    def test_studio_view(self):
         # pylint: disable=unused-argument
         """
-        Test studio view is displayed correctly.
+        Test studio view is using the StudioEditableXBlockMixin function
         """
-        block = self.make_one()
-        fragment = block.studio_view()
-        render_template.assert_called_once()
-        template_arg = render_template.call_args[0][0]
-        self.assertEqual(
-            template_arg,
-            'templates/staff_graded_assignment/edit.html'
-        )
-        cls = type(block)
-        context = render_template.call_args[0][1]
-        self.assertEqual(tuple(context['fields']), (
-            (cls.display_name, 'Staff Graded Assignment', 'string'),
-            (cls.points, 100, 'number'),
-            (cls.weight, '', 'number')
-        ))
-        fragment.add_javascript.assert_called_once_with(
-            DummyResource("static/js/src/studio.js"))
-        fragment.initialize_js.assert_called_once_with(
-            "StaffGradedAssignmentXBlock")
+        with mock.patch('edx_sga.sga.StudioEditableXBlockMixin.studio_view') as studio_view_mock:
+            block = self.make_one()
+            block.studio_view()
+        studio_view_mock.assert_called_once_with(None)
 
     def test_save_sga(self):
         """

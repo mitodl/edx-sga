@@ -36,6 +36,7 @@ from xblock.core import XBlock  # lint-amnesty, pylint: disable=import-error
 from xblock.exceptions import JsonHandlerError  # lint-amnesty, pylint: disable=import-error
 from xblock.fields import DateTime, Scope, String, Float, Integer  # lint-amnesty, pylint: disable=import-error
 from xblock.fragment import Fragment  # lint-amnesty, pylint: disable=import-error
+from xblockutils.studio_editable import StudioEditableXBlockMixin
 
 from xmodule.util.duedate import get_extended_due_date  # lint-amnesty, pylint: disable=import-error
 
@@ -70,7 +71,7 @@ def reify(meth):
     return property(getter)
 
 
-class StaffGradedAssignmentXBlock(XBlock):
+class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, XBlock):
     """
     This block defines a Staff Graded Assignment.  Students are shown a rubric
     and invited to upload a file which is then graded by staff.
@@ -78,9 +79,12 @@ class StaffGradedAssignmentXBlock(XBlock):
     has_score = True
     icon_class = 'problem'
     STUDENT_FILEUPLOAD_MAX_SIZE = 4 * 1000 * 1000  # 4 MB
+    editable_fields = ('display_name', 'points', 'weight')
 
     display_name = String(
-        default=_('Staff Graded Assignment'), scope=Scope.settings,
+        display_name=_("Display Name"),
+        default=_('Staff Graded Assignment'),
+        scope=Scope.settings,
         help=_("This name appears in the horizontal navigation at the top of "
                "the page.")
     )
@@ -224,7 +228,7 @@ class StaffGradedAssignmentXBlock(XBlock):
             "max_file_size": getattr(
                 settings, "STUDENT_FILEUPLOAD_MAX_SIZE",
                 self.STUDENT_FILEUPLOAD_MAX_SIZE
-            )
+            ),
         }
         if self.show_staff_grading_interface():
             context['is_course_staff'] = True
@@ -386,42 +390,12 @@ class StaffGradedAssignmentXBlock(XBlock):
         )
         return assignments
 
-    def studio_view(self, context=None):
+    def studio_view(self, context=None):  # pylint: disable=useless-super-delegation
         """
-        Return fragment for editing block in studio.
+        Render a form for editing this XBlock
         """
-        try:
-            cls = type(self)
-
-            def none_to_empty(data):
-                """
-                Return empty string if data is None else return data.
-                """
-                return data if data is not None else ''
-            edit_fields = (
-                (field, none_to_empty(getattr(self, field.name)), validator)
-                for field, validator in (
-                    (cls.display_name, 'string'),
-                    (cls.points, 'number'),
-                    (cls.weight, 'number'))
-            )
-
-            context = {
-                'fields': edit_fields
-            }
-            fragment = Fragment()
-            fragment.add_content(
-                render_template(
-                    'templates/staff_graded_assignment/edit.html',
-                    context
-                )
-            )
-            fragment.add_javascript(_resource("static/js/src/studio.js"))
-            fragment.initialize_js('StaffGradedAssignmentXBlock')
-            return fragment
-        except:  # pragma: NO COVER
-            log.error("Don't swallow my exceptions", exc_info=True)
-            raise
+        # this method only exists to provide context=None for backwards compat
+        return super(StaffGradedAssignmentXBlock, self).studio_view(context)
 
     @XBlock.json_handler
     def save_sga(self, data, suffix=''):

@@ -28,6 +28,10 @@ setup(
     include_package_data=True,
     install_requires=[
         'XBlock',
+        'xblock-utils==1.0.5',
+    ],
+    dependency_links=[
+        'https://github.com/mitodl/xblock-utils/tarball/master#egg=xblock-utils-1.0.5'
     ],
     entry_points={
         'xblock.v1': [
