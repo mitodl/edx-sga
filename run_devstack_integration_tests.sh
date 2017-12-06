@@ -29,8 +29,8 @@ pip install --exists-action w -r requirements/edx/testing.txt
 if [ -e requirements/edx/post.txt ]; then pip install --exists-action w -r requirements/edx/post.txt ; fi
 
 cd /edx-sga
-pip uninstall edx-sga -y
-pip install -e .
+pip uninstall edx-sga xblock-utils -y
+pip install -e . --process-dependency-links
 cp /edx-sga/edx_sga /edx/app/edxapp/edx-platform/lms/djangoapps/ -r
 
 # output the packages which are installed for logging

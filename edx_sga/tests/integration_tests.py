@@ -381,12 +381,13 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         Tests that finalize_uploaded_assignment sets a submission to be finalized
         """
         block = self.make_one()
-        created_student_data = self.make_student(block, "fred1", finalized=False)
+        created_student_data = self.make_student(block, "fred1", finalized=False, filename='answer')
         self.personalize(block, **created_student_data)
         submission_data = created_student_data['submission']
         response = block.finalize_uploaded_assignment(mock.Mock(method="POST"))
         recent_submission_data = block.get_submission()
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, block.student_state())
         self.assertEqual(submission_data['uuid'], recent_submission_data['uuid'])
         self.assertTrue(recent_submission_data['answer']['finalized'])
 
@@ -681,10 +682,73 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         self.assertEqual(block.get_score(item.student_id), None)
         self.assertEqual(state['comment'], '')
 
-    def test_past_due(self):
+    @data(True, False)
+    def test_past_due(self, is_past):
         """
         Test due date is pass.
         """
         block = self.make_one()
-        block.due = datetime.datetime(2010, 5, 12, 2, 42, tzinfo=pytz.utc)
-        self.assertTrue(block.past_due())
+        now = datetime.datetime.now(tz=pytz.utc)
+        delta = datetime.timedelta(days=-1 if is_past else 1)
+        block.due = now + delta
+        assert block.past_due() is is_past
+        assert block.past_due() is block.is_past_due()
+
+    @data(True, False)
+    def test_showanswer(self, is_answer_available):
+        """
+        The student state should have the solution if answer is available
+        """
+        block = self.make_one(solution='A solution')
+        with mock.patch(
+            'edx_sga.sga.StaffGradedAssignmentXBlock.answer_available',
+            return_value=is_answer_available,
+        ):
+            assert block.student_state()['solution'] == ('A solution' if is_answer_available else '')
+
+    def test_correctness_available(self):
+        """
+        Correctness should always be available
+        """
+        block = self.make_one()
+        assert block.correctness_available() is True
+
+    def test_has_attempted(self):
+        """
+        A SGA problem is attempted if they uploaded their submission and it is finalized
+        """
+        block = self.make_one()
+        assert block.has_attempted() is False
+        assert block.is_correct() is False
+        assert block.can_attempt() is True
+
+        path = pkg_resources.resource_filename(__package__, 'integration_tests.py')
+        upload = mock.Mock(file=DummyUpload(path, 'test.txt'))
+        block.upload_assignment(mock.Mock(params={'assignment': upload}))
+        assert block.has_attempted() is False
+        assert block.is_correct() is False
+        assert block.can_attempt() is True
+
+        block.finalize_uploaded_assignment(mock.Mock())
+        assert block.has_attempted() is True
+        assert block.is_correct() is True
+        assert block.can_attempt() is False
+
+    @data(True, False)
+    def test_runtime_user_is_staff(self, is_staff):
+        course = CourseFactory.create(org='org', number='bar', display_name='baz')
+        descriptor = ItemFactory(category="pure", parent=course)
+
+        staff = StaffFactory.create(course_key=course.id)
+        self.runtime, _ = render.get_module_system_for_user(
+            staff if is_staff else User.objects.create(),
+            self.student_data,
+            descriptor,
+            course.id,
+            mock.Mock(),
+            mock.Mock(),
+            mock.Mock(),
+            course=course
+        )
+        block = self.make_one()
+        assert block.runtime_user_is_staff() is is_staff

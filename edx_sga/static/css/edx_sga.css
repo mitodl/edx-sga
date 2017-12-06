@@ -111,6 +111,11 @@
   color: #0075b4;
 }
 
+.sga-block .solution::before {
+  content: "Solution: ";
+  font-weight: bold;
+}
+
 .staff-modal .task-message {
   font-family:'Open Sans', sans-serif;
   color: #4c4c4c;

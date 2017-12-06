@@ -35,8 +35,7 @@ function StaffGradedAssignmentXBlock(runtime, element) {
 
             $(content).find('.finalize-upload').on('click', function() {
               $.post(finalizeUploadUrl).success(
-                  function () {
-                      state.upload_allowed = false;
+                  function (state) {
                       render(state);
                   }
               ).fail(

@@ -37,6 +37,7 @@ from xblock.exceptions import JsonHandlerError  # lint-amnesty, pylint: disable=
 from xblock.fields import DateTime, Scope, String, Float, Integer  # lint-amnesty, pylint: disable=import-error
 from xblock.fragment import Fragment  # lint-amnesty, pylint: disable=import-error
 from xblockutils.studio_editable import StudioEditableXBlockMixin
+from xblockutils.show_answers import ShowAnswerXBlockMixin
 
 from xmodule.util.duedate import get_extended_due_date  # lint-amnesty, pylint: disable=import-error
 
@@ -71,7 +72,7 @@ def reify(meth):
     return property(getter)
 
 
-class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, XBlock):
+class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMixin, XBlock):
     """
     This block defines a Staff Graded Assignment.  Students are shown a rubric
     and invited to upload a file which is then graded by staff.
@@ -79,7 +80,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, XBlock):
     has_score = True
     icon_class = 'problem'
     STUDENT_FILEUPLOAD_MAX_SIZE = 4 * 1000 * 1000  # 4 MB
-    editable_fields = ('display_name', 'points', 'weight')
+    editable_fields = ('display_name', 'points', 'weight', 'showanswer', 'solution')
 
     display_name = String(
         display_name=_("Display Name"),
@@ -294,7 +295,8 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, XBlock):
             "annotated": annotated,
             "graded": graded,
             "max_score": self.max_score(),
-            "upload_allowed": self.upload_allowed(submission_data=submission)
+            "upload_allowed": self.upload_allowed(submission_data=submission),
+            "solution": force_text(self.solution) if self.answer_available() else '',
         }
 
     def staff_grading_data(self):
@@ -469,7 +471,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, XBlock):
             submission.answer['finalized'] = True
             submission.submitted_at = django_now()
             submission.save()
-        return Response(json_body={})
+        return Response(json_body=self.student_state())
 
     @XBlock.handler
     def staff_upload_annotated(self, request, suffix=''):
@@ -842,6 +844,45 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, XBlock):
     def get_real_user(self):
         """returns session user"""
         return self.runtime.get_real_user(self.xmodule_runtime.anonymous_student_id)
+
+    def correctness_available(self):
+        """
+        For SGA is_correct just means the user submitted the problem, which we always know one way or the other
+        """
+        return True
+
+    def is_past_due(self):
+        """
+        Is it now past this problem's due date?
+        """
+        return self.past_due()
+
+    def is_correct(self):
+        """
+        For SGA we show the answer as soon as we know the user has given us their submission
+        """
+        return self.has_attempted()
+
+    def has_attempted(self):
+        """
+        True if the student has already attempted this problem
+        """
+        submission = self.get_submission()
+        if not submission:
+            return False
+        return submission['answer']['finalized']
+
+    def can_attempt(self):
+        """
+        True if the student can attempt the problem
+        """
+        return not self.has_attempted()
+
+    def runtime_user_is_staff(self):
+        """
+        Is the logged in user a staff user?
+        """
+        return self.is_course_staff()
 
 
 def _get_sha1(file_descriptor):

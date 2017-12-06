@@ -47,6 +47,11 @@
         <% } %>
       </div>
     <% } %>
+    <% if (solution) { %>
+      <div class="solution">
+        <%= solution %>
+      </div>
+    <% } %>
     <% if (error) { %>
       <p class="error"><%= error %></p>
     <% } %>
