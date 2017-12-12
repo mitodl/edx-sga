@@ -11,4 +11,5 @@ pip install -e . -r test_requirements.txt
 cd /edx/app/edxapp/edx-platform
 mkdir reports
 
+cp ./setup.cfg /edx-sga
 pytest /edx-sga/edx_sga/tests/integration_tests.py
