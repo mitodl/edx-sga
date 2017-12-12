@@ -4,7 +4,7 @@ matrix:
     - install:
       - git clone https://github.com/edx/devstack.git
       - (cd devstack; sed -i 's/:cached//g' ./docker-compose-host.yml)
-      - (cd devstack; docker-compose )
+      - (cd devstack; make dev.provision)
       - (cd devstack; make dev.up)
       script: echo TODO
       services:
