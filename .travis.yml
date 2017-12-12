@@ -1,10 +1,22 @@
 language: python
-python:
-    - 2.7
-install:
-    - "pip install tox"
-env:
-    - TOX_ENV=django18
-    - TOX_ENV=django111
-script:
-    - tox -e $TOX_ENV
+matrix:
+  include:
+    - install:
+      - git clone https://github.com/edx/devstack.git
+      - (cd devstack; make dev.provision)
+      - (cd devstack; make dev.up)
+      script: echo TODO
+      services:
+        - docker
+      env:
+        name: Integration
+    - install:
+      - pip install tox
+      script: tox -e django18
+      env:
+        name: Django 1.8
+    - install:
+      - pip install tox
+      script: tox -e django111
+      env:
+        name: Django 1.11
