@@ -6,12 +6,9 @@ source /edx/app/edxapp/venvs/edxapp/bin/activate
 cd /edx-sga
 
 pip uninstall edx-sga -y
-pip install -e .
+pip install -e . -r test_requirements.txt
 
 cd /edx/app/edxapp/edx-platform
+mkdir reports
 
-
-# the migrations in the test take more than 10 minutes to set up, so we need to keep travis occupied
-(while true; do echo "."; sleep 60; done) &
-
-pytest /edx_sga/tests/integration_tests.py
+pytest /edx-sga/edx_sga/tests/integration_tests.py
