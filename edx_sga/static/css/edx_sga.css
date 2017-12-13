@@ -173,17 +173,16 @@
   color: #0075b4;
 }
 
-.inner-wrapper .task-message {
-  font-size: 11px;
+.staff-modal .task-message {
   font-family:'Open Sans', sans-serif;
   color: #4c4c4c;
   padding-bottom: 5px;
 }
 
-.inner-wrapper .ready-msg {
+.staff-modal .ready-msg {
   color: darkgreen;
 }
 
-.inner-wrapper .preparing-msg {
+.staff-modal .preparing-msg {
   color: red;
 }

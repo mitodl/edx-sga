@@ -20,6 +20,9 @@ function StaffGradedAssignmentXBlock(runtime, element) {
         var downloadSubmissionsStatusUrl = runtime.handlerUrl(element, 'download_submissions_status');
         var template = _.template($(element).find("#sga-tmpl").text());
         var gradingTemplate;
+        var preparingSubmissionsMsg = gettext(
+          'Started preparing student submissions zip file. This may take a while.'
+        );
 
         function render(state) {
             // Add download urls to template context
@@ -325,53 +328,51 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                 $(element).find('#download-init-button').click(function(e) {
                   e.preventDefault();
                   var self = this;
-                  $(self).addClass("disabled");
                   $.get(
                     prepareDownloadSubmissionsUrl,
                     function(data) {
                       if (data["downloadable"]) {
                         window.location = downloadSubmissionsUrl;
-                        $(element).find('.task-message').hide();
+                        $(self).removeClass("disabled");
                       } else {
-                        $(element).find('.task-message').show();
-                        $(element).find('.task-message').html(comeBackMessage());
-                        $(element).find('.task-message').removeClass("ready-msg");
-                        $(element).find('.task-message').addClass("preparing-msg");
+                        $(self).addClass("disabled");
+                        $(element).find('.task-message')
+                          .show()
+                          .html(preparingSubmissionsMsg)
+                          .removeClass("ready-msg")
+                          .addClass("preparing-msg");
+                          pollSubmissionDownload(downloadSubmissionsStatusUrl, preparingSubmissionsMsg);
                       }
-                      $(self).removeClass("disabled");
                     }
                   );
-                });
-                
-                pollUntilSuccess(downloadSubmissionsStatusUrl, checkResponse, 10000, 400).then(function(res) {
-                 if (res["zip_available"]) {
-                   $(element).find('.task-message').show();
-                   $(element).find('.btn-download-all').html(
-                     gettext("Download All Submissions (Ready)")
-                   );
-                   $(element).find('.task-message').html(gettext("Student submission file ready for download"));
-                   $(element).find('.task-message').removeClass("preparing-msg");
-                   $(element).find('.task-message').addClass("ready-msg");
-                 } else {
-                   $(element).find('.task-message').show();
-                   $(element).find('.task-message').html(comeBackMessage());
-                 }
-                }).fail(function(res) {
-                  console.log("FAILURE");
-                  console.log(res);
                 });
             }
         });
     }
 
-    function checkResponse(response) {
-      return response["zip_available"];
+    function pollSubmissionDownload(downloadSubmissionsStatusUrl, preparingSubmissionsMsg) {
+      pollUntilSuccess(downloadSubmissionsStatusUrl, checkResponse, 10000, 400).then(function(res) {
+        if (res["zip_available"]) {
+          $(element).find('#download-init-button').removeClass("disabled");
+          $(element).find('.task-message')
+            .show()
+            .html(gettext("Student submission file ready for download"))
+            .removeClass("preparing-msg")
+            .addClass("ready-msg");
+        } else {
+          $(element).find('.task-message')
+            .show()
+            .html(preparingSubmissionsMsg);
+        }
+      }).fail(function(res) {
+        $(element).find('.task-message')
+          .show()
+          .html("An error occurred while trying to get the status of your submission file.");
+      });
     }
 
-    function comeBackMessage() {
-      return gettext(
-        'Started preparing student submissions zip file.'
-      );
+    function checkResponse(response) {
+      return response["zip_available"];
     }
 
     function pollUntilSuccess(url, checkSuccessFn, intervalMs, maxTries) {
