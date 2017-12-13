@@ -179,3 +179,11 @@
   color: #4c4c4c;
   padding-bottom: 5px;
 }
+
+.inner-wrapper .ready-msg {
+  color: darkgreen;
+}
+
+.inner-wrapper .preparing-msg {
+  color: red;
+}

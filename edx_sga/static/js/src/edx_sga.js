@@ -216,10 +216,6 @@ function StaffGradedAssignmentXBlock(runtime, element) {
           return $(element).find('.sga-block').attr('data-staff') === 'True';
         }
 
-        function isSubmissionsAvailable() {
-          return $(element).find('.submissions-download-link').attr('data-submissions-available') === 'True';
-        }
-
         /* Just show error on enter grade dialog */
         function gradeFormError(error) {
             var form = $(element).find("#enter-grade-form");
@@ -338,26 +334,67 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                         $(element).find('.task-message').hide();
                       } else {
                         $(element).find('.task-message').show();
+                        $(element).find('.task-message').html(comeBackMessage());
+                        $(element).find('.task-message').removeClass("ready-msg");
+                        $(element).find('.task-message').addClass("preparing-msg");
                       }
                       $(self).removeClass("disabled");
                     }
                   );
                 });
-
-                setTimeout(function () {
-                  $.get(
-                    downloadSubmissionsStatusUrl,
-                    function(data) {
-                      if (data["zip_available"]) {
-                        $(element).find('.task-message').hide();
-                      } else {
-                        $(element).find('.task-message').show();
-                      }
-                    }
-                  );
-                }, 10000);
+                
+                pollUntilSuccess(downloadSubmissionsStatusUrl, checkResponse, 10000, 400).then(function(res) {
+                 if (res["zip_available"]) {
+                   $(element).find('.task-message').show();
+                   $(element).find('.btn-download-all').html(
+                     gettext("Download All Submissions (Ready)")
+                   );
+                   $(element).find('.task-message').html(gettext("Student submission file ready for download"));
+                   $(element).find('.task-message').removeClass("preparing-msg");
+                   $(element).find('.task-message').addClass("ready-msg");
+                 } else {
+                   $(element).find('.task-message').show();
+                   $(element).find('.task-message').html(comeBackMessage());
+                 }
+                }).fail(function(res) {
+                  console.log("FAILURE");
+                  console.log(res);
+                });
             }
         });
+    }
+
+    function checkResponse(response) {
+      return response["zip_available"];
+    }
+
+    function comeBackMessage() {
+      return gettext(
+        'Started preparing student submissions zip file.'
+      );
+    }
+
+    function pollUntilSuccess(url, checkSuccessFn, intervalMs, maxTries) {
+      var deferred = $.Deferred(),
+        tries = 1;
+
+      function makeLoopingRequest() {
+        $.get(url).success(function(response) {
+          if (checkSuccessFn(response)) {
+            deferred.resolve(response);
+          } else if (tries < maxTries) {
+            tries++;
+            setTimeout(makeLoopingRequest, intervalMs);
+          } else {
+            deferred.reject('Max tries exceeded.');
+          }
+        }).fail(function(err) {
+          deferred.reject('Request failed:\n' + err.responseText);
+        });
+      }
+      makeLoopingRequest();
+
+      return deferred.promise();
     }
 
     function loadjs(url) {
