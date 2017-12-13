@@ -728,9 +728,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
             {
                 'submission_id': uuid.uuid4().hex,
                 'filename': "test_{}.txt".format(uuid.uuid4().hex),
-                'timestamp': datetime.datetime.utcnow().strftime(
-                    DateTime.DATETIME_FORMAT
-                )
+                'timestamp': datetime.datetime.utcnow()
             } for __ in range(2)
         ]
         zip_student_submissions.delay = mock.Mock()
@@ -763,9 +761,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
             {
                 'submission_id': uuid.uuid4().hex,
                 'filename': "test_{}.txt".format(uuid.uuid4().hex),
-                'timestamp': datetime.datetime.utcnow().strftime(
-                    DateTime.DATETIME_FORMAT
-                )
+                'timestamp': datetime.datetime.utcnow()
             } for __ in range(2)
         ]
         zip_student_submissions.delay = mock.Mock()
