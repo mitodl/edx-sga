@@ -16,17 +16,6 @@ log = logging.getLogger(__name__)
 DATA_DIR = getattr(settings, "DATA_DIR", "/edx/app/edxapp/data")
 
 
-def _mk_dir(path):
-    """
-    Create a new directory.
-
-    Args:
-        path (str): path of new directory
-    """
-    _rm_file(path)
-    os.mkdir(path)
-
-
 def _rm_file(path):
     """
     Removes file if it exist.
@@ -136,15 +125,14 @@ def _get_dir_path(submissions_dir_name, location=None):
     return os.path.join(DATA_DIR, submissions_dir_name)
 
 
-def _recreate_submissions_folder(destination_path):
+def _remove_existing_artifacts(destination_path):
     """
-    removes existing submission collection folder and zip file and
-    create new folder for submission collection.
+    removes existing submission collection folder and zip file.
 
     Args:
         destination_path (str): folder from where we will zip files and facilitate for download
     """
-    _mk_dir(destination_path)
+    _rm_file(destination_path)
     _rm_file("{}.zip".format(destination_path))  # remove existing zip file
 
 
@@ -161,7 +149,8 @@ def zip_student_submissions(course_id, block_id, location, user):
     """
     submissions_dir_name = _get_submissions_base_name(user.username, block_id, course_id)
     destination_path = _get_dir_path(submissions_dir_name, location)
-    _recreate_submissions_folder(destination_path)
+    _remove_existing_artifacts(destination_path)
+    os.mkdir(destination_path)
     _collect_student_submissions(block_id, course_id, location, destination_path)
     _compress_folder(destination_path)
 
