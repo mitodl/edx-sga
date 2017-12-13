@@ -341,34 +341,29 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                           .html(preparingSubmissionsMsg)
                           .removeClass("ready-msg")
                           .addClass("preparing-msg");
-                          pollSubmissionDownload(downloadSubmissionsStatusUrl, preparingSubmissionsMsg);
+                        pollSubmissionDownload();
                       }
                     }
                   );
                 });
             }
         });
-    }
 
-    function pollSubmissionDownload(downloadSubmissionsStatusUrl, preparingSubmissionsMsg) {
-      pollUntilSuccess(downloadSubmissionsStatusUrl, checkResponse, 10000, 400).then(function(res) {
-        if (res["zip_available"]) {
-          $(element).find('#download-init-button').removeClass("disabled");
-          $(element).find('.task-message')
-            .show()
-            .html(gettext("Student submission file ready for download"))
-            .removeClass("preparing-msg")
-            .addClass("ready-msg");
-        } else {
-          $(element).find('.task-message')
-            .show()
-            .html(preparingSubmissionsMsg);
+        function pollSubmissionDownload() {
+          pollUntilSuccess(downloadSubmissionsStatusUrl, checkResponse, 10000, 100).then(function() {
+            $(element).find('#download-init-button').removeClass("disabled");
+            $(element).find('.task-message')
+              .show()
+              .html(gettext("Student submission file ready for download"))
+              .removeClass("preparing-msg")
+              .addClass("ready-msg");
+          }).fail(function() {
+            $(element).find('#download-init-button').removeClass("disabled");
+            $(element).find('.task-message')
+              .show()
+              .html(gettext("An error occurred while trying to get the status of your submission file."));
+          });
         }
-      }).fail(function(res) {
-        $(element).find('.task-message')
-          .show()
-          .html("An error occurred while trying to get the status of your submission file.");
-      });
     }
 
     function checkResponse(response) {
