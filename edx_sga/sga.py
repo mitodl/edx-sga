@@ -379,17 +379,11 @@ class StaffGradedAssignmentXBlock(XBlock):
                 assignments.append({
                     'submission_id': submission['uuid'],
                     'filename': submission['answer']["filename"],
-                    'timestamp': submission['created_at'].strftime(
-                        DateTime.DATETIME_FORMAT
-                    )
+                    'timestamp': submission['submitted_at'] or submission['created_at']
                 })
 
         assignments.sort(
-            key=lambda assignment: datetime.datetime.strptime(
-                assignment['timestamp'],
-                DateTime.DATETIME_FORMAT
-            ),
-            reverse=True
+            key=lambda assignment: assignment['timestamp'], reverse=True
         )
         return assignments
 
@@ -756,13 +750,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         if self.is_zip_file_available():
             assignments = self.get_sorted_submissions()
             if assignments:
-                locale_zone = get_time_zone()
-                last_assignment_data = datetime.datetime.strptime(
-                    assignments[0]['timestamp'],
-                    DateTime.DATETIME_FORMAT
-                )
-                last_assignment_data_locale = locale_zone.localize(last_assignment_data)
-                last_assignment_data = last_assignment_data_locale.astimezone(pytz.utc)
+                last_assignment_date = assignments[0]['timestamp'].replace(tzinfo=pytz.utc)
                 zip_loc = get_zip_file_path(
                     user.username,
                     self.block_course_id,
@@ -771,7 +759,7 @@ class StaffGradedAssignmentXBlock(XBlock):
                 )
                 zip_file_time = datetime.datetime.fromtimestamp(os.path.getmtime(zip_loc))
                 # if last zip file is older the last submission then recreate task
-                if zip_file_time >= last_assignment_data.replace(tzinfo=None):
+                if zip_file_time >= last_assignment_date.replace(tzinfo=None):
                     zip_file_ready = True
 
         if not zip_file_ready:
