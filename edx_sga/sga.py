@@ -627,7 +627,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         Return a file from storage and return in a Response.
         """
         try:
-            user = self.runtime.get_real_user(self.xmodule_runtime.anonymous_student_id)
+            user = self.get_real_user()
             require(user)
             destination_path = get_zip_file_path(
                 user.username,
@@ -748,7 +748,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         Runs a async task that collects submissions in background and zip them.
         """
         require(self.is_course_staff())
-        user = self.runtime.get_real_user(self.xmodule_runtime.anonymous_student_id)
+        user = self.get_real_user()
         require(user)
         zip_file_ready = False
 
@@ -867,7 +867,7 @@ class StaffGradedAssignmentXBlock(XBlock):
         """
         returns True if zip file available.
         """
-        user = self.runtime.get_real_user(self.xmodule_runtime.anonymous_student_id)
+        user = self.get_real_user()
         require(user)
         zip_file_path = get_zip_file_path(
             user.username,
@@ -876,6 +876,10 @@ class StaffGradedAssignmentXBlock(XBlock):
             self.location
         )
         return True if os.path.exists(zip_file_path) else False
+
+    def get_real_user(self):
+        """returns session user"""
+        return self.runtime.get_real_user(self.xmodule_runtime.anonymous_student_id)
 
 
 def _get_sha1(file_descriptor):

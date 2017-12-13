@@ -7,6 +7,8 @@ import json
 import mimetypes
 import unittest
 import tempfile
+import time
+import uuid
 import mock
 import pkg_resources
 import pytz
@@ -706,3 +708,115 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
             return_value=is_finalized_submission
         ):
             assert block.upload_allowed(submission_data={}) is expected_value
+
+    @mock.patch('edx_sga.sga.zip_student_submissions')
+    @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.get_sorted_submissions')
+    @data((False, False), (True, True))
+    @unpack
+    def test_prepare_download_submissions(
+            self,
+            is_zip_file_available,
+            downloadable,
+            get_sorted_submissions,
+            zip_student_submissions,
+    ):
+        """
+        Test prepare download api
+        """
+        block = self.make_xblock()
+        get_sorted_submissions.return_value = [
+            {
+                'submission_id': uuid.uuid4().hex,
+                'filename': "test_{}.txt".format(uuid.uuid4().hex),
+                'timestamp': datetime.datetime.utcnow().strftime(
+                    DateTime.DATETIME_FORMAT
+                )
+            } for __ in range(2)
+        ]
+        zip_student_submissions.delay = mock.Mock()
+        with mock.patch(
+            "edx_sga.sga.StaffGradedAssignmentXBlock.is_zip_file_available",
+            return_value=is_zip_file_available
+        ), mock.patch(
+            'edx_sga.sga.StaffGradedAssignmentXBlock.get_real_user',
+            return_value=self.staff
+        ), mock.patch(
+            'edx_sga.sga.os.path.getmtime',
+            return_value=time.time()
+        ):
+            response = block.prepare_download_submissions(None)
+            response_body = json.loads(response.body)
+            assert response_body["downloadable"] is downloadable
+
+    @mock.patch('edx_sga.sga.zip_student_submissions')
+    @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.get_sorted_submissions')
+    def test_prepare_download_submissions_task_called(
+            self,
+            get_sorted_submissions,
+            zip_student_submissions
+    ):
+        """
+        Test prepare download api
+        """
+        block = self.make_xblock()
+        get_sorted_submissions.return_value = [
+            {
+                'submission_id': uuid.uuid4().hex,
+                'filename': "test_{}.txt".format(uuid.uuid4().hex),
+                'timestamp': datetime.datetime.utcnow().strftime(
+                    DateTime.DATETIME_FORMAT
+                )
+            } for __ in range(2)
+        ]
+        zip_student_submissions.delay = mock.Mock()
+        with mock.patch(
+            "edx_sga.sga.StaffGradedAssignmentXBlock.is_zip_file_available",
+            return_value=False
+        ), mock.patch(
+            'edx_sga.sga.StaffGradedAssignmentXBlock.get_real_user',
+            return_value=self.staff
+        ), mock.patch(
+            'edx_sga.sga.os.path.getmtime',
+            return_value=time.time()
+        ):
+            response = block.prepare_download_submissions(None)
+            response_body = json.loads(response.body)
+            assert response_body["downloadable"] is False
+
+        zip_student_submissions.delay.assert_called_with(
+            block.block_course_id,
+            block.block_id,
+            block.location,
+            self.staff
+        )
+
+    @data((False, False), (True, True))
+    @unpack
+    def test_download_submissions_status(self, is_zip_file_available, downloadable):
+        """test download_submissions_status api"""
+        block = self.make_xblock()
+        with mock.patch(
+            "edx_sga.sga.StaffGradedAssignmentXBlock.is_zip_file_available",
+            return_value=is_zip_file_available
+        ):
+            response = block.download_submissions_status(None)
+            response_body = json.loads(response.body)
+            assert response_body["zip_available"] is downloadable
+
+    @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.is_course_staff')
+    def test_download_submissions(self, is_course_staff):
+        """tests download_submissions"""
+        block = self.make_xblock()
+        is_course_staff.return_value = True
+        path = pkg_resources.resource_filename(__package__, 'test_sga.py')
+        expected = open(path, 'rb').read()
+
+        with mock.patch(
+            "edx_sga.sga.get_zip_file_path", return_value=path
+        ), mock.patch(
+            'edx_sga.sga.StaffGradedAssignmentXBlock.get_real_user',
+            return_value=self.staff
+        ):
+            response = block.download_submissions(None)
+            assert response.status_code == 200
+            assert response.body == expected
