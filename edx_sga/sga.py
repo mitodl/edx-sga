@@ -375,13 +375,14 @@ class StaffGradedAssignmentXBlock(XBlock):
         )
 
         for submission in submissions:
-            assignments.append({
-                'submission_id': submission['uuid'],
-                'filename': submission['answer']["filename"],
-                'timestamp': submission['created_at'].strftime(
-                    DateTime.DATETIME_FORMAT
-                )
-            })
+            if is_finalized_submission(submission_data=submission):
+                assignments.append({
+                    'submission_id': submission['uuid'],
+                    'filename': submission['answer']["filename"],
+                    'timestamp': submission['created_at'].strftime(
+                        DateTime.DATETIME_FORMAT
+                    )
+                })
 
         assignments.sort(
             key=lambda assignment: datetime.datetime.strptime(
