@@ -44,7 +44,6 @@ from edx_sga.tasks import (
     zip_student_submissions
 )
 from edx_sga.utils import (
-    get_time_zone,
     tznow,
     is_finalized_submission
 )
