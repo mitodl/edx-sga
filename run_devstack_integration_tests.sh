@@ -28,13 +28,13 @@ pip install --exists-action w -r requirements/edx/paver.txt
 pip install --exists-action w -r requirements/edx/testing.txt
 if [ -e requirements/edx/post.txt ]; then pip install --exists-action w -r requirements/edx/post.txt ; fi
 
-# output the packages which are installed for logging
-pip freeze
-
 cd /edx-sga
 pip uninstall edx-sga -y
-pip install -e . -r test_requirements.txt
+pip install -e .
 cp /edx-sga/edx_sga /edx/app/edxapp/edx-platform/lms/djangoapps/ -r
+
+# output the packages which are installed for logging
+pip freeze
 
 cd /edx/app/edxapp/edx-platform
 pytest lms/djangoapps/edx_sga/tests/integration_tests.py
