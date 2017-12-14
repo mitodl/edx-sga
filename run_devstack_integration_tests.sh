@@ -4,6 +4,7 @@ set -e
 source /edx/app/edxapp/venvs/edxapp/bin/activate
 
 cd /edx/app/edxapp/edx-platform
+mkdir -p reports
 
 # these pip install commands are adapted from edx-platform/circle.yml
 pip install --exists-action w -r requirements/edx/paver.txt
@@ -27,13 +28,10 @@ pip install --exists-action w -r requirements/edx/paver.txt
 pip install --exists-action w -r requirements/edx/testing.txt
 if [ -e requirements/edx/post.txt ]; then pip install --exists-action w -r requirements/edx/post.txt ; fi
 
-
 cd /edx-sga
 pip uninstall edx-sga -y
 pip install -e . -r test_requirements.txt
+cp /edx-sga/edx_sga /edx/app/edxapp/edx-platform/lms/djangoapps/ -r
 
 cd /edx/app/edxapp/edx-platform
-mkdir -p reports
-
-cp /edx-sga/edx_sga ./lms/djangoapps/ -r
 pytest lms/djangoapps/edx_sga/tests/integration_tests.py
