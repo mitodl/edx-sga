@@ -28,6 +28,9 @@ pip install --exists-action w -r requirements/edx/paver.txt
 pip install --exists-action w -r requirements/edx/testing.txt
 if [ -e requirements/edx/post.txt ]; then pip install --exists-action w -r requirements/edx/post.txt ; fi
 
+# output the packages which are installed for logging
+pip freeze
+
 cd /edx-sga
 pip uninstall edx-sga -y
 pip install -e . -r test_requirements.txt
