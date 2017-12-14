@@ -3,6 +3,7 @@ matrix:
   include:
     - install:
       - git clone https://github.com/edx/devstack.git
+      # Travis's version of docker-compose doesn't understand :cached, and it's not required anyway, so this removes it
       - (cd devstack; sed -i 's/:cached//g' ./docker-compose-host.yml)
       - (cd devstack; make dev.clone)
       script:
@@ -15,9 +16,9 @@ matrix:
       - pip install tox
       script: tox -e django18
       env:
-        name: Django 1.8
+        name: Django 1.8 Unit Tests
     - install:
       - pip install tox
       script: tox -e django111
       env:
-        name: Django 1.11
+        name: Django 1.11 Unit Tests
