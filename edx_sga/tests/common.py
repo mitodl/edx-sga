@@ -1,5 +1,10 @@
 """shared test data"""
+from contextlib import contextmanager
 import os
+import shutil
+from tempfile import mkdtemp
+
+from mock import Mock
 
 
 class DummyResource(object):
@@ -13,23 +18,26 @@ class DummyResource(object):
         return isinstance(other, DummyResource) and self.path == other.path
 
 
-class DummyUpload(object):
+@contextmanager
+def dummy_upload(filename):
     """
-    Upload and read file.
+    Provide a mocked upload parameter
+
+    Args:
+        filename (str): A filename
+
+    Yields:
+        (upload, data): The upload object and the data in the file
     """
-    def __init__(self, path, name):
-        self.stream = open(path, 'rb')
-        self.name = name
-        self.size = os.path.getsize(path)
+    data = b"some information"
 
-    def read(self, number_of_bytes=None):
-        """
-        Read data from file.
-        """
-        return self.stream.read(number_of_bytes)
+    directory = mkdtemp()
 
-    def seek(self, offset):
-        """
-        Move to specified byte location in file
-        """
-        return self.stream.seek(offset)
+    try:
+        path = os.path.join(directory, filename)
+        with open(path, "wb") as f:
+            f.write(data)
+        with open(path, "rb") as f:
+            yield Mock(file=f), data
+    finally:
+        shutil.rmtree(directory)

@@ -7,7 +7,6 @@ import json
 import tempfile
 from ddt import ddt, data  # pylint: disable=import-error
 import mock
-import pkg_resources
 import pytz
 
 from courseware import module_render as render  # lint-amnesty, pylint: disable=import-error
@@ -27,7 +26,7 @@ from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase  # lint-a
 from opaque_keys.edx.locations import Location  # lint-amnesty, pylint: disable=import-error
 
 from edx_sga.sga import StaffGradedAssignmentXBlock
-from edx_sga.tests.common import DummyResource, DummyUpload
+from edx_sga.tests.common import DummyResource, dummy_upload
 
 
 @ddt
@@ -358,12 +357,10 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         """
         Tests upload and download assignment for non staff.
         """
-        path = pkg_resources.resource_filename(__package__, 'integration_tests.py')
-        expected = open(path, 'rb').read()
-        upload = mock.Mock(file=DummyUpload(path, 'test.txt'))
         block = self.make_one()
         self.personalize(block, **self.make_student(block, "fred"))
-        block.upload_assignment(mock.Mock(params={'assignment': upload}))
+        with dummy_upload("text.txt") as (upload, expected):
+            block.upload_assignment(mock.Mock(params={'assignment': upload}))
         response = block.download_assignment(None)
         self.assertEqual(response.body, expected)
 
@@ -395,14 +392,12 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         """
         Tests upload and download of annotated staff files.
         """
-        path = pkg_resources.resource_filename(__package__, 'integration_tests.py')
-        expected = open(path, 'rb').read()
-        upload = mock.Mock(file=DummyUpload(path, 'test.txt'))
         block = self.make_one()
         fred = self.make_student(block, "fred1")['module']
-        block.staff_upload_annotated(mock.Mock(params={
-            'annotated': upload,
-            'module_id': fred.id}))
+        with dummy_upload('test.txt') as (upload, expected):
+            block.staff_upload_annotated(mock.Mock(params={
+                'annotated': upload,
+                'module_id': fred.id}))
         response = block.staff_download_annotated(mock.Mock(params={
             'module_id': fred.id}))
         self.assertEqual(response.body, expected)
@@ -427,14 +422,12 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         """
         Test download annotated assignment for non staff.
         """
-        path = pkg_resources.resource_filename(__package__, 'integration_tests.py')
-        expected = open(path, 'rb').read()
-        upload = mock.Mock(file=DummyUpload(path, 'test.txt'))
         block = self.make_one()
         fred = self.make_student(block, "fred2")
-        block.staff_upload_annotated(mock.Mock(params={
-            'annotated': upload,
-            'module_id': fred['module'].id}))
+        with dummy_upload('test.txt') as (upload, expected):
+            block.staff_upload_annotated(mock.Mock(params={
+                'annotated': upload,
+                'module_id': fred['module'].id}))
         self.personalize(block, **fred)
         response = block.download_annotated(None)
         self.assertEqual(response.body, expected)
@@ -453,13 +446,11 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         """
         Test download for staff.
         """
-        path = pkg_resources.resource_filename(__package__, 'integration_tests.py')
-        expected = open(path, 'rb').read()
-        upload = mock.Mock(file=DummyUpload(path, 'test.txt'))
         block = self.make_one()
         student = self.make_student(block, 'fred')
         self.personalize(block, **student)
-        block.upload_assignment(mock.Mock(params={'assignment': upload}))
+        with dummy_upload("test.txt") as (upload, expected):
+            block.upload_assignment(mock.Mock(params={'assignment': upload}))
         response = block.staff_download(mock.Mock(params={
             'student_id': student['item'].student_id}))
         self.assertEqual(response.body, expected)
@@ -485,14 +476,12 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         Tests download annotated assignment
         with filename in unicode for non staff member.
         """
-        path = pkg_resources.resource_filename(__package__, 'integration_tests.py')
-        expected = open(path, 'rb').read()
-        upload = mock.Mock(file=DummyUpload(path, 'файл.txt'))
         block = self.make_one()
         fred = self.make_student(block, "fred2")
-        block.staff_upload_annotated(mock.Mock(params={
-            'annotated': upload,
-            'module_id': fred['module'].id}))
+        with dummy_upload('файл.txt') as (upload, expected):
+            block.staff_upload_annotated(mock.Mock(params={
+                'annotated': upload,
+                'module_id': fred['module'].id}))
         self.personalize(block, **fred)
         response = block.download_annotated(None)
         self.assertEqual(response.body, expected)
@@ -511,16 +500,15 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         """
         Tests download assignment with filename in unicode for staff.
         """
-        path = pkg_resources.resource_filename(__package__, 'integration_tests.py')
-        expected = open(path, 'rb').read()
-        upload = mock.Mock(file=DummyUpload(path, 'файл.txt'))
         block = self.make_one()
         student = self.make_student(block, 'fred')
         self.personalize(block, **student)
-        block.upload_assignment(mock.Mock(params={'assignment': upload}))
+        with dummy_upload('файл.txt') as (upload, expected):
+            block.upload_assignment(mock.Mock(params={'assignment': upload}))
         response = block.staff_download(mock.Mock(params={
             'student_id': student['item'].student_id}))
         self.assertEqual(response.body, expected)
+
         with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
             return_value=block.file_storage_path(  # lint-amnesty, pylint: disable=protected-access
