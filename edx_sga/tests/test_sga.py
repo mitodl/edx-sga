@@ -91,6 +91,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
 
         # fakes imports
         real_import = builtins.__import__
+
         def fake_import(name, *args, **kwargs):
             """mock imported object if not it is not available"""
             try:

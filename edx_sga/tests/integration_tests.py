@@ -4,12 +4,13 @@ Tests for SGA
 """
 import datetime
 import json
+import shutil
 import tempfile
+
 from ddt import ddt, data  # pylint: disable=import-error
 import mock
 import pkg_resources
 import pytz
-import shutil
 
 from courseware import module_render as render  # lint-amnesty, pylint: disable=import-error
 from courseware.models import StudentModule  # lint-amnesty, pylint: disable=import-error
