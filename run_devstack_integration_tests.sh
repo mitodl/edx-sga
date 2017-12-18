@@ -33,8 +33,13 @@ pip uninstall edx-sga xblock-utils -y
 pip install -e . --process-dependency-links
 cp /edx-sga/edx_sga /edx/app/edxapp/edx-platform/lms/djangoapps/ -r
 
+# Install codecov so we can upload code coverage results
+pip install codecov
+
 # output the packages which are installed for logging
 pip freeze
 
 cd /edx/app/edxapp/edx-platform
 pytest lms/djangoapps/edx_sga/tests/integration_tests.py
+coverage xml
+codecov
