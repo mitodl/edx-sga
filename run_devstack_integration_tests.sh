@@ -40,6 +40,6 @@ pip install codecov
 pip freeze
 
 cd /edx/app/edxapp/edx-platform
-pytest lms/djangoapps/edx_sga/tests/integration_tests.py --cov .
-coverage xml
+pytest lms/djangoapps/edx_sga/tests/integration_tests.py --cov-config /edx-sga/.coveragerc --cov ./lms/djangoapps/edx_sga
+coverage xml --rcfile /edx-sga/.coveragerc
 codecov
