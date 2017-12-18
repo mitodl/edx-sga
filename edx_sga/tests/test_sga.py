@@ -6,9 +6,11 @@ import datetime
 import json
 import mimetypes
 import unittest
+import shutil
 import tempfile
 import time
 import uuid
+
 import mock
 import pkg_resources
 import pytz
@@ -35,20 +37,6 @@ from edx_sga.tests.common import DummyResource, DummyUpload
 
 SHA1 = 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
 UUID = '8c4b765745f746f7a128470842211601'
-REAL_IMPORT = builtins.__import__
-
-
-def fake_import(*args, **kwargs):
-    """mock imported object if not it is not available"""
-    try:
-        return REAL_IMPORT(*args, **kwargs)
-    except ImportError:
-        return mock.Mock()
-
-
-def restore_import():
-    """restore builtin importer"""
-    builtins.__import__ = REAL_IMPORT
 
 
 def fake_get_submission(**kwargs):
@@ -97,18 +85,38 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         engine for use in all tests
         """
         super(StaffGradedAssignmentMockedTests, self).setUp()
-        # fakes imports
-        builtins.__import__ = fake_import
-        self.addCleanup(restore_import)
-        self.course_id = CourseLocator(org='foo', course='baz', run='bar')
-        self.runtime = mock.Mock(anonymous_student_id='MOCK')
-        self.scope_ids = mock.Mock()
+
         tmp = tempfile.mkdtemp()
+        self.addCleanup(lambda: shutil.rmtree(tmp))
+
+        # fakes imports
+        real_import = builtins.__import__
+        def fake_import(name, *args, **kwargs):
+            """mock imported object if not it is not available"""
+            try:
+                return real_import(name, *args, **kwargs)
+            except ImportError:
+                for module in ('courseware', 'lms', 'student', 'xmodule'):
+                    if name.startswith("{}.".format(module)) or name == module:
+                        return mock.Mock()
+                raise
+        builtins.__import__ = fake_import
+
+        def restore_import():
+            """restore builtin importer"""
+            builtins.__import__ = real_import
+
+        self.addCleanup(restore_import)
+
         patcher = mock.patch(
             "edx_sga.sga.default_storage",
             FileSystemStorage(tmp))
         patcher.start()
         self.addCleanup(patcher.stop)
+
+        self.course_id = CourseLocator(org='foo', course='baz', run='bar')
+        self.runtime = mock.Mock(anonymous_student_id='MOCK')
+        self.scope_ids = mock.Mock()
         self.staff = mock.Mock(return_value={
             "password": "test",
             "username": "tester",

@@ -9,13 +9,13 @@ from ddt import ddt, data  # pylint: disable=import-error
 import mock
 import pkg_resources
 import pytz
+import shutil
 
 from courseware import module_render as render  # lint-amnesty, pylint: disable=import-error
 from courseware.models import StudentModule  # lint-amnesty, pylint: disable=import-error
 from courseware.tests.factories import StaffFactory  # lint-amnesty, pylint: disable=import-error
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=import-error
 from django.core.exceptions import PermissionDenied  # lint-amnesty, pylint: disable=import-error
-from django.core.files.storage import FileSystemStorage  # lint-amnesty, pylint: disable=import-error
 from submissions import api as submissions_api  # lint-amnesty, pylint: disable=import-error
 from submissions.models import StudentItem  # lint-amnesty, pylint: disable=import-error
 from student.models import anonymous_id_for_user, UserProfile  # lint-amnesty, pylint: disable=import-error
@@ -58,13 +58,14 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         )
 
         self.scope_ids = mock.Mock()
+
         tmp = tempfile.mkdtemp()
-        patcher = mock.patch(
-            "edx_sga.sga.default_storage",
-            FileSystemStorage(tmp)
-        )
-        patcher.start()
-        self.addCleanup(patcher.stop)
+        self.addCleanup(lambda: shutil.rmtree(tmp))
+
+        updated_settings_decorator = self.settings(MEDIA_ROOT=tmp)
+        updated_settings_decorator.enable()
+        self.addCleanup(updated_settings_decorator.disable)
+
         self.staff = AdminFactory.create(password="test")
 
     def make_one(self, display_name=None, **kw):

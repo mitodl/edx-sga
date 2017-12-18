@@ -2,6 +2,7 @@
 .*.swp
 *.egg-info
 .coverage
+coverage.xml
 dist/
 .tox/
 .idea/
