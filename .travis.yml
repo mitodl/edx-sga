@@ -6,8 +6,14 @@ matrix:
       # Travis's version of docker-compose doesn't understand :cached, and it's not required anyway, so this removes it
       - (cd devstack; sed -i 's/:cached//g' ./docker-compose-host.yml)
       - (cd devstack; make dev.clone)
-      script:
-        - (cd devstack; env; DEVSTACK_WORKSPACE=$PWD/.. docker-compose -f docker-compose.yml -f docker-compose-host.yml run -e TRAVIS=$TRAVIS -e CI=$CI -v $PWD/..:/edx-sga lms /edx-sga/run_devstack_integration_tests.sh)
+      script: >
+        cd devstack;
+        DEVSTACK_WORKSPACE=$PWD/.. docker-compose
+        -f docker-compose.yml -f docker-compose-host.yml run
+        -e TRAVIS -e TRAVIS_COMMIT -e TRAVIS_REPO_SLUG -e TRAVIS_PULL_REQUEST -e TRAVIS_PULL_REQUEST_SHA
+        -e TRAVIS_TAG -e TRAVIS_PULL_REQUEST_BRANCH
+        -e CI
+        -v $PWD/..:/edx-sga lms /edx-sga/run_devstack_integration_tests.sh
       services:
         - docker
       env:
