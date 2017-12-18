@@ -7,7 +7,7 @@ matrix:
       - (cd devstack; sed -i 's/:cached//g' ./docker-compose-host.yml)
       - (cd devstack; make dev.clone)
       script:
-        - (cd devstack; DEVSTACK_WORKSPACE=$PWD/.. docker-compose -f docker-compose.yml -f docker-compose-host.yml run -e TRAVIS=$TRAVIS -e CI=$CI -v $PWD/..:/edx-sga lms /edx-sga/run_devstack_integration_tests.sh)
+        - (cd devstack; env; DEVSTACK_WORKSPACE=$PWD/.. docker-compose -f docker-compose.yml -f docker-compose-host.yml run -e TRAVIS=$TRAVIS -e CI=$CI -v $PWD/..:/edx-sga lms /edx-sga/run_devstack_integration_tests.sh)
       services:
         - docker
       env:
