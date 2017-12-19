@@ -710,9 +710,8 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         assert block.is_correct() is False
         assert block.can_attempt() is True
 
-        path = pkg_resources.resource_filename(__package__, 'integration_tests.py')
-        upload = mock.Mock(file=DummyUpload(path, 'test.txt'))
-        block.upload_assignment(mock.Mock(params={'assignment': upload}))
+        with dummy_upload('test.txt') as (upload, _):
+            block.upload_assignment(mock.Mock(params={'assignment': upload}))
         assert block.has_attempted() is False
         assert block.is_correct() is False
         assert block.can_attempt() is True
