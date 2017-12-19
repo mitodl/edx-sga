@@ -4,23 +4,12 @@ Utility functions for the SGA XBlock
 import datetime
 import pytz
 
-from django.conf import settings
 
-
-def get_time_zone():
+def utcnow():
     """
-    returns user preferred time zone
+    Get current date and time in UTC
     """
-    return pytz.timezone(getattr(settings, "TIME_ZONE", pytz.utc.zone))
-
-
-def tznow():
-    """
-    Get current date and time.
-    """
-    return datetime.datetime.utcnow().replace(
-        tzinfo=get_time_zone()
-    )
+    return datetime.datetime.now(tz=pytz.utc)
 
 
 def is_finalized_submission(submission_data):

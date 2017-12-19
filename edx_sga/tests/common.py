@@ -1,10 +1,14 @@
 """shared test data"""
 from contextlib import contextmanager
+from datetime import datetime
+import hashlib
 import os
 import shutil
 from tempfile import mkdtemp
 
 from mock import Mock
+import pytz
+from xblock.fields import DateTime
 
 
 class DummyResource(object):
@@ -41,3 +45,29 @@ def dummy_upload(filename):
             yield Mock(file=f), data
     finally:
         shutil.rmtree(directory)
+
+
+def get_sha1(data):
+    """
+    Helper function to produce a SHA1 hash
+    """
+    algorithm = hashlib.sha1()
+    algorithm.update(data)
+    return algorithm.hexdigest()
+
+
+def is_near_now(other_time):
+    """
+    Is a time pretty close to right now?
+    """
+    delta = abs(other_time - datetime.now(tz=pytz.utc))
+    return delta.total_seconds() < 5
+
+
+def parse_timestamp(timestamp):
+    """
+    Parse the xblock timestamp into a UTC datetime
+    """
+    return datetime.strptime(timestamp, DateTime.DATETIME_FORMAT).replace(
+        tzinfo=pytz.utc
+    )

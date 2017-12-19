@@ -46,7 +46,7 @@ from edx_sga.tasks import (
     zip_student_submissions
 )
 from edx_sga.utils import (
-    tznow,
+    utcnow,
     is_finalized_submission
 )
 
@@ -237,7 +237,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         state['annotated_sha1'] = sha1 = _get_sha1(upload.file)
         state['annotated_filename'] = filename = upload.file.name
         state['annotated_mimetype'] = mimetypes.guess_type(upload.file.name)[0]
-        state['annotated_timestamp'] = tznow().strftime(
+        state['annotated_timestamp'] = utcnow().strftime(
             DateTime.DATETIME_FORMAT
         )
         path = self.file_storage_path(sha1, filename)
@@ -596,7 +596,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         Add context info for the Staff Debug interface.
         """
         published = self.start
-        context['is_released'] = published and published < tznow()
+        context['is_released'] = published and published < utcnow()
         context['location'] = self.location
         context['category'] = type(self).__name__
         context['fields'] = [
@@ -606,6 +606,12 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
     def get_module_by_id(self, module_id):
         """
         returns student mode object
+
+        Args:
+            module_id (int): The module id
+
+        Returns:
+            StudentModule: A StudentModule object
         """
         return StudentModule.objects.get(pk=module_id)
 
@@ -799,7 +805,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         """
         due = get_extended_due_date(self)
         if due is not None:
-            return tznow() > due
+            return utcnow() > due
         return False
 
     def upload_allowed(self, submission_data=None):

@@ -3,7 +3,13 @@
 Tests for SGA utility functions
 """
 import pytest  # pylint: disable=import-error
-from edx_sga.utils import is_finalized_submission
+import pytz
+
+from edx_sga.utils import (
+    is_finalized_submission,
+    utcnow,
+)
+from edx_sga.tests.common import is_near_now
 
 
 @pytest.mark.parametrize(
@@ -19,3 +25,12 @@ from edx_sga.utils import is_finalized_submission
 def test_is_finalized_submission(submission_data, expected_value):
     """Test for is_finalized_submission"""
     assert is_finalized_submission(submission_data) is expected_value
+
+
+def test_utcnow():
+    """
+    tznow should return a datetime object in UTC
+    """
+    now = utcnow()
+    assert is_near_now(now)
+    assert now.tzinfo.zone == pytz.utc.zone

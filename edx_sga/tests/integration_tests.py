@@ -3,6 +3,7 @@
 Tests for SGA
 """
 import datetime
+import hashlib
 import json
 import tempfile
 from ddt import ddt, data  # pylint: disable=import-error
@@ -26,7 +27,13 @@ from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase  # lint-a
 from opaque_keys.edx.locations import Location  # lint-amnesty, pylint: disable=import-error
 
 from edx_sga.sga import StaffGradedAssignmentXBlock
-from edx_sga.tests.common import DummyResource, dummy_upload
+from edx_sga.tests.common import (
+    DummyResource,
+    dummy_upload,
+    get_sha1,
+    is_near_now,
+    parse_timestamp,
+)
 
 
 @ddt
@@ -418,6 +425,32 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
             )
             self.assertEqual(response.status_code, 404)
 
+    def test_staff_upload_annotated_state(self):
+        # pylint: disable=no-member
+        """
+        Test state recorded in the module state when staff_upload_annotated is called
+        """
+        block = self.make_one()
+        fred = self.make_student(block, "fred1")['module']
+
+        with dummy_upload('testa.txt') as (upload, _):
+            block.upload_assignment(mock.Mock(params={"assignment": upload}))
+        block.finalize_uploaded_assignment(mock.Mock(method="POST"))
+
+        with dummy_upload('testb.txt') as (upload, expected):
+            request = mock.Mock(params={
+                'annotated': upload,
+                'module_id': fred.id
+            })
+            resp = block.staff_upload_annotated(request)
+        assert resp.json == block.staff_grading_data()
+        state = json.loads(block.get_module_by_id(fred.id).state)
+        assert state['annotated_mimetype'] == 'text/plain'
+        parsed_date = parse_timestamp(state['annotated_timestamp'])
+        assert is_near_now(parsed_date)
+        assert state['annotated_filename'].endswith('testb.txt')
+        assert state['annotated_sha1'] == get_sha1(expected)
+
     def test_download_annotated(self):
         # pylint: disable=no-member
         """
@@ -546,27 +579,44 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
             filename="foo.txt",
             score=10,
             annotated_filename="foo_corrected.txt",
-            comment="Good work!")['module']
+            comment="Good work!")
         fred = self.make_student(
             block, "fred",
-            filename="bar.txt")['module']
+            filename="bar.txt")
         data = block.get_staff_grading_data(None).json_body  # lint-amnesty, pylint: disable=redefined-outer-name
         assignments = sorted(data['assignments'], key=lambda x: x['username'])
-        self.assertEqual(assignments[0]['module_id'], barney.id)
-        self.assertEqual(assignments[0]['username'], 'barney')
-        self.assertEqual(assignments[0]['fullname'], 'barney')
-        self.assertEqual(assignments[0]['filename'], 'foo.txt')
-        self.assertEqual(assignments[0]['score'], 10)
-        self.assertEqual(assignments[0]['annotated'], 'foo_corrected.txt')
-        self.assertEqual(assignments[0]['comment'], 'Good work!')
 
-        self.assertEqual(assignments[1]['module_id'], fred.id)
-        self.assertEqual(assignments[1]['username'], 'fred')
-        self.assertEqual(assignments[1]['fullname'], 'fred')
-        self.assertEqual(assignments[1]['filename'], 'bar.txt')
-        self.assertEqual(assignments[1]['score'], None)
-        self.assertEqual(assignments[1]['annotated'], u'')
-        self.assertEqual(assignments[1]['comment'], u'')
+        barney_assignment, fred_assignment = assignments
+
+        assert barney_assignment['module_id'] == barney['module'].id
+        assert barney_assignment['username'] == 'barney'
+        assert barney_assignment['fullname'] == 'barney'
+        assert barney_assignment['filename'] == 'foo.txt'
+        assert barney_assignment['score'] == 10
+        assert barney_assignment['annotated'] == 'foo_corrected.txt'
+        assert barney_assignment['comment'] == 'Good work!'
+        assert barney_assignment['approved'] is True
+        assert barney_assignment['finalized'] is True
+        assert barney_assignment['may_grade'] is False
+        assert barney_assignment['needs_approval'] is False
+        assert barney_assignment['student_id'] == barney['item'].student_id
+        assert barney_assignment['submission_id'] == barney['submission']['uuid']
+        assert is_near_now(parse_timestamp(barney_assignment['timestamp']))
+
+        assert fred_assignment['module_id'] == fred['module'].id
+        assert fred_assignment['username'] == 'fred'
+        assert fred_assignment['fullname'] == 'fred'
+        assert fred_assignment['filename'] == 'bar.txt'
+        assert fred_assignment['score'] is None
+        assert fred_assignment['annotated'] == u''
+        assert fred_assignment['comment'] == u''
+        assert fred_assignment['approved'] is False
+        assert fred_assignment['finalized'] is True
+        assert fred_assignment['may_grade'] is True
+        assert fred_assignment['needs_approval'] is False
+        assert fred_assignment['student_id'] == fred['item'].student_id
+        assert fred_assignment['submission_id'] == fred['submission']['uuid']
+        assert is_near_now(parse_timestamp(fred_assignment['timestamp']))
 
     @mock.patch('edx_sga.sga.log')
     def test_assert_logging_when_student_module_created(self, mocked_log):
