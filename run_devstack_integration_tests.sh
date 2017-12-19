@@ -41,5 +41,5 @@ pip freeze
 
 cd /edx/app/edxapp/edx-platform
 pytest lms/djangoapps/edx_sga/tests/integration_tests.py --cov-config /edx-sga/.coveragerc --cov ./lms/djangoapps
-coverage xml --rcfile /edx-sga/.coveragerc
+coverage xml --rcfile /edx-sga/.coveragerc -i
 codecov
