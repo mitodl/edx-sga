@@ -3,7 +3,6 @@
 Tests for SGA
 """
 import datetime
-import hashlib
 import json
 import tempfile
 from ddt import ddt, data  # pylint: disable=import-error
