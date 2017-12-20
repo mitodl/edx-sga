@@ -790,3 +790,14 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         )
         block = self.make_one()
         assert block.runtime_user_is_staff() is is_staff
+
+    @data(True, False)
+    def test_grace_period(self, has_grace_period):
+        block = self.make_one()
+
+        # Due date is slightly in the past
+        block.due = datetime.datetime.now(tz=pytz.utc) - datetime.timedelta(seconds=500)
+        if has_grace_period:
+            block.graceperiod = datetime.timedelta(days=1)
+
+        assert block.past_due() is not has_grace_period

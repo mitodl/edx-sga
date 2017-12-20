@@ -804,8 +804,20 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         Return whether due date has passed.
         """
         due = get_extended_due_date(self)
-        if due is not None:
-            return utcnow() > due
+        try:
+            graceperiod = self.graceperiod
+        except AttributeError:
+            # graceperiod and due are defined in InheritanceMixin
+            # It's used automatically in edX but the unit tests will need to mock it out
+            graceperiod = None
+
+        if graceperiod is not None and due:
+            close_date = due + graceperiod
+        else:
+            close_date = due
+
+        if close_date is not None:
+            return utcnow() > close_date
         return False
 
     def upload_allowed(self, submission_data=None):
