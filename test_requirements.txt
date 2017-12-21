@@ -22,3 +22,5 @@ pytest-pep8
 pytest-pylint==0.6.0
 six==1.11.0
 tox
+
+git+https://github.com/edx/xblock-utils.git@v1.0.5#egg=xblock-utils==1.0.5

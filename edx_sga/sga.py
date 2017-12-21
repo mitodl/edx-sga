@@ -37,10 +37,10 @@ from xblock.exceptions import JsonHandlerError  # lint-amnesty, pylint: disable=
 from xblock.fields import DateTime, Scope, String, Float, Integer  # lint-amnesty, pylint: disable=import-error
 from xblock.fragment import Fragment  # lint-amnesty, pylint: disable=import-error
 from xblockutils.studio_editable import StudioEditableXBlockMixin
-from xblockutils.show_answers import ShowAnswerXBlockMixin
 
 from xmodule.util.duedate import get_extended_due_date  # lint-amnesty, pylint: disable=import-error
 
+from edx_sga.showanswer import ShowAnswerXBlockMixin
 from edx_sga.tasks import (
     get_zip_file_path,
     zip_student_submissions
