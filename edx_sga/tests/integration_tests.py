@@ -7,7 +7,7 @@ import json
 import shutil
 import tempfile
 
-from ddt import ddt, data, unpack
+from ddt import ddt, data
 import mock
 import pytz
 
@@ -20,17 +20,12 @@ from submissions import api as submissions_api  # lint-amnesty, pylint: disable=
 from submissions.models import StudentItem  # lint-amnesty, pylint: disable=import-error
 from student.models import anonymous_id_for_user, UserProfile  # lint-amnesty, pylint: disable=import-error
 from student.tests.factories import AdminFactory  # lint-amnesty, pylint: disable=import-error
-from xblock.core import XBlock
 from xblock.field_data import DictFieldData
-from xblock.fields import Integer, String, DateTime
 from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disable=import-error
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory  # lint-amnesty, pylint: disable=import-error
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase  # lint-amnesty, pylint: disable=import-error
 from opaque_keys.edx.locations import Location  # lint-amnesty, pylint: disable=import-error
-from web_fragments.fragment import Fragment
 
-from edx_sga.constants import ShowAnswer
-from edx_sga.showanswer import ShowAnswerXBlockMixin
 from edx_sga.sga import StaffGradedAssignmentXBlock
 from edx_sga.tests.common import (
     DummyResource,
@@ -806,154 +801,3 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
             block.graceperiod = datetime.timedelta(days=1)
 
         assert block.past_due() is not has_grace_period
-
-
-class ShowAnswerXBlock(ShowAnswerXBlockMixin, XBlock):  # pylint: disable=abstract-method
-    """
-    A basic ShowAnswer XBlock implementation (for use in tests)
-    """
-    CATEGORY = 'showanswer'
-    STUDIO_LABEL = 'Show Answers'
-
-    color = String(default="red")
-    count = Integer(default=42)
-    comment = String(default="")
-    date = DateTime(default=datetime.datetime(2014, 5, 14, tzinfo=pytz.UTC))
-    editable_fields = ('color', 'count', 'comment', 'date')
-
-    def student_view(self, context):  # pylint: disable=unused-argument
-        """Just a placeholder"""
-        return Fragment()
-
-
-@ddt
-class TestShowAnswerXBlock(ModuleStoreTestCase):
-    """
-    Unit tests for ShowAnswerXBlockMixin
-    """
-    def setUp(self):
-        super(TestShowAnswerXBlock, self).setUp()
-        course = CourseFactory.create(org='foo', number='bar', display_name='baz')
-        descriptor = ItemFactory(category="pure", parent=course)
-        self.course_id = course.id
-        self.instructor = StaffFactory.create(course_key=self.course_id)
-        self.student_data = mock.Mock()
-        self.runtime, _ = render.get_module_system_for_user(
-            self.instructor,
-            self.student_data,
-            descriptor,
-            course.id,
-            mock.Mock(),
-            mock.Mock(),
-            mock.Mock(),
-            course=course
-        )
-
-    def get_root(self, **kwargs):
-        """Get the root block"""
-        return ShowAnswerXBlock(self.runtime, DictFieldData(kwargs), mock.Mock())
-
-    @data(*[
-        [True, True, True],
-        [True, False, False],
-        [False, True, True],
-        [False, False, True],
-    ])
-    @unpack
-    def test_closed(self, can_attempt, past_due, expected):
-        """
-        Assert possible values for closed()
-        """
-        block = self.get_root()
-        with mock.patch.object(
-            ShowAnswerXBlock, 'can_attempt', return_value=can_attempt,
-        ), mock.patch.object(
-            ShowAnswerXBlock, 'is_past_due', return_value=past_due,
-        ):
-            assert block.closed() is expected
-
-    def test_answer_available_no_correctness(self):
-        """
-        If no correctness is available, the answer is not available
-        """
-        block = self.get_root()
-        with mock.patch.object(
-            ShowAnswerXBlock, 'correctness_available', return_value=False
-        ):
-            assert block.answer_available() is False
-
-    def test_answer_available_user_is_staff(self):
-        """
-        If user is staff and correctness is available, the answer is available
-        """
-        block = self.get_root()
-        self.runtime.user_is_staff = True
-        with mock.patch.object(
-            ShowAnswerXBlock, 'correctness_available', return_value=True
-        ), mock.patch.object(
-            ShowAnswerXBlock, 'runtime_user_is_staff', return_value=True,
-        ):
-            assert block.answer_available() is True
-
-    @data(*[
-        ['', {}, False],
-        [ShowAnswer.NEVER, {}, False],
-        [ShowAnswer.ATTEMPTED, {}, False],
-        [ShowAnswer.ATTEMPTED, {'has_attempted': True}, True],
-        [ShowAnswer.ANSWERED, {}, False],
-        [ShowAnswer.ANSWERED, {'is_correct': True}, True],
-        [ShowAnswer.CLOSED, {}, False],
-        [ShowAnswer.CLOSED, {'closed': True}, True],
-        [ShowAnswer.FINISHED, {}, False],
-        [ShowAnswer.FINISHED, {'closed': True}, True],
-        [ShowAnswer.FINISHED, {'is_correct': True}, True],
-        [ShowAnswer.FINISHED, {'closed': True, 'is_correct': True}, True],
-        [ShowAnswer.CORRECT_OR_PAST_DUE, {}, False],
-        [ShowAnswer.CORRECT_OR_PAST_DUE, {'is_correct': True}, True],
-        [ShowAnswer.CORRECT_OR_PAST_DUE, {'is_past_due': True}, True],
-        [ShowAnswer.CORRECT_OR_PAST_DUE, {'is_correct': True, 'is_past_due': True}, True],
-        [ShowAnswer.PAST_DUE, {}, False],
-        [ShowAnswer.PAST_DUE, {'is_past_due': True}, True],
-        [ShowAnswer.ALWAYS, {}, True],
-        ['unexpected', {}, False],
-    ])
-    @unpack
-    def test_answer_available_showanswer(self, showanswer, properties, expected):
-        """
-        Try different values of showanswer and assert answer_available()
-        """
-        block = self.get_root()
-        block.showanswer = showanswer
-        with mock.patch.object(
-            ShowAnswerXBlock, 'correctness_available', return_value=True,
-        ), mock.patch.object(
-            ShowAnswerXBlock, 'runtime_user_is_staff', return_value=False,
-        ), mock.patch.object(
-            ShowAnswerXBlock, 'has_attempted', return_value=properties.get('has_attempted', False),
-        ), mock.patch.object(
-            ShowAnswerXBlock, 'is_correct', return_value=properties.get('is_correct', False),
-        ), mock.patch.object(
-            ShowAnswerXBlock, 'closed', return_value=properties.get('closed', False),
-        ), mock.patch.object(
-            ShowAnswerXBlock, 'is_past_due', return_value=properties.get('is_past_due', False),
-        ):
-            assert block.answer_available() is expected
-
-    def test_defaults(self):
-        """
-        Assert defaults
-        """
-        block = self.get_root()
-        assert block.solution == ''
-        assert block.showanswer == ShowAnswer.PAST_DUE
-
-    def test_fields(self):
-        """
-        Assert field overrides
-        """
-        block = self.get_root(
-            solution="The solution",
-            showanswer=ShowAnswer.ANSWERED,
-        )
-        assert block.solution == 'The solution'
-        assert block.showanswer == ShowAnswer.ANSWERED

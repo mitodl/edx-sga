@@ -26,6 +26,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'workbench',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -83,3 +84,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 TECH_SUPPORT_EMAIL = 'support@example.com'
+
+
+# For xblock-sdk workbench
+WORKBENCH = {}
