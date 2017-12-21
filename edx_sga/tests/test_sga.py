@@ -13,7 +13,9 @@ import uuid
 
 import mock
 import pkg_resources
+import pytest
 import pytz
+from workbench.runtime import WorkbenchRuntime
 
 try:
     # Python 2
@@ -24,6 +26,7 @@ except ImportError:
 
 from ddt import ddt, data, unpack  # pylint: disable=import-error
 from django.conf import settings  # lint-amnesty, pylint: disable=import-error
+from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.utils.timezone import now as django_now  # pylint: disable=import-error
 from opaque_keys.edx.locations import Location  # lint-amnesty, pylint: disable=import-error
@@ -36,6 +39,9 @@ from edx_sga.tests.common import DummyResource, dummy_upload
 
 SHA1 = 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
 UUID = '8c4b765745f746f7a128470842211601'
+
+
+pytestmark = pytest.mark.django_db  # pylint: disable=invalid-name
 
 
 def fake_get_submission(**kwargs):
@@ -71,6 +77,22 @@ def fake_student_module():
         state='{"display_name": "Staff Graded Assignment"}',
         save=mock.Mock()
     )
+
+
+class FakeWorkbenchRuntime(WorkbenchRuntime):
+    """Override for testing purposes"""
+
+    anonymous_student_id = 'MOCK'
+    user_is_staff = True
+
+    def __init__(self, *args, **kwargs):
+        super(FakeWorkbenchRuntime, self).__init__(*args, **kwargs)
+
+        User.objects.create(username=self.anonymous_student_id)
+
+    def get_real_user(self, username):
+        """Get the real user"""
+        return User.objects.get(username=username)
 
 
 @ddt
@@ -115,7 +137,7 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
         self.addCleanup(patcher.stop)
 
         self.course_id = CourseLocator(org='foo', course='baz', run='bar')
-        self.runtime = mock.Mock(anonymous_student_id='MOCK')
+        self.runtime = FakeWorkbenchRuntime()
         self.scope_ids = mock.Mock()
         self.staff = mock.Mock(return_value={
             "password": "test",

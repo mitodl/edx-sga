@@ -42,12 +42,15 @@ class TestShowAnswerXBlock(TestCase):
     Unit tests for ShowAnswerXBlockMixin
     """
 
-    # pylint: disable=attribute-defined-outside-init
+    def setUp(self):
+        super(TestShowAnswerXBlock, self).setUp()
+
+        self.runtime = WorkbenchRuntime()
+
     def get_root(self):
         """Create an xblock block with a ShowAnswerXBlockMixin"""
-        self.runtime = WorkbenchRuntime()
-        self.root_id = self.runtime.parse_xml_string('<showanswer />')
-        return self.runtime.get_block(self.root_id)
+        root_id = self.runtime.parse_xml_string('<showanswer />')
+        return self.runtime.get_block(root_id)
 
     @ddt.data(*[
         [True, True, True],
