@@ -158,7 +158,7 @@ Course Authoring in edX Studio
 +----------------+--------------------------------------------------------------------------+
 | display_name   | The name appears in the horizontal navigation at the top of the page     |
 +----------------+--------------------------------------------------------------------------+
-| Maximum Score  | Maximum grade score given to assignment by staff                         |
+| Maximum Score  | Maximum grade score given to assignment by staff (an integer)            |
 +----------------+--------------------------------------------------------------------------+
 | Problem Weight | Defines the number of points each problem is worth.                      |
 +----------------+--------------------------------------------------------------------------+
@@ -180,7 +180,7 @@ above. It is recommended to also include a url_name attribute. For example:
 .. code:: XML
 
         <vertical display_name="Staff Graded Assignment">
-            <edx_sga url_name="sga_example" weight="10.0" display_name="SGA Example" points="100.0" />
+            <edx_sga url_name="sga_example" weight="10.0" display_name="SGA Example" points="100" />
         </vertical>
 
 
