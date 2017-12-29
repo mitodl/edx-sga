@@ -1,0 +1,4 @@
+<course advanced_modules="[&quot;edx_sga&quot;, &quot;annotatable&quot;]" cert_html_view_enabled="true" display_name="SGA Course" graceperiod="2 days" instructor_info="{&quot;instructors&quot;: []}" language="en" learning_info="[]" minimum_grade_credit="0.8" start="&quot;2015-01-01T00:00:00+00:00&quot;">
+  <chapter url_name="chapter"/>
+  <wiki slug="SGAU.SGA101.2017_SGA"/>
+</course>

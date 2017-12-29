@@ -1,0 +1,7 @@
+<vertical display_name="SGA Unit">
+    <edx_sga url_name="edx_sga" xblock-family="xblock.v1" display_name="SGA Test 1">
+        <solution>
+            <p>You're seeing the answer</p>
+        </solution>
+    </edx_sga>
+</vertical>

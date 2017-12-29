@@ -1,0 +1,55 @@
+{
+    "course/course": {
+        "advanced_modules": [
+            "edx_sga", 
+            "annotatable"
+        ], 
+        "cert_html_view_enabled": true, 
+        "discussion_topics": {
+            "General": {
+                "id": "course"
+            }
+        }, 
+        "display_name": "SGA Course", 
+        "graceperiod": "2 days", 
+        "instructor_info": {
+            "instructors": []
+        }, 
+        "language": "en", 
+        "learning_info": [], 
+        "minimum_grade_credit": 0.8, 
+        "start": "2015-01-01T00:00:00Z", 
+        "tabs": [
+            {
+                "course_staff_only": false, 
+                "name": "Home", 
+                "type": "course_info"
+            }, 
+            {
+                "course_staff_only": false, 
+                "name": "Course", 
+                "type": "courseware"
+            }, 
+            {
+                "course_staff_only": false, 
+                "name": "Textbooks", 
+                "type": "textbooks"
+            }, 
+            {
+                "course_staff_only": false, 
+                "name": "Discussion", 
+                "type": "discussion"
+            }, 
+            {
+                "course_staff_only": false, 
+                "name": "Wiki", 
+                "type": "wiki"
+            }, 
+            {
+                "course_staff_only": false, 
+                "name": "Progress", 
+                "type": "progress"
+            }
+        ]
+    }
+}

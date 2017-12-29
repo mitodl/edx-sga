@@ -22,6 +22,7 @@ from django.template import Context, Template  # lint-amnesty, pylint: disable=i
 from django.utils.encoding import force_text  # pylint: disable=import-error
 from django.utils.timezone import now as django_now  # pylint: disable=import-error
 from django.utils.translation import ugettext_lazy as _  # pylint: disable=import-error
+from lxml import etree
 
 from courseware.models import StudentModule  # lint-amnesty, pylint: disable=import-error
 from student.models import user_by_anonymous_id  # lint-amnesty, pylint: disable=import-error
@@ -34,7 +35,7 @@ from submissions.models import (
 from webob.response import Response
 from xblock.core import XBlock  # lint-amnesty, pylint: disable=import-error
 from xblock.exceptions import JsonHandlerError  # lint-amnesty, pylint: disable=import-error
-from xblock.fields import DateTime, Scope, String, Float, Integer  # lint-amnesty, pylint: disable=import-error
+from xblock.fields import DateTime, Scope, String, Float, Integer, JSONField  # lint-amnesty, pylint: disable=import-error
 from xblock.fragment import Fragment  # lint-amnesty, pylint: disable=import-error
 from xblockutils.studio_editable import StudioEditableXBlockMixin
 
@@ -149,6 +150,47 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         default=None,
         help=_("When the annotated file was uploaded")
     )
+
+    @classmethod
+    def parse_xml(cls, node, runtime, keys, id_generator):
+        """
+        Override default serialization to handle <solution /> elements
+        """
+        block = runtime.construct_xblock_from_class(cls, keys)
+
+        for child in node:
+            if child.tag == "solution":
+                block.solution = ''
+                # convert child elements of <solution> into HTML for display
+                for subchild in child:
+                    block.solution += etree.tostring(subchild)
+
+        # Attributes become fields.
+        # Note that a solution attribute here will override any solution XML element
+        for name, value in node.items():  # lxml has no iteritems
+            cls._set_field_if_present(block, name, value, {})
+
+        return block
+
+    def add_xml_to_node(self, node):
+        """
+        For exporting, set data on `node` from ourselves.
+        """
+        super(StaffGradedAssignmentXBlock, self).add_xml_to_node(node)
+
+        if 'solution' in node.attrib:
+            # Try outputting it as an XML element if we can
+            solution = node.attrib.get('solution')
+            wrapped = "<solution>{}</solution>".format(solution)
+            try:
+                child = etree.fromstring(wrapped)
+            except:
+                # Parsing exception, leave the solution as an attribute
+                pass
+            else:
+                node.append(child)
+                del node.attrib['solution']
+
 
     @XBlock.json_handler
     def save_sga(self, data, suffix=''):
