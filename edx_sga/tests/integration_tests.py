@@ -10,8 +10,8 @@ import tempfile
 
 from ddt import ddt, data, unpack
 import mock
-from lxml import etree
 from opaque_keys.edx.locator import CourseLocator
+from opaque_keys.edx.locations import Location  # lint-amnesty, pylint: disable=import-error
 import pytz
 
 from courseware import module_render as render  # lint-amnesty, pylint: disable=import-error
@@ -29,7 +29,6 @@ from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory  # li
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase  # lint-amnesty, pylint: disable=import-error
 from xmodule.modulestore.xml_importer import import_course_from_xml  # lint-amnesty, pylint: disable=import-error
 from xmodule.modulestore.xml_exporter import export_course_to_xml  # lint-amnesty, pylint: disable=import-error
-from opaque_keys.edx.locations import Location  # lint-amnesty, pylint: disable=import-error
 
 from edx_sga.constants import ShowAnswer
 from edx_sga.sga import StaffGradedAssignmentXBlock
@@ -813,20 +812,19 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         """Create a test vertical with an SGA unit inside"""
         attrs = 'solution="&lt;p&gt;Broken xml"' if solution_as_attribute else ''
 
-        if solution_as_element:
-            return """<vertical display_name="SGA Unit">
+        return (
+            """<vertical display_name="SGA Unit">
               <edx_sga url_name="edx_sga" xblock-family="xblock.v1" display_name="SGA Test 1" {attrs}>
                 <solution>
                   <p>You're seeing the answer</p>
                 </solution>
               </edx_sga>
             </vertical>""".format(attrs=attrs)
-        else:
-            return """<vertical display_name="SGA Unit">
-                <edx_sga 
-                url_name="edx_sga" xblock-family="xblock.v1" 
-                display_name="SGA Test 1" {attrs} />
+        ) if solution_as_element else (
+            """<vertical display_name="SGA Unit">
+                <edx_sga url_name="edx_sga" xblock-family="xblock.v1" display_name="SGA Test 1" {attrs} />
             </vertical>""".format(attrs=attrs)
+        )
 
     def import_test_course(self, solution_as_attribute, solution_as_element):
         """

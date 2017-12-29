@@ -35,7 +35,7 @@ from submissions.models import (
 from webob.response import Response
 from xblock.core import XBlock  # lint-amnesty, pylint: disable=import-error
 from xblock.exceptions import JsonHandlerError  # lint-amnesty, pylint: disable=import-error
-from xblock.fields import DateTime, Scope, String, Float, Integer, JSONField  # lint-amnesty, pylint: disable=import-error
+from xblock.fields import DateTime, Scope, String, Float, Integer  # lint-amnesty, pylint: disable=import-error
 from xblock.fragment import Fragment  # lint-amnesty, pylint: disable=import-error
 from xblockutils.studio_editable import StudioEditableXBlockMixin
 
@@ -184,13 +184,12 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
             wrapped = "<solution>{}</solution>".format(solution)
             try:
                 child = etree.fromstring(wrapped)
-            except:
+            except:  # pylint: disable=bare-except
                 # Parsing exception, leave the solution as an attribute
                 pass
             else:
                 node.append(child)
                 del node.attrib['solution']
-
 
     @XBlock.json_handler
     def save_sga(self, data, suffix=''):
