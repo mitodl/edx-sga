@@ -174,7 +174,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
 
     def add_xml_to_node(self, node):
         """
-        For exporting, set data on `node` from ourselves.
+        Override default serialization to output solution field as a separate child element.
         """
         super(StaffGradedAssignmentXBlock, self).add_xml_to_node(node)
 
