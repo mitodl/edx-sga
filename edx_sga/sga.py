@@ -160,10 +160,8 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
 
         for child in node:
             if child.tag == "solution":
-                block.solution = ''
                 # convert child elements of <solution> into HTML for display
-                for subchild in child:
-                    block.solution += etree.tostring(subchild)
+                block.solution = ''.join(etree.tostring(subchild) for subchild in child)
 
         # Attributes become fields.
         # Note that a solution attribute here will override any solution XML element
