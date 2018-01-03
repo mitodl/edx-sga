@@ -121,6 +121,8 @@ class StaffGradedAssignmentMockedTests(unittest.TestCase):
                 for module in ('courseware', 'lms', 'student', 'xmodule'):
                     if name.startswith("{}.".format(module)) or name == module:
                         return mock.Mock()
+                if name == 'safe_lxml':
+                    return real_import('lxml', *args, **kwargs)
                 raise
         builtins.__import__ = fake_import
 
