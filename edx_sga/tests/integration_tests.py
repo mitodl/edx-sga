@@ -2,6 +2,7 @@
 """
 Tests for SGA
 """
+import cgi
 import datetime
 import json
 import os
@@ -808,25 +809,20 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
 
         assert block.past_due() is not has_grace_period
 
-    def make_test_vertical(self, solution_as_attribute, solution_as_element):
+    def make_test_vertical(self, solution_attribute=None, solution_element=None):
         """Create a test vertical with an SGA unit inside"""
-        attrs = 'solution="&lt;p&gt;Broken xml"' if solution_as_attribute else ''
+        solution_attribute = 'solution="{}"'.format(cgi.escape(solution_attribute)) if solution_attribute else ''
+        solution_element = '<solution>{}</solution>'.format(solution_element) if solution_element else ''
 
         return (
             """<vertical display_name="SGA Unit">
-              <edx_sga url_name="edx_sga" xblock-family="xblock.v1" display_name="SGA Test 1" {attrs}>
-                <solution>
-                  <p>You're seeing the answer</p>
-                </solution>
+              <edx_sga url_name="edx_sga" xblock-family="xblock.v1" display_name="SGA Test 1" {solution_attribute}>
+                {solution_element}
               </edx_sga>
-            </vertical>""".format(attrs=attrs)
-        ) if solution_as_element else (
-            """<vertical display_name="SGA Unit">
-                <edx_sga url_name="edx_sga" xblock-family="xblock.v1" display_name="SGA Test 1" {attrs} />
-            </vertical>""".format(attrs=attrs)
+            </vertical>""".format(solution_attribute=solution_attribute, solution_element=solution_element)
         )
 
-    def import_test_course(self, solution_as_attribute, solution_as_element):
+    def import_test_course(self, solution_attribute=None, solution_element=None):
         """
         Import the test course with the sga unit
         """
@@ -835,7 +831,7 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         xml_dir = os.path.join(root, "test_data")
 
         with open(os.path.join(xml_dir, "2017_SGA", "vertical", "vertical.xml"), "w") as f:
-            f.write(self.make_test_vertical(solution_as_attribute, solution_as_element))
+            f.write(self.make_test_vertical(solution_attribute, solution_element))
 
         store = modulestore()
         import_course_from_xml(
@@ -847,36 +843,31 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         return store.get_course(CourseLocator.from_string('SGAU/SGA101/course'))
 
     @data(*[
-        [True, True],
-        [True, False],
-        [False, True],
-        [False, False],
+        ['<p>Broken xml', "<p>You're seeing the answer</p>", '<p>Broken xml'],
+        ['<p>Broken xml', None, '<p>Broken xml'],
+        [None, "<p>You're seeing the answer</p>", "<p>You're seeing the answer</p>"],
+        [None, None, ''],
     ])
     @unpack
-    def test_import(self, solution_as_attribute, solution_as_element):
+    def test_import(self, solution_attribute_value, solution_element_value, expected_solution_text):
         """Import the test course with the SGA module"""
-        course = self.import_test_course(solution_as_attribute, solution_as_element)
+        course = self.import_test_course(solution_attribute_value, solution_element_value)
         sga = course.get_children()[0].get_children()[0].get_children()[0].get_children()[0]
-
-        if solution_as_attribute:
-            expected_solution = "<p>Broken xml"
-        elif solution_as_element:
-            expected_solution = "<p>You're seeing the answer</p>"
-        else:
-            expected_solution = ''
-        assert sga.solution == expected_solution
+        assert expected_solution_text in sga.solution
         assert sga.showanswer == ShowAnswer.PAST_DUE
 
     @data(*[
-        [True, True],
-        [True, False],
-        [False, True],
-        [False, False],
+        ['<p>Broken xml', "<p>You're seeing the answer</p>", '<p>Broken xml', None],
+        ['<p>Broken xml', None, '<p>Broken xml', None],
+        [None, "<p>You're seeing the answer</p>", None, "<p>You're seeing the answer</p>"],
+        [None, None, None, None],
     ])
     @unpack
-    def test_export(self, solution_as_attribute, solution_as_element):
+    def test_export(
+            self, solution_attribute_value, solution_element_value,
+            expected_solution_attribute_value, expected_solution_element_value):
         """Export the test course with the SGA module"""
-        course = self.import_test_course(solution_as_attribute, solution_as_element)
+        course = self.import_test_course(solution_attribute_value, solution_element_value)
 
         temp_dir = tempfile.mkdtemp()
         self.addCleanup(lambda: shutil.rmtree(temp_dir))
@@ -887,11 +878,8 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         with open(os.path.join(temp_dir, "2017_SGA", "vertical", "vertical.xml")) as f:
             content = f.read()
 
+        # If both are true the expected output should only have the attribute, since it took precedence
+        # and the attribute contents are broken XML
         assert reformat_xml(content) == reformat_xml(
-            self.make_test_vertical(
-                solution_as_attribute,
-                # If both are true the expected output should only have the attribute, since it took precedence
-                # and the attribute contents are broken XML
-                solution_as_element if not solution_as_attribute else False,
-            )
+            self.make_test_vertical(expected_solution_attribute_value, expected_solution_element_value)
         )

@@ -78,4 +78,14 @@ def reformat_xml(xml_string):
     """
     Parse and render the XML to remove whitespace differences
     """
-    return etree.tostring(etree.fromstring(xml_string), pretty_print=True)
+    parser = etree.XMLParser(remove_blank_text=True)
+    root = etree.XML(xml_string, parser=parser)
+
+    # Remove whitespace
+    for elem in root.iter('*'):
+        if elem.text is not None:
+            elem.text = elem.text.strip()
+            if not elem.text:
+                elem.text = None
+
+    return etree.tostring(root)
