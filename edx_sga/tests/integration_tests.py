@@ -828,7 +828,13 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         """
         # adapted from edx-platform/cms/djangoapps/contentstore/management/commands/tests/test_cleanup_assets.py
         root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        xml_dir = os.path.join(root, "test_data")
+        input_dir = os.path.join(root, "test_data")
+
+        temp_dir = tempfile.mkdtemp()
+        self.addCleanup(lambda: shutil.rmtree(temp_dir))
+
+        xml_dir = os.path.join(temp_dir, "xml")
+        shutil.copytree(input_dir, xml_dir)
 
         with open(os.path.join(xml_dir, "2017_SGA", "vertical", "vertical.xml"), "w") as f:
             f.write(self.make_test_vertical(solution_attribute, solution_element))
