@@ -871,7 +871,7 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
     @unpack
     def test_export(
             self, solution_attribute_value, solution_element_value,
-            expected_solution_attribute_value, expected_solution_element_value):
+            expected_solution_attribute, expected_solution_element):
         """Export the test course with the SGA module"""
         course = self.import_test_course(solution_attribute_value, solution_element_value)
 
@@ -887,5 +887,5 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         # If both are true the expected output should only have the attribute, since it took precedence
         # and the attribute contents are broken XML
         assert reformat_xml(content) == reformat_xml(
-            self.make_test_vertical(expected_solution_attribute_value, expected_solution_element_value)
+            self.make_test_vertical(expected_solution_attribute, expected_solution_element)
         )
