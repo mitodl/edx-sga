@@ -752,6 +752,13 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         ):
             assert block.student_state()['solution'] == ('A solution' if is_answer_available else '')
 
+    def test_base_asset_url(self):
+        """
+        The base asset url for the course should be passed to the javascript so it can replace static links
+        """
+        block = self.make_one(solution='A solution')
+        assert block.student_state()['base_asset_url'] == '/c4x/foo/bar/asset/'
+
     def test_correctness_available(self):
         """
         Correctness should always be available
