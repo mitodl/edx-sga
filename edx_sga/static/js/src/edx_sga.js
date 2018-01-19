@@ -24,37 +24,11 @@ function StaffGradedAssignmentXBlock(runtime, element) {
           'Started preparing student submissions zip file. This may take a while.'
         );
 
-        // Utility method for replacing a portion of a string.
-        // copied from edx-platform/common/static/js/src/utility.js
-        function rewriteStaticLinks(content, from, to) {
-            if (from === null || to === null) {
-                return content;
-            }
-            // replace only relative urls
-            function replacer(match) {
-                if (match === from) {
-                    return to;
-                } else {
-                    return match;
-                }
-            }
-
-            // change all relative urls only which may be embedded inside other tags in content.
-            // handle http and https
-            // escape all regex interpretable chars
-            var fromRe = from.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-            var regex = new RegExp('(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}([-a-zA-Z0-9@:%_\+.~#?&//=]*))?' + fromRe, 'g');
-            return content.replace(regex, replacer);
-        }
-
         function render(state) {
             // Add download urls to template context
             state.downloadUrl = downloadUrl;
             state.annotatedUrl = annotatedUrl;
             state.error = state.error || false;
-            if (state.solution) {
-              state.solution = rewriteStaticLinks(state.solution, "/static/", state.base_asset_url);
-            }
 
             // Render template
             var content = $(element).find('#sga-content').html(template(state));

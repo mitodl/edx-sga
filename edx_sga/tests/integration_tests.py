@@ -25,6 +25,7 @@ from submissions.models import StudentItem  # lint-amnesty, pylint: disable=impo
 from student.models import anonymous_id_for_user, UserProfile  # lint-amnesty, pylint: disable=import-error
 from student.tests.factories import AdminFactory  # lint-amnesty, pylint: disable=import-error
 from xblock.field_data import DictFieldData
+from xblock.fields import ScopeIds
 from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disable=import-error
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory  # lint-amnesty, pylint: disable=import-error
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase  # lint-amnesty, pylint: disable=import-error
@@ -54,23 +55,13 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         engine for use in all tests
         """
         super(StaffGradedAssignmentXblockTests, self).setUp()
-        course = CourseFactory.create(org='foo', number='bar', display_name='baz')
-        descriptor = ItemFactory(category="pure", parent=course)
-        self.course_id = course.id
+        self.course = CourseFactory.create(org='foo', number='bar', display_name='baz')
+        self.descriptor = ItemFactory(category="pure", parent=self.course)
+        self.course_id = self.course.id
         self.instructor = StaffFactory.create(course_key=self.course_id)
         self.student_data = mock.Mock()
-        self.runtime, _ = render.get_module_system_for_user(
-            self.instructor,
-            self.student_data,
-            descriptor,
-            course.id,
-            mock.Mock(),
-            mock.Mock(),
-            mock.Mock(),
-            course=course
-        )
-
-        self.scope_ids = mock.Mock()
+        self.runtime = self.make_runtime()
+        self.scope_ids = self.make_scope_ids(self.runtime)
 
         tmp = tempfile.mkdtemp()
         self.addCleanup(lambda: shutil.rmtree(tmp))
@@ -80,6 +71,38 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
         self.addCleanup(updated_settings_decorator.disable)
 
         self.staff = AdminFactory.create(password="test")
+
+    def make_runtime(self, **kwargs):
+        """
+        Make a runtime
+        """
+        runtime, _ = render.get_module_system_for_user(
+            self.instructor,
+            self.student_data,
+            self.descriptor,
+            self.course.id,
+            mock.Mock(),
+            mock.Mock(),
+            mock.Mock(),
+            course=self.course,
+            # not sure why this isn't working, if set to true it looks for
+            # 'display_name_with_default_escaped' field that doesn't exist in SGA
+            wrap_xmodule_display=False,
+            **kwargs
+        )
+
+        return runtime
+
+    def make_scope_ids(self, runtime):
+        """
+        Make scope ids
+        """
+        # Not sure if this is a valid block type, might be sufficient for testing purposes
+        block_type = 'sga'
+        def_id = runtime.id_generator.create_definition(block_type)
+        return ScopeIds(
+            'user', block_type, def_id, self.descriptor.location
+        )
 
     def make_one(self, display_name=None, **kw):
         """
@@ -93,7 +116,6 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
 
         block.xmodule_runtime = self.runtime
         block.course_id = self.course_id
-        block.scope_ids.usage_id = "i4x://foo/bar/category/name"
         block.category = 'problem'
 
         if display_name:
@@ -751,6 +773,27 @@ class StaffGradedAssignmentXblockTests(ModuleStoreTestCase):
             return_value=is_answer_available,
         ):
             assert block.student_state()['solution'] == ('A solution' if is_answer_available else '')
+
+    @data(True, False)
+    def test_replace_url(self, has_static_asset_path):
+        """
+        If the static asset path is set on a course, it should be substituted when the course is rendered
+        """
+        # make a runtime with a static asset path, which will override the base_asset_url
+
+        static_asset_path = '/a/different/static/asset/path'
+        if has_static_asset_path:
+            self.runtime = self.make_runtime(static_asset_path=static_asset_path)
+            self.scope_ids = self.make_scope_ids(self.runtime)
+
+        block = self.make_one(
+            solution='<a href="/static/test.pdf">A PDF</a>',
+            showanswer=ShowAnswer.ALWAYS,
+        )
+        solution = block.student_state()['solution']
+        assert '<a href="{}/test.pdf">A PDF</a>'.format(
+            static_asset_path if has_static_asset_path else '/c4x/foo/bar/asset'
+        ) == solution
 
     def test_base_asset_url(self):
         """

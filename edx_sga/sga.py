@@ -678,6 +678,11 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         else:
             graded = None
 
+        if self.answer_available():
+            solution = self.runtime.replace_urls(force_text(self.solution))
+        else:
+            solution = ''
+
         return {
             "display_name": force_text(self.display_name),
             "uploaded": uploaded,
@@ -685,7 +690,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
             "graded": graded,
             "max_score": self.max_score(),
             "upload_allowed": self.upload_allowed(submission_data=submission),
-            "solution": force_text(self.solution) if self.answer_available() else '',
+            "solution": solution,
             "base_asset_url": StaticContent.get_base_url_path_for_course_assets(self.location.course_key),
         }
 
