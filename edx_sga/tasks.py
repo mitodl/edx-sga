@@ -1,13 +1,11 @@
 """celery async tasks"""
 import zipfile
 import hashlib
-from io import BytesIO
 import logging
 import os
-import shutil
+import tempfile
 
 from django.core.files.storage import default_storage  # lint-amnesty, pylint: disable=import-error
-from django.core.files.base import ContentFile  # lint-amnesty, pylint: disable=import-error
 
 from lms import CELERY_APP  # pylint: disable=no-name-in-module, import-error
 from submissions import api as submissions_api  # lint-amnesty, pylint: disable=import-error
@@ -15,7 +13,7 @@ from student.models import user_by_anonymous_id  # lint-amnesty, pylint: disable
 from opaque_keys.edx.locator import BlockUsageLocator
 
 from edx_sga.utils import get_file_storage_path
-from edx_sga.constants import BLOCK_SIZE, ITEM_TYPE
+from edx_sga.constants import ITEM_TYPE
 
 
 log = logging.getLogger(__name__)
@@ -61,21 +59,31 @@ def _compress_student_submissions(zip_file_path, block_id, course_id, locator):
     student_submissions = _get_student_submissions(block_id, course_id, locator)
     if not student_submissions:
         return
-    # Build the zip file in memory
-    zip_file_bytes = BytesIO()
-    with zipfile.ZipFile(zip_file_bytes, 'w') as zip_pointer:
-        for student_username, submission_file_path in student_submissions:
-            with default_storage.open(submission_file_path, 'rb') as destination_file:
-                filename_in_zip = '{}_{}'.format(
+
+    log.info("Compressing %d student submissions to path: %s ", len(student_submissions), zip_file_path)
+    # Build the zip file in memory using temporary file wrapper specialized to switch
+    # from StringIO to a real file when it exceeds a certain size or when a fileno is needed.
+    with tempfile.SpooledTemporaryFile() as tmp:
+        with zipfile.ZipFile(tmp, 'w', compression=zipfile.ZIP_DEFLATED) as zip_pointer:
+            for student_username, submission_file_path in student_submissions:
+                log.info(
+                    "Creating zip file for student: %s, submission path: %s ",
                     student_username,
-                    os.path.basename(submission_file_path)
+                    submission_file_path
                 )
-                zip_pointer.writestr(filename_in_zip, destination_file.read())
-    zip_file_bytes.seek(0)
-    # Write the bytes of the in-memory zip file to an actual file
-    default_storage.save(zip_file_path, ContentFile(b''))
-    with default_storage.open(zip_file_path, 'wb') as zip_file_pointer:
-        shutil.copyfileobj(zip_file_bytes, zip_file_pointer, length=BLOCK_SIZE)
+                with default_storage.open(submission_file_path, 'rb') as destination_file:
+                    filename_in_zip = '{}_{}'.format(
+                        student_username,
+                        os.path.basename(submission_file_path)
+                    )
+                    zip_pointer.writestr(filename_in_zip, destination_file.read())
+        # Reset file pointer
+        tmp.seek(0)
+        # Write the bytes of the in-memory zip file to an actual file
+        log.info(
+            "Moving zip file from memory to storage at path: %s ", zip_file_path
+        )
+        default_storage.save(zip_file_path, tmp)
 
 
 @CELERY_APP.task
@@ -91,7 +99,9 @@ def zip_student_submissions(course_id, block_id, locator_unicode, username):
     """
     locator = BlockUsageLocator.from_string(locator_unicode)
     zip_file_path = get_zip_file_path(username, course_id, block_id, locator)
+    log.info("Creating zip file for course: %s at path: %s", locator, zip_file_path)
     if default_storage.exists(zip_file_path):
+        log.info("Deleting already-existing zip file at path: %s", zip_file_path)
         default_storage.delete(zip_file_path)
     _compress_student_submissions(
         zip_file_path,

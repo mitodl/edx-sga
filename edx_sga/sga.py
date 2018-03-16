@@ -5,6 +5,7 @@ and invited to upload a file which is then graded by staff.
 import json
 import logging
 import mimetypes
+import os
 
 import pkg_resources
 import pytz
@@ -147,6 +148,25 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
     )
 
     @classmethod
+    def student_upload_max_size(cls):
+        """
+        returns max file size limit in system
+        """
+        return getattr(
+            settings,
+            "STUDENT_FILEUPLOAD_MAX_SIZE",
+            cls.STUDENT_FILEUPLOAD_MAX_SIZE
+        )
+
+    @classmethod
+    def file_size_over_limit(cls, file_obj):
+        """
+        checks if file size is under limit.
+        """
+        file_obj.seek(0, os.SEEK_END)
+        return file_obj.tell() > cls.student_upload_max_size()
+
+    @classmethod
     def parse_xml(cls, node, runtime, keys, id_generator):
         """
         Override default serialization to handle <solution /> elements
@@ -221,17 +241,24 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
 
     @XBlock.handler
     def upload_assignment(self, request, suffix=''):
-        # pylint: disable=unused-argument
+        # pylint: disable=unused-argument, protected-access
         """
         Save a students submission file.
         """
         require(self.upload_allowed())
         user = self.get_real_user()
         require(user)
+        upload = request.params['assignment']
+        if self.file_size_over_limit(upload.file):
+            raise JsonHandlerError(
+                413, 'Unable to upload file. Max size limit is {size}'.format(
+                    size=self.student_upload_max_size()
+                )
+            )
         # Uploading an assignment represents a change of state with this user in this block,
         # so we need to ensure that the user has a StudentModule record, which represents that state.
         self.get_or_create_student_module(user)
-        upload = request.params['assignment']
+
         sha1 = get_sha1(upload.file)
         answer = {
             "sha1": sha1,
@@ -449,8 +476,10 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         user = self.get_real_user()
         require(user)
         zip_file_ready = False
+        location = unicode(self.location)
 
         if self.is_zip_file_available(user):
+            log.info("Zip file already available for block: %s for instructor: %s", location, user.username)
             assignments = self.get_sorted_submissions()
             if assignments:
                 last_assignment_date = assignments[0]['timestamp'].astimezone(pytz.utc)
@@ -461,15 +490,23 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
                     self.location
                 )
                 zip_file_time = get_file_modified_time_utc(zip_file_path)
+                log.info(
+                    "Zip file modified time: %s, last zip file time: %s for block: %s for instructor: %s",
+                    last_assignment_date,
+                    zip_file_time,
+                    location,
+                    user.username
+                )
                 # if last zip file is older the last submission then recreate task
                 if zip_file_time >= last_assignment_date:
                     zip_file_ready = True
 
         if not zip_file_ready:
+            log.info("Creating new zip file for block: %s for instructor: %s", location, user.username)
             zip_student_submissions.delay(
                 self.block_course_id,
                 self.block_id,
-                unicode(self.location),
+                location,
                 user.username
             )
 
@@ -532,10 +569,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         context = {
             "student_state": json.dumps(self.student_state()),
             "id": self.location.name.replace('.', '_'),
-            "max_file_size": getattr(
-                settings, "STUDENT_FILEUPLOAD_MAX_SIZE",
-                self.STUDENT_FILEUPLOAD_MAX_SIZE
-            ),
+            "max_file_size": self.student_upload_max_size(),
         }
         if self.show_staff_grading_interface():
             context['is_course_staff'] = True
