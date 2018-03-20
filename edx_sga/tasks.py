@@ -61,9 +61,8 @@ def _compress_student_submissions(zip_file_path, block_id, course_id, locator):
         return
 
     log.info("Compressing %d student submissions to path: %s ", len(student_submissions), zip_file_path)
-    # Build the zip file in memory using temporary file wrapper specialized to switch
-    # from StringIO to a real file when it exceeds a certain size or when a fileno is needed.
-    with tempfile.SpooledTemporaryFile() as tmp:
+    # Build the zip file in memory using temporary file.
+    with tempfile.TemporaryFile() as tmp:
         with zipfile.ZipFile(tmp, 'w', compression=zipfile.ZIP_DEFLATED) as zip_pointer:
             for student_username, submission_file_path in student_submissions:
                 log.info(

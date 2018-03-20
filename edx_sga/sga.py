@@ -249,6 +249,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         user = self.get_real_user()
         require(user)
         upload = request.params['assignment']
+        sha1 = get_sha1(upload.file)
         if self.file_size_over_limit(upload.file):
             raise JsonHandlerError(
                 413, 'Unable to upload file. Max size limit is {size}'.format(
@@ -258,8 +259,6 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         # Uploading an assignment represents a change of state with this user in this block,
         # so we need to ensure that the user has a StudentModule record, which represents that state.
         self.get_or_create_student_module(user)
-
-        sha1 = get_sha1(upload.file)
         answer = {
             "sha1": sha1,
             "filename": upload.file.name,
@@ -269,8 +268,11 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         student_item_dict = self.get_student_item_dict()
         submissions_api.create_submission(student_item_dict, answer)
         path = self.file_storage_path(sha1, upload.file.name)
-        if not default_storage.exists(path):
-            default_storage.save(path, File(upload.file))
+        log.info("Saving file: %s at path: %s for user: %s", upload.file.name, path, user.username)
+        if default_storage.exists(path):
+            # save latest submission
+            default_storage.delete(path)
+        default_storage.save(path, File(upload.file))
         return Response(json_body=self.student_state())
 
     @XBlock.handler

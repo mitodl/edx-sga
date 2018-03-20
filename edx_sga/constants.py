@@ -1,6 +1,6 @@
 """Constants"""
 
-BLOCK_SIZE = 8 * 1024
+BLOCK_SIZE = 2**10 * 8  # 8kb
 ITEM_TYPE = 'sga'
 
 
