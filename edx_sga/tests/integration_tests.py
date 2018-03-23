@@ -20,6 +20,7 @@ from courseware.models import StudentModule  # lint-amnesty, pylint: disable=imp
 from courseware.tests.factories import StaffFactory  # lint-amnesty, pylint: disable=import-error
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=import-error
 from django.core.exceptions import PermissionDenied  # lint-amnesty, pylint: disable=import-error
+from django.test.utils import override_settings  # lint-amnesty, pylint: disable=import-error
 from submissions import api as submissions_api  # lint-amnesty, pylint: disable=import-error
 from submissions.models import StudentItem  # lint-amnesty, pylint: disable=import-error
 from student.models import anonymous_id_for_user, UserProfile  # lint-amnesty, pylint: disable=import-error
@@ -218,6 +219,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         block = self.make_one(points=20.4)
         self.assertEqual(block.max_score(), 20)
 
+    @override_settings(TECH_SUPPORT_EMAIL='foo@example.com')
     @mock.patch('edx_sga.sga._resource', DummyResource)
     @mock.patch('edx_sga.sga.render_template')
     @mock.patch('edx_sga.sga.Fragment')
@@ -238,6 +240,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         context = render_template.call_args[0][1]
         self.assertEqual(context['is_course_staff'], True)
         self.assertEqual(context['id'], 'name')
+        self.assertEqual(context['support_email'], 'foo@example.com')
         student_state = json.loads(context['student_state'])
         self.assertEqual(
             student_state['display_name'],

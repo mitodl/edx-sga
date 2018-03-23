@@ -347,7 +347,15 @@ function StaffGradedAssignmentXBlock(runtime, element) {
                       $(self).removeClass("disabled");
                       $(element).find('.task-message')
                         .show()
-                        .html(gettext("An error occurred while trying to prepare your submission file"))
+                        .html(
+                          interpolate(
+                            gettext(
+                              'The download file was not created. Please try again or contact %(support_email)s'
+                            ),
+                            {support_email: $(element).find('.sga-block').attr("data-support-email")},
+                            true
+                          )
+                        )
                         .removeClass("preparing-msg")
                         .addClass("ready-msg");
                     }
@@ -368,7 +376,15 @@ function StaffGradedAssignmentXBlock(runtime, element) {
             $(element).find('#download-init-button').removeClass("disabled");
             $(element).find('.task-message')
               .show()
-              .html(gettext("An error occurred while trying to get the status of your submission file."));
+              .html(
+                interpolate(
+                  gettext(
+                    'The download file was not created. Please try again or contact %(support_email)s'
+                  ),
+                  {support_email: $(element).find('.sga-block').attr("data-support-email")},
+                  true
+                )
+              );
           });
         }
     }

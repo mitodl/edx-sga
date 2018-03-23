@@ -572,6 +572,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
             "student_state": json.dumps(self.student_state()),
             "id": self.location.name.replace('.', '_'),
             "max_file_size": self.student_upload_max_size(),
+            "support_email": settings.TECH_SUPPORT_EMAIL
         }
         if self.show_staff_grading_interface():
             context['is_course_staff'] = True
