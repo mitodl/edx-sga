@@ -21,6 +21,7 @@ from courseware.models import StudentModule  # lint-amnesty, pylint: disable=imp
 from courseware.tests.factories import StaffFactory  # lint-amnesty, pylint: disable=import-error
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=import-error
 from django.core.exceptions import PermissionDenied  # lint-amnesty, pylint: disable=import-error
+from django.db import transaction  # lint-amnesty, pylint: disable=import-error
 from django.test.utils import override_settings  # lint-amnesty, pylint: disable=import-error
 from submissions import api as submissions_api  # lint-amnesty, pylint: disable=import-error
 from submissions.models import StudentItem  # lint-amnesty, pylint: disable=import-error
@@ -141,51 +142,52 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
                 answer[key] = state.pop(key)
         score = state.pop('score', None)
 
-        user = User(username=name)
-        user.save()
-        profile = UserProfile(user=user, name=name)
-        profile.save()
-        if make_state:
-            module = StudentModule(
-                module_state_key=block.location,
-                student=user,
+        with transaction.atomic():
+            user = User(username=name)
+            user.save()
+            profile = UserProfile(user=user, name=name)
+            profile.save()
+            if make_state:
+                module = StudentModule(
+                    module_state_key=block.location,
+                    student=user,
+                    course_id=self.course_id,
+                    state=json.dumps(state))
+                module.save()
+
+            anonymous_id = anonymous_id_for_user(user, self.course_id)
+            item = StudentItem(
+                student_id=anonymous_id,
                 course_id=self.course_id,
-                state=json.dumps(state))
-            module.save()
+                item_id=block.block_id,
+                item_type='sga')
+            item.save()
 
-        anonymous_id = anonymous_id_for_user(user, self.course_id)
-        item = StudentItem(
-            student_id=anonymous_id,
-            course_id=self.course_id,
-            item_id=block.block_id,
-            item_type='sga')
-        item.save()
+            if answer:
+                student_id = block.get_student_item_dict(anonymous_id)
+                submission = submissions_api.create_submission(student_id, answer)
+                if score is not None:
+                    submissions_api.set_score(
+                        submission['uuid'], score, block.max_score())
+            else:
+                submission = None
 
-        if answer:
-            student_id = block.get_student_item_dict(anonymous_id)
-            submission = submissions_api.create_submission(student_id, answer)
-            if score is not None:
-                submissions_api.set_score(
-                    submission['uuid'], score, block.max_score())
-        else:
-            submission = None
+            self.addCleanup(item.delete)
+            self.addCleanup(profile.delete)
+            self.addCleanup(user.delete)
 
-        self.addCleanup(item.delete)
-        self.addCleanup(profile.delete)
-        self.addCleanup(user.delete)
+            if make_state:
+                self.addCleanup(module.delete)
+                return {
+                    'module': module,
+                    'item': item,
+                    'submission': submission
+                }
 
-        if make_state:
-            self.addCleanup(module.delete)
             return {
-                'module': module,
                 'item': item,
                 'submission': submission
             }
-
-        return {
-            'item': item,
-            'submission': submission
-        }
 
     def personalize(self, block, module, item, submission):
         # pylint: disable=unused-argument
@@ -492,14 +494,23 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         Test download annotated assignment for non staff.
         """
         block = self.make_one()
-        fred = self.make_student(block, "fred2")
-        with self.dummy_upload('test.txt') as (upload, expected):
-            block.staff_upload_annotated(mock.Mock(params={
-                'annotated': upload,
-                'module_id': fred['module'].id}))
-        self.personalize(block, **fred)
-        response = block.download_annotated(None)
-        self.assertEqual(response.body, expected)
+        students_info = [
+            ['fred2', 'test_fred.txt', 'student 1'],
+            ['foo2', 'test_foo.txt', 'student 2']
+        ]
+        students = []
+        for student_name, filename, text in students_info:
+            student = self.make_student(block, student_name)
+            with self.dummy_upload(filename, text) as (upload, __):
+                block.staff_upload_annotated(mock.Mock(params={
+                    'annotated': upload,
+                    'module_id': student['module'].id}))
+            students.append((student, text))
+
+        for student, text in students:
+            self.personalize(block, **student)
+            response = block.download_annotated(None)
+            self.assertEqual(response.body, text)
 
         with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
@@ -513,32 +524,44 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
 
     def test_staff_download(self):
         """
-        Test download for staff.
+        Test validate each student assignment for staff download.
         """
+        students = []
         block = self.make_one()
-        student = self.make_student(block, 'fred')
-        self.personalize(block, **student)
-        with self.dummy_upload("test.txt") as (upload, expected):
-            block.upload_assignment(mock.Mock(params={'assignment': upload}))
-        response = block.staff_download(mock.Mock(params={
-            'student_id': student['item'].student_id}))
-        self.assertEqual(response.body, expected)
+        students_info = [
+            ['fred2', 'test_fred.txt', 'student 1'],
+            ['foo2', 'test_foo.txt', 'student 2']
+        ]
+        for student_name, filename, text in students_info:
+            student = self.make_student(block, student_name)
+            self.personalize(block, **student)
+            with self.dummy_upload(filename, text) as (upload, __):
+                block.upload_assignment(mock.Mock(params={'assignment': upload}))
+            students.append((student, text,))
 
-        with mock.patch(
-            "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
-            return_value=block.file_storage_path(  # lint-amnesty, pylint: disable=protected-access
-                "",
-                "test_notfound.txt"
-            )  # lint-amnesty, pylint: disable=protected-access
-        ):
+        for student, text in students:
             response = block.staff_download(
-                mock.Mock(
-                    params={
-                        'student_id': student['item'].student_id
-                    }
-                )
+                mock.Mock(params={'student_id': student['item'].student_id})
             )
-            self.assertEqual(response.status_code, 404)
+            self.assertEqual(response.body, text)
+
+        # assert that staff cannot access invalid files
+        for student, __ in students:
+            with mock.patch(
+                "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
+                return_value=block.file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+                    "",
+                    "test_notfound.txt"
+                )  # lint-amnesty, pylint: disable=protected-access
+            ):
+                response = block.staff_download(
+                    mock.Mock(
+                        params={
+                            'student_id': student['item'].student_id
+                        }
+                    )
+                )
+                self.assertEqual(response.status_code, 404)
 
     def test_download_annotated_unicode_filename(self):
         """

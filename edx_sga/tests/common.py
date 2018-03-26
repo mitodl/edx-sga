@@ -50,17 +50,18 @@ class TempfileMixin(unittest.TestCase):
         del cls._original_file_storage
 
     @contextmanager
-    def dummy_upload(self, filename):
+    def dummy_upload(self, filename, data=b"some information"):
         """
         Provides a temporary file to act as a file that a user has uploaded
 
         Args:
             filename (str): A filename
+            data (bytes): Random string
+            delete_file (bool): A flag to delete file.
 
         Yields:
             (upload, data): The upload object and the data in the file
         """
-        data = b"some information"
         try:
             default_storage.save(filename, ContentFile(data))
             with default_storage.open(filename, "rb") as f:

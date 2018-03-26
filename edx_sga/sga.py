@@ -301,9 +301,16 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         """
         require(self.is_course_staff())
         upload = request.params['annotated']
+        sha1 = get_sha1(upload.file)
+        if self.file_size_over_limit(upload.file):
+            raise JsonHandlerError(
+                413, 'Unable to upload file. Max size limit is {size}'.format(
+                    size=self.student_upload_max_size()
+                )
+            )
         module = self.get_student_module(request.params['module_id'])
         state = json.loads(module.state)
-        state['annotated_sha1'] = sha1 = get_sha1(upload.file)
+        state['annotated_sha1'] = sha1
         state['annotated_filename'] = filename = upload.file.name
         state['annotated_mimetype'] = mimetypes.guess_type(upload.file.name)[0]
         state['annotated_timestamp'] = utcnow().strftime(
