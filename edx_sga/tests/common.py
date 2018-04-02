@@ -57,7 +57,6 @@ class TempfileMixin(unittest.TestCase):
         Args:
             filename (str): A filename
             data (bytes): Random string
-            delete_file (bool): A flag to delete file.
 
         Yields:
             (upload, data): The upload object and the data in the file
