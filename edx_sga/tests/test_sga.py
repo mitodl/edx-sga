@@ -601,6 +601,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         ):
             assert block.upload_allowed(submission_data={}) is expected_value
 
+    @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.count_archive_files')
     @mock.patch('edx_sga.sga.zip_student_submissions')
     @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.get_sorted_submissions')
     @data((False, False), (True, True))
@@ -611,11 +612,13 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             downloadable,
             get_sorted_submissions,
             zip_student_submissions,
+            count_archive_files
     ):
         """
         Test prepare download api
         """
         block = self.make_xblock()
+        count_archive_files.return_value = 2
         get_sorted_submissions.return_value = [
             {
                 'submission_id': uuid.uuid4().hex,
@@ -637,6 +640,49 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             response = block.prepare_download_submissions(None)
             response_body = json.loads(response.body)
             assert response_body["downloadable"] is downloadable
+
+    @mock.patch('edx_sga.sga.get_file_modified_time_utc')
+    @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.count_archive_files')
+    @mock.patch('edx_sga.sga.zip_student_submissions')
+    @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.get_sorted_submissions')
+    @data((2, True, False), (1, False, True))
+    @unpack
+    def test_prepare_download_submissions_when_student_score_reset(
+            self,
+            count_archive_files,
+            downloadable,
+            zip_task_called,
+            get_sorted_submissions,
+            zip_student_submissions,
+            count_archive_files_mock,
+            get_file_modified_time_utc
+    ):
+        """
+        Test prepare download api
+        """
+        now = datetime.datetime.now(tz=pytz.utc)
+        block = self.make_xblock()
+        count_archive_files_mock.return_value = count_archive_files
+        get_sorted_submissions.return_value = [
+            {
+                'submission_id': uuid.uuid4().hex,
+                'filename': "test_{}.txt".format(uuid.uuid4().hex),
+                'timestamp': now
+            } for __ in range(2)
+        ]
+        get_file_modified_time_utc.return_value = now
+        zip_student_submissions.delay = mock.Mock()
+        with mock.patch(
+            "edx_sga.sga.StaffGradedAssignmentXBlock.is_zip_file_available", return_value=True
+        ), mock.patch(
+            'edx_sga.sga.StaffGradedAssignmentXBlock.get_real_user', return_value=self.staff
+        ), mock.patch(
+            'edx_sga.utils.default_storage.modified_time', return_value=datetime.datetime.now()
+        ):
+            response = block.prepare_download_submissions(None)
+            response_body = json.loads(response.body)
+            assert response_body["downloadable"] is downloadable
+            assert zip_student_submissions.delay.called is zip_task_called
 
     @mock.patch('edx_sga.sga.zip_student_submissions')
     @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.get_sorted_submissions')
@@ -671,7 +717,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             response_body = json.loads(response.body)
             assert response_body["downloadable"] is False
 
-        zip_student_submissions.delay.assert_called_with(
+        zip_student_submissions.delay.assert_called_once_with(
             unicode(block.block_course_id),
             unicode(block.block_id),
             unicode(block.location),

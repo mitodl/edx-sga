@@ -8,8 +8,11 @@ import mimetypes
 import os
 import urllib
 
+from contextlib import closing
+from zipfile import ZipFile
 import pkg_resources
 import pytz
+
 from courseware.models import StudentModule  # lint-amnesty, pylint: disable=import-error
 from django.conf import settings  # lint-amnesty, pylint: disable=import-error
 from django.core.exceptions import PermissionDenied  # lint-amnesty, pylint: disable=import-error
@@ -511,6 +514,11 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
                 if zip_file_time >= last_assignment_date:
                     zip_file_ready = True
 
+                # check if some one reset submission. If yes the recreate zip file
+                assignment_count = len(assignments)
+                if self.count_archive_files(user) != assignment_count:
+                    zip_file_ready = False
+
         if not zip_file_ready:
             log.info("Creating new zip file for block: %s for instructor: %s", location, user.username)
             zip_student_submissions.delay(
@@ -971,6 +979,20 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
             self.location
         )
         return True if default_storage.exists(zip_file_path) else False
+
+    def count_archive_files(self, user):
+        """
+        returns number of files archive in zip.
+        """
+        zip_file_path = get_zip_file_path(
+            user.username,
+            self.block_course_id,
+            self.block_id,
+            self.location
+        )
+        with default_storage.open(zip_file_path, 'rb') as zip_file:
+            with closing(ZipFile(zip_file)) as archive:
+                return len(archive.infolist())
 
     def get_real_user(self):
         """returns session user"""
