@@ -117,6 +117,9 @@ function StaffGradedAssignmentXBlock(runtime, element) {
             });
 
             updateChangeEvent(fileUpload);
+            if (state.error) {
+              $(content).find('p.error').focus();
+            }
         }
 
         function renderStaffGrading(data) {
