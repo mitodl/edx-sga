@@ -143,7 +143,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         score = state.pop('score', None)
 
         with transaction.atomic():
-            user = User(username=name)
+            user = User(username=name, email='{}@example.com'.format(name))
             user.save()
             profile = UserProfile(user=user, name=name)
             profile.save()
