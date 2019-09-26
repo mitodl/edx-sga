@@ -2,11 +2,12 @@
 This block defines a Staff Graded Assignment.  Students are shown a rubric
 and invited to upload a file which is then graded by staff.
 """
+from __future__ import absolute_import
 import json
 import logging
 import mimetypes
 import os
-import urllib
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 
 from contextlib import closing
 from zipfile import ZipFile
@@ -53,6 +54,7 @@ from edx_sga.utils import (
     get_file_storage_path,
     file_contents_iter,
 )
+import six
 
 log = logging.getLogger(__name__)
 
@@ -489,7 +491,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         user = self.get_real_user()
         require(user)
         zip_file_ready = False
-        location = unicode(self.location)
+        location = six.text_type(self.location)
 
         if self.is_zip_file_available(user):
             log.info("Zip file already available for block: %s for instructor: %s", location, user.username)
@@ -649,14 +651,14 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         """
         Return the usage_id of the block.
         """
-        return unicode(self.scope_ids.usage_id)
+        return six.text_type(self.scope_ids.usage_id)
 
     @reify
     def block_course_id(self):
         """
         Return the course_id of the block.
         """
-        return unicode(self.course_id)
+        return six.text_type(self.course_id)
 
     def get_student_item_dict(self, student_id=None):
         # pylint: disable=no-member
@@ -879,7 +881,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
             return Response(
                 app_iter=file_contents_iter(path),
                 content_type=mime_type,
-                content_disposition="attachment; filename*=UTF-8''" + urllib.quote(filename.encode('utf-8'))
+                content_disposition="attachment; filename*=UTF-8''" + six.moves.urllib.parse.quote(filename.encode('utf-8'))
             )
         except IOError:
             if require_staff:
@@ -1051,7 +1053,7 @@ def load_resource(resource_path):  # pragma: NO COVER
     Gets the content of a resource
     """
     resource_content = pkg_resources.resource_string(__name__, resource_path)
-    return unicode(resource_content)
+    return six.text_type(resource_content)
 
 
 def render_template(template_path, context=None):  # pragma: NO COVER

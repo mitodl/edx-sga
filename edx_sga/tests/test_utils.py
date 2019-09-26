@@ -2,6 +2,7 @@
 """
 Tests for SGA utility functions
 """
+from __future__ import absolute_import
 import pytest  # pylint: disable=import-error
 import pytz
 

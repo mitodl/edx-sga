@@ -3,6 +3,7 @@ Django command which migrates existing SGA submissions for a course from all
 old SGA implementation before v0.4.0 to newer version that uses the
 'submissions' application.
 """
+from __future__ import absolute_import
 import json
 
 from django.core.management.base import BaseCommand, CommandError  # lint-amnesty, pylint: disable=import-error

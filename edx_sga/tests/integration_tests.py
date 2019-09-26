@@ -2,13 +2,14 @@
 """
 Tests for SGA
 """
+from __future__ import absolute_import
 import cgi
 import datetime
 import json
 import os
 import shutil
 import tempfile
-import urllib
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 
 from ddt import ddt, data, unpack
 import mock
@@ -630,7 +631,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         response = block.staff_download(mock.Mock(params={
             'student_id': student['item'].student_id}))
         self.assertEqual(response.body, expected)
-        assert urllib.quote(file_name.encode('utf-8')) in response.content_disposition
+        assert six.moves.urllib.parse.quote(file_name.encode('utf-8')) in response.content_disposition
 
     @data("my,assignment.txt", "my,1,1,assignment.txt")
     def test_file_download_comma_in_name(self, file_name):
@@ -645,7 +646,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         response = block.staff_download(mock.Mock(params={
             'student_id': student['item'].student_id}))
         self.assertEqual(response.body, expected)
-        assert urllib.quote(file_name.encode('utf-8')) in response.content_disposition
+        assert six.moves.urllib.parse.quote(file_name.encode('utf-8')) in response.content_disposition
 
     def test_get_staff_grading_data_not_staff(self):
         """

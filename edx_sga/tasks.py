@@ -1,4 +1,5 @@
 """celery async tasks"""
+from __future__ import absolute_import
 import zipfile
 import hashlib
 import logging

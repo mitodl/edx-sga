@@ -2,6 +2,7 @@
 """
 Tests for SGA
 """
+from __future__ import absolute_import
 import datetime
 import json
 import mimetypes
@@ -12,10 +13,12 @@ import mock
 import pytest
 import pytz
 from workbench.runtime import WorkbenchRuntime
+import six
+from six.moves import range
 
 try:
     # Python 2
-    import __builtin__ as builtins
+    import six.moves.builtins as builtins
 except ImportError:
     # Python 3
     import builtins
@@ -718,9 +721,9 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             assert response_body["downloadable"] is False
 
         zip_student_submissions.delay.assert_called_once_with(
-            unicode(block.block_course_id),
-            unicode(block.block_id),
-            unicode(block.location),
+            six.text_type(block.block_course_id),
+            six.text_type(block.block_id),
+            six.text_type(block.location),
             self.staff.username
         )
 

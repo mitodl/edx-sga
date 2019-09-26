@@ -1,6 +1,7 @@
 """
 Utility functions for the SGA XBlock
 """
+from __future__ import absolute_import
 import hashlib
 import os
 import datetime
