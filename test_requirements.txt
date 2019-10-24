@@ -1,7 +1,7 @@
 celery==3.1.18
 codecov
 coverage==4.4.2
-cryptography==1.9
+cryptography==2.5
 ddt==1.1.1
 djangorestframework==3.6.4
 edx-celeryutils==0.2.6
@@ -19,8 +19,6 @@ pytest
 pytest-cov
 pytest-django
 pytest-mock
-pytest-pep8
-pytest-pylint==0.6.0
 six==1.11.0
 tox
 

@@ -1,17 +1,19 @@
 """
 Utility functions for the SGA XBlock
 """
+from __future__ import absolute_import
+
+import datetime
 import hashlib
 import os
-import datetime
 import time
 from functools import partial
-import pytz
+
 import six
 
+import pytz
 from django.conf import settings
 from django.core.files.storage import default_storage
-
 from edx_sga.constants import BLOCK_SIZE
 
 
@@ -54,7 +56,7 @@ def get_sha1(file_descriptor):
     Get file hex digest (fingerprint).
     """
     sha1 = hashlib.sha1()
-    for block in iter(partial(file_descriptor.read, BLOCK_SIZE), ''):
+    for block in iter(partial(file_descriptor.read, BLOCK_SIZE), b''):
         sha1.update(block)
     file_descriptor.seek(0)
     return sha1.hexdigest()
@@ -80,4 +82,4 @@ def file_contents_iter(file_path):
     Returns an iterator over the contents of a file located at the given file path
     """
     file_descriptor = default_storage.open(file_path)
-    return iter(partial(file_descriptor.read, BLOCK_SIZE), '')
+    return iter(partial(file_descriptor.read, BLOCK_SIZE), b'')

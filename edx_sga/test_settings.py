@@ -3,6 +3,8 @@ Django settings for edx_sga project.
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from __future__ import absolute_import
+
 import os
 
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'

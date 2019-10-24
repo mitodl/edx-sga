@@ -1,0 +1,15 @@
+# This file describes this Open edX repo, as described in OEP-2:
+# https://open-edx-proposals.readthedocs.io/en/latest/oep-0002-bp-repo-metadata.html#specification
+
+owner: 'pdpinch'
+oeps:
+    oep-2: true
+    oep-7: true
+    oep-18: false
+
+tags:
+    - library
+    - xblock
+
+
+nick: staff-graded

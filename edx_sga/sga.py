@@ -2,57 +2,51 @@
 This block defines a Staff Graded Assignment.  Students are shown a rubric
 and invited to upload a file which is then graded by staff.
 """
+from __future__ import absolute_import
+
 import json
 import logging
 import mimetypes
 import os
-import urllib
-
 from contextlib import closing
 from zipfile import ZipFile
+
 import pkg_resources
+import six
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
+
 import pytz
-
-from lms.djangoapps.courseware.models import StudentModule  # lint-amnesty, pylint: disable=import-error
-from django.conf import settings  # lint-amnesty, pylint: disable=import-error
-from django.core.exceptions import PermissionDenied  # lint-amnesty, pylint: disable=import-error
-from django.core.files import File  # lint-amnesty, pylint: disable=import-error
-from django.core.files.storage import default_storage  # lint-amnesty, pylint: disable=import-error
-from django.template import Context, Template  # lint-amnesty, pylint: disable=import-error
-from django.utils.encoding import force_text  # pylint: disable=import-error
-from django.utils.timezone import now as django_now  # pylint: disable=import-error
-from django.utils.translation import ugettext_lazy as _  # pylint: disable=import-error
-from safe_lxml import etree  # pylint: disable=import-error
-from student.models import user_by_anonymous_id  # lint-amnesty, pylint: disable=import-error
-from submissions import api as submissions_api  # lint-amnesty, pylint: disable=import-error
-from submissions.models import (
-    Submission,
-    StudentItem as SubmissionsStudent
-)  # lint-amnesty, pylint: disable=import-error
-from webob.response import Response
-from xblock.core import XBlock  # lint-amnesty, pylint: disable=import-error
-from xblock.exceptions import JsonHandlerError  # lint-amnesty, pylint: disable=import-error
-from xblock.fields import DateTime, Scope, String, Float, Integer  # lint-amnesty, pylint: disable=import-error
-from xblock.fragment import Fragment  # lint-amnesty, pylint: disable=import-error
-from xblockutils.studio_editable import StudioEditableXBlockMixin
-from xmodule.util.duedate import get_extended_due_date  # lint-amnesty, pylint: disable=import-error
-from xmodule.contentstore.content import StaticContent
-
+from django.conf import settings
+from django.core.exceptions import PermissionDenied
+from django.core.files import File
+from django.core.files.storage import default_storage
+from django.template import Context, Template
+from django.utils.encoding import force_text
+from django.utils.timezone import now as django_now
+from django.utils.translation import ugettext_lazy as _
 from edx_sga.constants import ITEM_TYPE
 from edx_sga.showanswer import ShowAnswerXBlockMixin
-from edx_sga.tasks import (
-    get_zip_file_name,
-    get_zip_file_path,
-    zip_student_submissions
-)
-from edx_sga.utils import (
-    get_sha1,
-    utcnow,
-    is_finalized_submission,
-    get_file_modified_time_utc,
-    get_file_storage_path,
-    file_contents_iter,
-)
+from edx_sga.tasks import (get_zip_file_name, get_zip_file_path,
+                           zip_student_submissions)
+from edx_sga.utils import (file_contents_iter, get_file_modified_time_utc,
+                           get_file_storage_path, get_sha1,
+                           is_finalized_submission, utcnow)
+from lms.djangoapps.courseware.models import StudentModule
+from safe_lxml import etree
+from student.models import user_by_anonymous_id
+from submissions import api as submissions_api
+from submissions.models import StudentItem as SubmissionsStudent
+from submissions.models import Submission
+from webob.response import Response
+from xblock.core import XBlock
+from xblock.exceptions import JsonHandlerError
+from xblock.fields import DateTime, Float, Integer, Scope, String
+from xblock.fragment import Fragment
+from xblockutils.studio_editable import StudioEditableXBlockMixin
+from xmodule.contentstore.content import StaticContent
+from xmodule.util.duedate import get_extended_due_date
 
 log = logging.getLogger(__name__)
 
@@ -485,11 +479,12 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         """
         Runs a async task that collects submissions in background and zip them.
         """
+        # pylint: disable=no-member
         require(self.is_course_staff())
         user = self.get_real_user()
         require(user)
         zip_file_ready = False
-        location = unicode(self.location)
+        location = six.text_type(self.location)
 
         if self.is_zip_file_available(user):
             log.info("Zip file already available for block: %s for instructor: %s", location, user.username)
@@ -537,6 +532,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         """
         Api for downloading zip file which consist of all students submissions.
         """
+        # pylint: disable=no-member
         require(self.is_course_staff())
         user = self.get_real_user()
         require(user)
@@ -555,7 +551,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
             return Response(
                 app_iter=file_contents_iter(zip_file_path),
                 content_type='application/zip',
-                content_disposition="attachment; filename=" + zip_file_name.encode('utf-8')
+                content_disposition="attachment; filename=" + zip_file_name
             )
         except IOError:
             return Response(
@@ -649,14 +645,14 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         """
         Return the usage_id of the block.
         """
-        return unicode(self.scope_ids.usage_id)
+        return six.text_type(self.scope_ids.usage_id)
 
     @reify
     def block_course_id(self):
         """
         Return the course_id of the block.
         """
-        return unicode(self.course_id)
+        return six.text_type(self.course_id)
 
     def get_student_item_dict(self, student_id=None):
         # pylint: disable=no-member
@@ -737,6 +733,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         Returns:
             StudentModule: A StudentModule object
         """
+        # pylint: disable=no-member
         student_module, created = StudentModule.objects.get_or_create(
             course_id=self.course_id,
             module_state_key=self.location,
@@ -781,7 +778,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
             solution = self.runtime.replace_urls(force_text(self.solution))
         else:
             solution = ''
-
+        # pylint: disable=no-member
         return {
             "display_name": force_text(self.display_name),
             "uploaded": uploaded,
@@ -876,11 +873,14 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         Return a file from storage and return in a Response.
         """
         try:
-            return Response(
+            content_disposition = "attachment; filename*=UTF-8''"
+            content_disposition += six.moves.urllib.parse.quote(filename.encode('utf-8'))
+            output = Response(
                 app_iter=file_contents_iter(path),
                 content_type=mime_type,
-                content_disposition="attachment; filename*=UTF-8''" + urllib.quote(filename.encode('utf-8'))
+                content_disposition=content_disposition
             )
+            return output
         except IOError:
             if require_staff:
                 return Response(
@@ -898,6 +898,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
             )
 
     def validate_score_message(self, course_id, username):  # lint-amnesty, pylint: disable=missing-docstring
+        # pylint: disable=no-member
         log.error(
             "enter_grade: invalid grade submitted for course:%s module:%s student:%s",
             course_id,
@@ -972,6 +973,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         """
         returns True if zip file exists.
         """
+        # pylint: disable=no-member
         zip_file_path = get_zip_file_path(
             user.username,
             self.block_course_id,
@@ -984,6 +986,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         """
         returns number of files archive in zip.
         """
+        # pylint: disable=no-member
         zip_file_path = get_zip_file_path(
             user.username,
             self.block_course_id,
@@ -996,6 +999,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
 
     def get_real_user(self):
         """returns session user"""
+        # pylint: disable=no-member
         return self.runtime.get_real_user(self.xmodule_runtime.anonymous_student_id)
 
     def correctness_available(self):
@@ -1051,7 +1055,7 @@ def load_resource(resource_path):  # pragma: NO COVER
     Gets the content of a resource
     """
     resource_content = pkg_resources.resource_string(__name__, resource_path)
-    return unicode(resource_content)
+    return six.text_type(resource_content)
 
 
 def render_template(template_path, context=None):  # pragma: NO COVER

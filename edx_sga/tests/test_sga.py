@@ -2,6 +2,8 @@
 """
 Tests for SGA
 """
+from __future__ import absolute_import
+
 import datetime
 import json
 import mimetypes
@@ -10,26 +12,27 @@ import uuid
 
 import mock
 import pytest
+import six
+from six.moves import range
+
 import pytz
-from workbench.runtime import WorkbenchRuntime
-
-try:
-    # Python 2
-    import __builtin__ as builtins
-except ImportError:
-    # Python 3
-    import builtins
-
-from ddt import ddt, data, unpack  # pylint: disable=import-error
-from django.conf import settings  # lint-amnesty, pylint: disable=import-error
+from ddt import data, ddt, unpack
+from django.conf import settings
 from django.contrib.auth.models import User
-from django.utils.timezone import now as django_now  # pylint: disable=import-error
-from opaque_keys.edx.locations import Location  # lint-amnesty, pylint: disable=import-error
-from opaque_keys.edx.locator import CourseLocator  # lint-amnesty, pylint: disable=import-error
+from django.utils.timezone import now as django_now
+from edx_sga.tests.common import DummyResource, TempfileMixin
+from opaque_keys.edx.locations import Location
+from opaque_keys.edx.locator import CourseLocator
+from workbench.runtime import WorkbenchRuntime
 from xblock.field_data import DictFieldData
 from xblock.fields import DateTime
 
-from edx_sga.tests.common import TempfileMixin, DummyResource
+try:
+    # Python 2
+    import six.moves.builtins as builtins  # pylint: disable=ungrouped-imports
+except ImportError:
+    # Python 3
+    import builtins  # pylint: disable=ungrouped-imports
 
 
 SHA1 = 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
@@ -58,8 +61,8 @@ def fake_get_submission(**kwargs):
 def fake_upload_submission(upload):
     """returns fake submission data with values calculated from an upload object"""
     return fake_get_submission(
-        filename=upload.file.name.encode('utf-8'),
-        mimetype=mimetypes.guess_type(upload.file.name.encode('utf-8'))[0]
+        filename=upload.file.name,
+        mimetype=mimetypes.guess_type(upload.file.name)[0]
     )
 
 
@@ -192,7 +195,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         Set values on block from file upload.
         """
         now = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone(getattr(settings, "TIME_ZONE", pytz.utc.zone)))
-        block.annotated_mimetype = mimetypes.guess_type(upload.file.name.encode('utf-8'))[0]
+        block.annotated_mimetype = mimetypes.guess_type(upload.file.name)[0]
         block.annotated_filename = upload.file.name.encode('utf-8')
         block.annotated_sha1 = SHA1
         block.annotated_timestamp = now.strftime(
@@ -289,13 +292,13 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
                 assert student_state['uploaded'] == {'filename': 'foo.txt'}
                 assert student_state['graded'] == {'comment': 'ok', 'score': 10}
                 assert student_state['max_score'] == 100
+
                 fragment.add_css.assert_called_once_with(
                     DummyResource("static/css/edx_sga.css"))
                 fragment.initialize_js.assert_called_once_with(
                     "StaffGradedAssignmentXBlock")
 
     def test_studio_view(self):
-        # pylint: disable=unused-argument
         """
         Test studio view is using the StudioEditableXBlockMixin function
         """
@@ -306,26 +309,25 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
 
     def test_save_sga(self):
         """
-        Tests save SGA  block on studio.
+        Tests save SGA  block on studio
         """
         def weights_positive_float_test():
             """
             tests weight is non negative float.
             """
             orig_weight = 11.0
-
             # Test negative weight doesn't work
             block.save_sga(mock.Mock(method="POST", body=json.dumps({
                 "display_name": "Test Block",
                 "points": '100',
-                "weight": -10.0})))
+                "weight": -10.0}).encode('utf-8')))
             assert block.weight == orig_weight
 
             # Test string weight doesn't work
             block.save_sga(mock.Mock(method="POST", body=json.dumps({
                 "display_name": "Test Block",
                 "points": '100',
-                "weight": "a"})))
+                "weight": "a"}).encode('utf-8')))
             assert block.weight == orig_weight
 
         def point_positive_int_test():
@@ -336,14 +338,14 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             block.save_sga(mock.Mock(method="POST", body=json.dumps({
                 "display_name": "Test Block",
                 "points": '-10',
-                "weight": 11})))
+                "weight": 11}).encode('utf-8')))
             assert block.points == orig_score
 
             # Test float doesn't work
             block.save_sga(mock.Mock(method="POST", body=json.dumps({
                 "display_name": "Test Block",
                 "points": '24.5',
-                "weight": 11})))
+                "weight": 11}).encode('utf-8')))
             assert block.points == orig_score
 
         orig_score = 23
@@ -354,8 +356,8 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         assert block.weight is None
         block.save_sga(mock.Mock(method="POST", body=json.dumps({
             "display_name": "Test Block",
-            "points": str(orig_score),
-            "weight": 11})))
+            "points": orig_score,
+            "weight": 11}).encode('utf-8')))
         assert block.display_name == "Test Block"
         assert block.points == orig_score
         assert block.weight == 11
@@ -516,7 +518,6 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
                 }))
             assert staff_grading_data.called is True
             self.personalize_upload(block, upload)
-
         with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
             return_value=block.file_storage_path(SHA1, file_name)
@@ -638,7 +639,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             return_value=datetime.datetime.now()
         ):
             response = block.prepare_download_submissions(None)
-            response_body = json.loads(response.body)
+            response_body = json.loads(response.body.decode('utf-8'))
             assert response_body["downloadable"] is downloadable
 
     @mock.patch('edx_sga.sga.get_file_modified_time_utc')
@@ -680,7 +681,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             'edx_sga.utils.default_storage.modified_time', return_value=datetime.datetime.now()
         ):
             response = block.prepare_download_submissions(None)
-            response_body = json.loads(response.body)
+            response_body = json.loads(response.body.decode('utf-8'))
             assert response_body["downloadable"] is downloadable
             assert zip_student_submissions.delay.called is zip_task_called
 
@@ -714,13 +715,13 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             return_value=datetime.datetime.now()
         ):
             response = block.prepare_download_submissions(None)
-            response_body = json.loads(response.body)
+            response_body = json.loads(response.body.decode('utf-8'))
             assert response_body["downloadable"] is False
 
         zip_student_submissions.delay.assert_called_once_with(
-            unicode(block.block_course_id),
-            unicode(block.block_id),
-            unicode(block.location),
+            six.text_type(block.block_course_id),
+            six.text_type(block.block_id),
+            six.text_type(block.location),
             self.staff.username
         )
 
@@ -734,7 +735,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             return_value=is_zip_file_available
         ):
             response = block.download_submissions_status(None)
-            response_body = json.loads(response.body)
+            response_body = json.loads(response.body.decode('utf-8'))
             assert response_body["zip_available"] is downloadable
 
     @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.is_course_staff')
@@ -743,7 +744,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         block = self.make_xblock()
         is_course_staff.return_value = True
 
-        expected = b"some information"
+        expected = b"some information blah"
         filename = "foo.zip"
         path = os.path.join(self.temp_directory, filename)
         with open(path, "wb") as temp_file:

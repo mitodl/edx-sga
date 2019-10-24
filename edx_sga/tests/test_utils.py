@@ -2,14 +2,13 @@
 """
 Tests for SGA utility functions
 """
-import pytest  # pylint: disable=import-error
-import pytz
+from __future__ import absolute_import
 
-from edx_sga.utils import (
-    is_finalized_submission,
-    utcnow,
-)
+import pytest
+
+import pytz
 from edx_sga.tests.common import is_near_now
+from edx_sga.utils import is_finalized_submission, utcnow
 
 
 @pytest.mark.parametrize(

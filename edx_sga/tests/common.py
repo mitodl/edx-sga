@@ -1,19 +1,21 @@
 """Shared test functionality"""
+from __future__ import absolute_import
+
+import hashlib
+import shutil
 import unittest
 from contextlib import contextmanager
 from datetime import datetime
-import hashlib
-import shutil
 from tempfile import mkdtemp
 
-from mock import Mock
 from lxml import etree
-import pytz
-from xblock.fields import DateTime
+from mock import Mock
 
+import pytz
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from xblock.fields import DateTime
 
 
 class TempfileMixin(unittest.TestCase):

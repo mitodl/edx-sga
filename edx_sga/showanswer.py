@@ -1,14 +1,11 @@
 """XBlock mixins for showanswer"""
+from __future__ import absolute_import
+
 import logging
 
 from django.utils.translation import ugettext_lazy as _
-from xblock.fields import (
-    Scope,
-    String,
-)
-
 from edx_sga.constants import ShowAnswer
-
+from xblock.fields import Scope, String
 
 log = logging.getLogger(__name__)
 

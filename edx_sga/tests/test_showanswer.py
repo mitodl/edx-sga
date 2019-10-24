@@ -1,19 +1,20 @@
 """Tests for ShowAnswerXBlockMixin"""
+from __future__ import absolute_import
+
 import datetime
 from unittest import TestCase
 
-import ddt
 import mock
 import pytest
-import pytz
-from workbench.runtime import WorkbenchRuntime
-from xblock.core import XBlock
-from xblock.fields import Integer, String, DateTime
-from web_fragments.fragment import Fragment
 
+import ddt
+import pytz
 from edx_sga.constants import ShowAnswer
 from edx_sga.showanswer import ShowAnswerXBlockMixin
-
+from web_fragments.fragment import Fragment
+from workbench.runtime import WorkbenchRuntime
+from xblock.core import XBlock
+from xblock.fields import DateTime, Integer, String
 
 pytestmark = pytest.mark.django_db  # pylint: disable=invalid-name
 

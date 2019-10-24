@@ -1,0 +1,8 @@
+# Local tweaks to pylintrc for edx_lint's own code.
+
+
+
+[MESSAGES CONTROL]
+# disable import-error due to us pylint disabling it everywhere in code
+disable+ =
+    import-error,

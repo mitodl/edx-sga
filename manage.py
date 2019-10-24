@@ -2,6 +2,8 @@
 """
 Standard manage.py command from django startproject
 """
+from __future__ import absolute_import
+
 import os
 import sys
 

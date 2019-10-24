@@ -3,15 +3,17 @@ Django command which migrates existing SGA submissions for a course from all
 old SGA implementation before v0.4.0 to newer version that uses the
 'submissions' application.
 """
+from __future__ import absolute_import
+
 import json
 
-from django.core.management.base import BaseCommand, CommandError  # lint-amnesty, pylint: disable=import-error
-from lms.djangoapps.courseware.courses import get_course_by_id  # lint-amnesty, pylint: disable=import-error
-from lms.djangoapps.courseware.models import StudentModule  # lint-amnesty, pylint: disable=import-error
-from opaque_keys.edx.keys import CourseKey  # lint-amnesty, pylint: disable=import-error
-from student.models import anonymous_id_for_user  # lint-amnesty, pylint: disable=import-error
-from submissions import api as submissions_api  # lint-amnesty, pylint: disable=import-error
-from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disable=import-error
+from django.core.management.base import BaseCommand, CommandError
+from lms.djangoapps.courseware.courses import get_course_by_id
+from lms.djangoapps.courseware.models import StudentModule
+from opaque_keys.edx.keys import CourseKey
+from student.models import anonymous_id_for_user
+from submissions import api as submissions_api
+from xmodule.modulestore.django import modulestore
 
 
 class Command(BaseCommand):

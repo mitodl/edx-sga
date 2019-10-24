@@ -2,49 +2,46 @@
 """
 Tests for SGA
 """
-import cgi
+from __future__ import absolute_import
+
 import datetime
+import html
 import json
 import os
 import shutil
 import tempfile
-import urllib
 
-from ddt import ddt, data, unpack
 import mock
-from opaque_keys.edx.locator import CourseLocator
-from opaque_keys.edx.locations import Location  # lint-amnesty, pylint: disable=import-error
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
+
 import pytz
-
-from lms.djangoapps.courseware import module_render as render  # lint-amnesty, pylint: disable=import-error
-from lms.djangoapps.courseware.models import StudentModule  # lint-amnesty, pylint: disable=import-error
-from lms.djangoapps.courseware.tests.factories import StaffFactory  # lint-amnesty, pylint: disable=import-error
-from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=import-error
-from django.core.exceptions import PermissionDenied  # lint-amnesty, pylint: disable=import-error
-from django.db import transaction  # lint-amnesty, pylint: disable=import-error
-from django.test.utils import override_settings  # lint-amnesty, pylint: disable=import-error
-from submissions import api as submissions_api  # lint-amnesty, pylint: disable=import-error
-from submissions.models import StudentItem  # lint-amnesty, pylint: disable=import-error
-from student.models import anonymous_id_for_user, UserProfile  # lint-amnesty, pylint: disable=import-error
-from student.tests.factories import AdminFactory  # lint-amnesty, pylint: disable=import-error
-from xblock.field_data import DictFieldData
-from xblock.fields import ScopeIds
-from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disable=import-error
-from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory  # lint-amnesty, pylint: disable=import-error
-from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase  # lint-amnesty, pylint: disable=import-error
-from xmodule.modulestore.xml_importer import import_course_from_xml  # lint-amnesty, pylint: disable=import-error
-from xmodule.modulestore.xml_exporter import export_course_to_xml  # lint-amnesty, pylint: disable=import-error
-
+from ddt import data, ddt, unpack
+from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
+from django.db import transaction
+from django.test.utils import override_settings
 from edx_sga.constants import ShowAnswer
 from edx_sga.sga import StaffGradedAssignmentXBlock
-from edx_sga.tests.common import (
-    TempfileMixin,
-    DummyResource,
-    get_sha1,
-    is_near_now,
-    parse_timestamp,
-    reformat_xml,
-)
+from edx_sga.tests.common import (DummyResource, TempfileMixin, get_sha1,
+                                  is_near_now, parse_timestamp, reformat_xml)
+from lms.djangoapps.courseware import module_render as render
+from lms.djangoapps.courseware.models import StudentModule
+from lms.djangoapps.courseware.tests.factories import StaffFactory
+from opaque_keys.edx.locations import Location
+from opaque_keys.edx.locator import CourseLocator
+from student.models import UserProfile, anonymous_id_for_user
+from student.tests.factories import AdminFactory
+from submissions import api as submissions_api
+from submissions.models import StudentItem
+from xblock.field_data import DictFieldData
+from xblock.fields import ScopeIds
+from xmodule.modulestore.django import modulestore
+from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
+from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
+from xmodule.modulestore.xml_exporter import export_course_to_xml
+from xmodule.modulestore.xml_importer import import_course_from_xml
 
 
 @ddt
@@ -630,7 +627,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         response = block.staff_download(mock.Mock(params={
             'student_id': student['item'].student_id}))
         self.assertEqual(response.body, expected)
-        assert urllib.quote(file_name.encode('utf-8')) in response.content_disposition
+        assert six.moves.urllib.parse.quote(file_name.encode('utf-8')) in response.content_disposition
 
     @data("my,assignment.txt", "my,1,1,assignment.txt")
     def test_file_download_comma_in_name(self, file_name):
@@ -645,7 +642,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         response = block.staff_download(mock.Mock(params={
             'student_id': student['item'].student_id}))
         self.assertEqual(response.body, expected)
-        assert urllib.quote(file_name.encode('utf-8')) in response.content_disposition
+        assert six.moves.urllib.parse.quote(file_name.encode('utf-8')) in response.content_disposition
 
     def test_get_staff_grading_data_not_staff(self):
         """
@@ -917,7 +914,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
 
     def make_test_vertical(self, solution_attribute=None, solution_element=None):
         """Create a test vertical with an SGA unit inside"""
-        solution_attribute = 'solution="{}"'.format(cgi.escape(solution_attribute)) if solution_attribute else ''
+        solution_attribute = 'solution="{}"'.format(html.escape(solution_attribute)) if solution_attribute else ''
         solution_element = '<solution>{}</solution>'.format(solution_element) if solution_element else ''
 
         return (

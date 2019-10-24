@@ -1,20 +1,19 @@
 """celery async tasks"""
-import zipfile
+from __future__ import absolute_import
+
 import hashlib
 import logging
 import os
 import tempfile
+import zipfile
 
-from django.core.files.storage import default_storage  # lint-amnesty, pylint: disable=import-error
-
-from lms import CELERY_APP  # pylint: disable=no-name-in-module, import-error
-from submissions import api as submissions_api  # lint-amnesty, pylint: disable=import-error
-from student.models import user_by_anonymous_id  # lint-amnesty, pylint: disable=import-error
-from opaque_keys.edx.locator import BlockUsageLocator
-
-from edx_sga.utils import get_file_storage_path
+from django.core.files.storage import default_storage
 from edx_sga.constants import ITEM_TYPE
-
+from edx_sga.utils import get_file_storage_path
+from lms import CELERY_APP  # pylint: disable=no-name-in-module
+from opaque_keys.edx.locator import BlockUsageLocator
+from student.models import user_by_anonymous_id
+from submissions import api as submissions_api
 
 log = logging.getLogger(__name__)
 
@@ -132,7 +131,7 @@ def get_zip_file_name(username, course_id, block_id):
     """
     return "{username}_submissions_{id}_{course_key}.zip".format(
         username=username,
-        id=hashlib.md5(block_id).hexdigest(),
+        id=hashlib.md5(block_id.encode('utf-8')).hexdigest(),
         course_key=course_id
     )
 
