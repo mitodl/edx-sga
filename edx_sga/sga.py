@@ -25,7 +25,7 @@ from django.core.files.storage import default_storage
 from django.template import Context, Template
 from django.utils.encoding import force_text
 from django.utils.timezone import now as django_now
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from edx_sga.constants import ITEM_TYPE
 from edx_sga.showanswer import ShowAnswerXBlockMixin
 from edx_sga.tasks import (get_zip_file_name, get_zip_file_path,
