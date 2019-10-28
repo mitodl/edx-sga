@@ -1,17 +1,5 @@
 Release Notes
 =============
-Version 0.10.0
--------------
-- modified sga to be compatible with both python 2 and 3
-
-Version 0.9.0 (Released October 01, 2019)
--------------
-
-- Possible fix for copying units with SGA (#254)
-- Correct the courseware imports
-- Added focus to file upload error message (#241)
-- Recreated submissions zip file when student(s) score reset (#239)
-- Fixed race condition when removing grades SGA (#117)
 
 Version 0.9.0 (Released October 01, 2019)
 -------------
