@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-12 17:09+0430\n"
+"POT-Creation-Date: 2019-11-22 21:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,6 +15,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: edx_sga/sga.py
+msgid "Display Name"
+msgstr ""
 
 #: edx_sga/sga.py edx_sga/templates/staff_graded_assignment/show.html
 msgid "Staff Graded Assignment"
@@ -91,29 +95,54 @@ msgstr ""
 msgid "When the annotated file was uploaded"
 msgstr ""
 
-#: edx_sga/templates/staff_graded_assignment/edit.html
-msgid "Settings"
+#: edx_sga/showanswer.py
+msgid "Show Answer"
 msgstr ""
 
-#: edx_sga/templates/staff_graded_assignment/show.html
-msgid "File uploaded"
+#: edx_sga/showanswer.py
+msgid ""
+"Defines when to show the answer to the problem. A default value can be set "
+"in Advanced Settings."
 msgstr ""
 
-#: edx_sga/templates/staff_graded_assignment/show.html
-msgid "No file has been uploaded."
+#: edx_sga/showanswer.py
+msgid "Always"
 msgstr ""
 
-#: edx_sga/templates/staff_graded_assignment/show.html
-#, python-format
-msgid "Your score is %(graded_score)s / %(max_score)s"
+#: edx_sga/showanswer.py
+msgid "Answered"
 msgstr ""
 
-#: edx_sga/templates/staff_graded_assignment/show.html
-msgid "Annotated file from instructor"
+#: edx_sga/showanswer.py
+msgid "Attempted"
 msgstr ""
 
-#: edx_sga/templates/staff_graded_assignment/show.html
-msgid "This assignment has not yet been graded."
+#: edx_sga/showanswer.py
+msgid "Closed"
+msgstr ""
+
+#: edx_sga/showanswer.py
+msgid "Finished"
+msgstr ""
+
+#: edx_sga/showanswer.py
+msgid "Correct or Past Due"
+msgstr ""
+
+#: edx_sga/showanswer.py
+msgid "Past Due"
+msgstr ""
+
+#: edx_sga/showanswer.py
+msgid "Never"
+msgstr ""
+
+#: edx_sga/showanswer.py
+msgid "Solution to the problem to show to the user"
+msgstr ""
+
+#: edx_sga/showanswer.py
+msgid "Solution"
 msgstr ""
 
 #: edx_sga/templates/staff_graded_assignment/show.html
@@ -125,7 +154,20 @@ msgid "Upload your assignment"
 msgstr ""
 
 #: edx_sga/templates/staff_graded_assignment/show.html
-msgid "Select a file"
+msgid "File uploaded"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+#, python-format
+msgid "Your score is <%%= graded.score %%> / <%%= max_score %%>"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Annotated file from instructor"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "This assignment has not yet been graded."
 msgstr ""
 
 #: edx_sga/templates/staff_graded_assignment/show.html
@@ -145,6 +187,10 @@ msgid "Uploaded"
 msgstr ""
 
 #: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Submitted"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
 msgid "Grade"
 msgstr ""
 
@@ -158,6 +204,14 @@ msgstr ""
 
 #: edx_sga/templates/staff_graded_assignment/show.html
 msgid "Actions"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Yes"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "No"
 msgstr ""
 
 #: edx_sga/templates/staff_graded_assignment/show.html
@@ -181,7 +235,7 @@ msgid "Grade Submissions"
 msgstr ""
 
 #: edx_sga/templates/staff_graded_assignment/show.html
-msgid "Staff Debug Info"
+msgid "Download All Submissions"
 msgstr ""
 
 #: edx_sga/templates/staff_graded_assignment/show.html

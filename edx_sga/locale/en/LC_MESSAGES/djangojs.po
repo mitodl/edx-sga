@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-12 17:09+0430\n"
+"POT-Creation-Date: 2019-11-22 21:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: edx_sga/static/js/src/edx_sga.js
-msgid "Upload %(file_name)s"
+msgid "Started preparing student submissions zip file. This may take a while."
+msgstr ""
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Submission failed. Please contact your course instructor."
 msgstr ""
 
 #: edx_sga/static/js/src/edx_sga.js
@@ -34,6 +38,10 @@ msgstr ""
 
 #: edx_sga/static/js/src/edx_sga.js
 msgid "Uploading... %(percent)s %"
+msgstr ""
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "yes"
 msgstr ""
 
 #: edx_sga/static/js/src/edx_sga.js
@@ -54,4 +62,14 @@ msgstr ""
 
 #: edx_sga/static/js/src/edx_sga.js
 msgid "No grade to remove."
+msgstr ""
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid ""
+"The download file was not created. Please try again or contact "
+"%(support_email)s"
+msgstr ""
+
+#: edx_sga/static/js/src/edx_sga.js
+msgid "Student submission file ready for download"
 msgstr ""
