@@ -7,15 +7,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-10 13:09+0430\n"
+"POT-Creation-Date: 2019-11-22 21:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: rtl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: edx_sga/sga.py
+msgid "Display Name"
+msgstr "يهسحمشغ رشوث"
 
 #: edx_sga/sga.py edx_sga/templates/staff_graded_assignment/show.html
 msgid "Staff Graded Assignment"
@@ -96,30 +100,57 @@ msgstr "فهوثسفشوح"
 msgid "When the annotated file was uploaded"
 msgstr "صاثر فاث شررخفشفثي بهمث صشس عحمخشيثي"
 
-#: edx_sga/templates/staff_graded_assignment/edit.html
-msgid "Settings"
-msgstr "سثففهرلس"
+#: edx_sga/showanswer.py
+msgid "Show Answer"
+msgstr "ساخص شرسصثق"
 
-#: edx_sga/templates/staff_graded_assignment/show.html
-msgid "File uploaded"
-msgstr "بهمث عحمخشيثي"
+#: edx_sga/showanswer.py
+msgid ""
+"Defines when to show the answer to the problem. A default value can be set "
+"in Advanced Settings."
+msgstr ""
+"يثبهرثس صاثر فخ ساخص فاث شرسصثق فخ فاث حقخزمثو. ش يثبشعمف دشمعث ذشر زث سثف "
+"هر شيدشرذثي سثففهرلس."
 
-#: edx_sga/templates/staff_graded_assignment/show.html
-msgid "No file has been uploaded."
-msgstr "رخ بهمث اشس زثثر عحمخشيثي."
+#: edx_sga/showanswer.py
+msgid "Always"
+msgstr "شمصشغس"
 
-#: edx_sga/templates/staff_graded_assignment/show.html
-#, python-format
-msgid "Your score is %(graded_score)s / %(max_score)s"
-msgstr "غخعق سذخقث هس %(graded_score)s / %(max_score)s"
+#: edx_sga/showanswer.py
+msgid "Answered"
+msgstr "شرسصثقثي"
 
-#: edx_sga/templates/staff_graded_assignment/show.html
-msgid "Annotated file from instructor"
-msgstr "شررخفشفثي بهمث بقخو هرسفقعذفخق"
+#: edx_sga/showanswer.py
+msgid "Attempted"
+msgstr "شففثوحفثي"
 
-#: edx_sga/templates/staff_graded_assignment/show.html
-msgid "This assignment has not yet been graded."
-msgstr "فاهس شسسهلروثرف اشس رخف غثف زثثر لقشيثي."
+#: edx_sga/showanswer.py
+msgid "Closed"
+msgstr "ذمخسثي"
+
+#: edx_sga/showanswer.py
+msgid "Finished"
+msgstr "بهرهساثي"
+
+#: edx_sga/showanswer.py
+msgid "Correct or Past Due"
+msgstr "ذخققثذف خق حشسف يعث"
+
+#: edx_sga/showanswer.py
+msgid "Past Due"
+msgstr "حشسف يعث"
+
+#: edx_sga/showanswer.py
+msgid "Never"
+msgstr "رثدثق"
+
+#: edx_sga/showanswer.py
+msgid "Solution to the problem to show to the user"
+msgstr "سخمعفهخر فخ فاث حقخزمثو فخ ساخص فخ فاث عسثق"
+
+#: edx_sga/showanswer.py
+msgid "Solution"
+msgstr "سخمعفهخر"
 
 #: edx_sga/templates/staff_graded_assignment/show.html
 msgid "Upload a different file"
@@ -130,8 +161,21 @@ msgid "Upload your assignment"
 msgstr "عحمخشي غخعق شسسهلروثرف"
 
 #: edx_sga/templates/staff_graded_assignment/show.html
-msgid "Select a file"
-msgstr "سثمثذف ش بهمث"
+msgid "File uploaded"
+msgstr "بهمث عحمخشيثي"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+#, python-format
+msgid "Your score is <%%= graded.score %%> / <%%= max_score %%>"
+msgstr "غخعق سذخقث هس <%%= graded.score %%> / <%%= max_score %%>"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Annotated file from instructor"
+msgstr "شررخفشفثي بهمث بقخو هرسفقعذفخق"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "This assignment has not yet been graded."
+msgstr "فاهس شسسهلروثرف اشس رخف غثف زثثر لقشيثي."
 
 #: edx_sga/templates/staff_graded_assignment/show.html
 msgid "Username"
@@ -150,6 +194,10 @@ msgid "Uploaded"
 msgstr "عحمخشيثي"
 
 #: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Submitted"
+msgstr "سعزوهففثي"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
 msgid "Grade"
 msgstr "لقشيث"
 
@@ -164,6 +212,14 @@ msgstr "شررخفشفثي"
 #: edx_sga/templates/staff_graded_assignment/show.html
 msgid "Actions"
 msgstr "شذفهخرس"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Yes"
+msgstr "غثس"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "No"
+msgstr "رخ"
 
 #: edx_sga/templates/staff_graded_assignment/show.html
 msgid "Awaiting instructor approval"
@@ -186,8 +242,8 @@ msgid "Grade Submissions"
 msgstr "لقشيث سعزوهسسهخرس"
 
 #: edx_sga/templates/staff_graded_assignment/show.html
-msgid "Staff Debug Info"
-msgstr "سفشبب يثزعل هربخ"
+msgid "Download All Submissions"
+msgstr "يخصرمخشي شمم سعزوهسسهخرس"
 
 #: edx_sga/templates/staff_graded_assignment/show.html
 msgid "Loading..."
