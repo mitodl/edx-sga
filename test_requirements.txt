@@ -10,6 +10,7 @@ edx-lint
 edx-opaque-keys
 edx-submissions
 jsonfield==2.1.1
+edx-i18n-tools
 mako==1.0.7
 mock==2.0.0
 pdbpp==0.10.0
