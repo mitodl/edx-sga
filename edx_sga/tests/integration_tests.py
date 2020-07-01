@@ -224,7 +224,6 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
     @mock.patch('edx_sga.sga.render_template')
     @mock.patch('edx_sga.sga.Fragment')
     def test_student_view(self, fragment, render_template):
-        # pylint: disable=unused-argument
         """
         Test student view renders correctly.
         """
@@ -251,6 +250,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         self.assertEqual(student_state['upload_allowed'], True)
         self.assertEqual(student_state['max_score'], 100)
         self.assertEqual(student_state['graded'], None)
+        # pylint: disable=no-member
         fragment.add_css.assert_called_once_with(
             DummyResource("static/css/edx_sga.css"))
         fragment.initialize_js.assert_called_once_with(
@@ -292,7 +292,6 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
     @mock.patch('edx_sga.sga.render_template')
     @mock.patch('edx_sga.sga.Fragment')
     def test_student_view_with_score(self, fragment, render_template):
-        # pylint: disable=unused-argument
         """
         Tests scores are displayed correctly on student view.
         """
@@ -320,13 +319,13 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         self.assertEqual(student_state['max_score'], 100)
         self.assertEqual(student_state['graded'],
                          {u'comment': '', u'score': 10})
+        # pylint: disable=no-member
         fragment.add_css.assert_called_once_with(
             DummyResource("static/css/edx_sga.css"))
         fragment.initialize_js.assert_called_once_with(
             "StaffGradedAssignmentXBlock")
 
     def test_studio_view(self):
-        # pylint: disable=unused-argument
         """
         Test studio view is using the StudioEditableXBlockMixin function
         """
@@ -407,9 +406,9 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
 
         with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
-            return_value=block.file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+            return_value=block.file_storage_path(  # lint-amnesty
                 "", "test_notfound.txt"
-            )  # lint-amnesty, pylint: disable=protected-access
+            )  # lint-amnesty
         ):
             response = block.download_assignment(None)
             self.assertEqual(response.status_code, 404)
@@ -430,7 +429,6 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         self.assertTrue(recent_submission_data['answer']['finalized'])
 
     def test_staff_upload_download_annotated(self):
-        # pylint: disable=no-member
         """
         Tests upload and download of annotated staff files.
         """
@@ -446,9 +444,9 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
 
         with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
-            return_value=block.file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+            return_value=block.file_storage_path(  # lint-amnesty
                 "", "test_notfound.txt"
-            )  # lint-amnesty, pylint: disable=protected-access
+            )  # lint-amnesty
         ):
             response = block.staff_download_annotated(
                 mock.Mock(
@@ -460,7 +458,6 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
             self.assertEqual(response.status_code, 404)
 
     def test_staff_upload_annotated_state(self):
-        # pylint: disable=no-member
         """
         Test state recorded in the module state when staff_upload_annotated is called
         """
@@ -486,7 +483,6 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         assert state['annotated_sha1'] == get_sha1(expected)
 
     def test_download_annotated(self):
-        # pylint: disable=no-member
         """
         Test download annotated assignment for non staff.
         """
@@ -511,10 +507,10 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
 
         with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
-            return_value=block.file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+            return_value=block.file_storage_path(  # lint-amnesty
                 "",
                 "test_notfound.txt"
-            )  # lint-amnesty, pylint: disable=protected-access
+            )  # lint-amnesty
         ):
             response = block.download_annotated(None)
             self.assertEqual(response.status_code, 404)
@@ -546,10 +542,10 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         for student, __ in students:
             with mock.patch(
                 "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
-                return_value=block.file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+                return_value=block.file_storage_path(  # lint-amnesty
                     "",
                     "test_notfound.txt"
-                )  # lint-amnesty, pylint: disable=protected-access
+                )  # lint-amnesty
             ):
                 response = block.staff_download(
                     mock.Mock(
@@ -577,10 +573,10 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
 
         with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
-            return_value=block.file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+            return_value=block.file_storage_path(  # lint-amnesty
                 "",
                 "test_notfound.txt"
-            )  # lint-amnesty, pylint: disable=protected-access
+            )  # lint-amnesty
         ):
             response = block.download_annotated(None)
             self.assertEqual(response.status_code, 404)
@@ -600,10 +596,10 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
 
         with mock.patch(
             "edx_sga.sga.StaffGradedAssignmentXBlock.file_storage_path",
-            return_value=block.file_storage_path(  # lint-amnesty, pylint: disable=protected-access
+            return_value=block.file_storage_path(  # lint-amnesty
                 "",
                 "test_notfound.txt"
-            )  # lint-amnesty, pylint: disable=protected-access
+            )  # lint-amnesty
         ):
             response = block.staff_download(
                 mock.Mock(
@@ -654,7 +650,6 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
             block.get_staff_grading_data(None)
 
     def test_get_staff_grading_data(self):
-        # pylint: disable=no-member
         """
         Test fetch grading data for staff members.
         """
@@ -725,7 +720,6 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         self.assertIn(block.location, module_creation_log_message)
 
     def test_enter_grade_instructor(self):
-        # pylint: disable=no-member
         """
         Test enter grade by instructors.
         """
@@ -743,7 +737,6 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         self.assertEqual(block.get_score(fred['item'].student_id), 9)
 
     def test_enter_grade_staff(self):
-        # pylint: disable=no-member
         """
         Test grade enter by staff.
         """
@@ -761,7 +754,6 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
 
     @data(None, "", '9.24', "second")
     def test_enter_grade_fail(self, grade):
-        # pylint: disable=no-member
         """
         Tests grade enter fail.
         """
@@ -785,7 +777,6 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         )
 
     def test_remove_grade(self):
-        # pylint: disable=no-member
         """
         Test remove grade.
         """

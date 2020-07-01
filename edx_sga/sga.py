@@ -43,7 +43,7 @@ from webob.response import Response
 from xblock.core import XBlock
 from xblock.exceptions import JsonHandlerError
 from xblock.fields import DateTime, Float, Integer, Scope, String
-from xblock.fragment import Fragment
+from web_fragments.fragment import Fragment
 from xblockutils.studio_editable import StudioEditableXBlockMixin
 from xmodule.contentstore.content import StaticContent
 from xmodule.util.duedate import get_extended_due_date
@@ -165,7 +165,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         return file_obj.tell() > cls.student_upload_max_size()
 
     @classmethod
-    def parse_xml(cls, node, runtime, keys, id_generator):
+    def parse_xml(cls, node, runtime, keys):  # pylint: disable=arguments-differ
         """
         Override default serialization to handle <solution /> elements
         """
@@ -239,7 +239,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
 
     @XBlock.handler
     def upload_assignment(self, request, suffix=''):
-        # pylint: disable=unused-argument, protected-access
+        # pylint: disable=unused-argument
         """
         Save a students submission file.
         """
@@ -796,7 +796,6 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         grading screen.
         """
         def get_student_data():
-            # pylint: disable=no-member
             """
             Returns a dict of student assignment information along with
             annotated file name, student id and module id, this

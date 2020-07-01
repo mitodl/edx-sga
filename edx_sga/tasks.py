@@ -10,7 +10,7 @@ import zipfile
 from django.core.files.storage import default_storage
 from edx_sga.constants import ITEM_TYPE
 from edx_sga.utils import get_file_storage_path
-from lms import CELERY_APP  # pylint: disable=no-name-in-module
+from lms import CELERY_APP
 from opaque_keys.edx.locator import BlockUsageLocator
 from student.models import user_by_anonymous_id
 from submissions import api as submissions_api
