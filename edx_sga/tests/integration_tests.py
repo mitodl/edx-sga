@@ -109,6 +109,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         """
         Creates a XBlock SGA for testing purpose.
         """
+        weight = kw.get('weight', 0)
         field_data = DictFieldData(kw)
         block = StaffGradedAssignmentXBlock(self.runtime, field_data, self.scope_ids)
         block.location = Location(
@@ -123,6 +124,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
             block.display_name = display_name
 
         block.start = datetime.datetime(2010, 5, 12, 2, 42, tzinfo=pytz.utc)
+        block.weight = weight
         modulestore().create_item(
             self.staff.username, block.location.course_key, block.location.block_type, block.location.block_id
         )
@@ -228,7 +230,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         """
         Test student view renders correctly.
         """
-        block = self.make_one("Custom name")
+        block = self.make_one("Custom name", weight=12)
         self.personalize(block, **self.make_student(block, 'fred'))
         fragment = block.student_view()
         render_template.assert_called_once()
@@ -251,6 +253,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         self.assertEqual(student_state['upload_allowed'], True)
         self.assertEqual(student_state['max_score'], 100)
         self.assertEqual(student_state['graded'], None)
+        assert student_state['weight'] == 12
         fragment.add_css.assert_called_once_with(
             DummyResource("static/css/edx_sga.css"))
         fragment.initialize_js.assert_called_once_with(
@@ -382,7 +385,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         block.save_sga(mock.Mock(body='{}'))
         self.assertEqual(block.display_name, "Staff Graded Assignment")
         self.assertEqual(block.points, 100)
-        self.assertEqual(block.weight, None)
+        self.assertEqual(block.weight, 0)
         block.save_sga(mock.Mock(method="POST", body=json.dumps({
             "display_name": "Test Block",
             "points": str(orig_score),
@@ -658,7 +661,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         """
         Test fetch grading data for staff members.
         """
-        block = self.make_one()
+        block = self.make_one(weight=15)
         barney = self.make_student(
             block, "barney",
             filename="foo.txt",
@@ -669,6 +672,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
             block, "fred",
             filename="bar.txt")
         data = block.get_staff_grading_data(None).json_body  # lint-amnesty, pylint: disable=redefined-outer-name
+        assert data['weight'] == 15
         assignments = sorted(data['assignments'], key=lambda x: x['username'])
 
         barney_assignment, fred_assignment = assignments
@@ -754,8 +758,10 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
             'submission_id': fred['submission']['uuid'],
             'grade': 9,
             'comment': "Good!"}))
-        state = json.loads(StudentModule.objects.get(
-            pk=fred['module'].id).state)
+        student_module = StudentModule.objects.get(pk=fred['module'].id)
+        state = json.loads(student_module.state)
+        assert student_module.grade == 9
+        assert student_module.max_grade == block.max_score()
         self.assertEqual(state['comment'], 'Good!')
         self.assertEqual(state['staff_score'], 9)
 
@@ -799,7 +805,9 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
             'student_id': item.student_id,
         })
         block.remove_grade(request)
-        state = json.loads(StudentModule.objects.get(pk=module.id).state)
+        student_module = StudentModule.objects.get(pk=module.id)
+        state = json.loads(student_module.state)
+        assert student_module.grade == 0
         self.assertEqual(block.get_score(item.student_id), None)
         self.assertEqual(state['comment'], '')
 

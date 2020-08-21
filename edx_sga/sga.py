@@ -433,6 +433,9 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
             state['staff_score'] = score
         state['comment'] = request.params.get('comment', '')
         module.state = json.dumps(state)
+        # to fix score on edx progress page
+        module.grade = score
+        module.max_grade = self.max_score()
         module.save()
         log.info(
             "enter_grade for course:%s module:%s student:%s",
@@ -457,6 +460,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
             self.block_id
         )
         module = self.get_student_module(request.params['module_id'])
+        module.grade = 0
         state = json.loads(module.state)
         state['staff_score'] = None
         state['comment'] = ''
@@ -787,6 +791,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
             "max_score": self.max_score(),
             "upload_allowed": self.upload_allowed(submission_data=submission),
             "solution": solution,
+            'weight': self.weight,
             "base_asset_url": StaticContent.get_base_url_path_for_course_assets(self.location.course_key),
         }
 
@@ -843,6 +848,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         return {
             'assignments': list(get_student_data()),
             'max_score': self.max_score(),
+            'weight': self.weight,
             'display_name': force_text(self.display_name)
         }
 
