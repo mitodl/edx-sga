@@ -32,7 +32,7 @@ try:
     import six.moves.builtins as builtins  # pylint: disable=ungrouped-imports
 except ImportError:
     # Python 3
-    import builtins  # pylint: disable=ungrouped-imports
+    import builtins
 
 
 SHA1 = 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
@@ -206,7 +206,6 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
     @mock.patch('edx_sga.sga.render_template')
     @mock.patch('edx_sga.sga.Fragment')
     def test_student_view(self, fragment, render_template):
-        # pylint: disable=unused-argument
         """
         Test student view renders correctly.
         """
@@ -238,6 +237,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             assert student_state['upload_allowed'] is True
             assert student_state['max_score'] == 100
             assert student_state['graded'] is None
+            # pylint: disable=no-member
             fragment.add_css.assert_called_once_with(
                 DummyResource("static/css/edx_sga.css"))
             fragment.initialize_js.assert_called_once_with(
@@ -249,7 +249,6 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
     @mock.patch('edx_sga.sga.render_template')
     @mock.patch('edx_sga.sga.Fragment')
     def test_student_view_with_score(self, fragment, render_template, get_score, upload_allowed):
-        # pylint: disable=unused-argument
         """
         Tests scores are displayed correctly on student view.
         """
@@ -292,7 +291,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
                 assert student_state['uploaded'] == {'filename': 'foo.txt'}
                 assert student_state['graded'] == {'comment': 'ok', 'score': 10}
                 assert student_state['max_score'] == 100
-
+                # pylint: disable=no-member
                 fragment.add_css.assert_called_once_with(
                     DummyResource("static/css/edx_sga.css"))
                 fragment.initialize_js.assert_called_once_with(
@@ -459,7 +458,6 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
     @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.is_course_staff')
     @mock.patch('edx_sga.sga.get_sha1')
     def test_staff_upload_download_annotated(self, get_sha1, is_course_staff, get_student_module):
-        # pylint: disable=no-member
         """
         Tests upload and download of annotated staff files.
         """
@@ -496,7 +494,6 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
     @mock.patch('edx_sga.sga.StaffGradedAssignmentXBlock.is_course_staff')
     @mock.patch('edx_sga.sga.get_sha1')
     def test_download_annotated(self, get_sha1, is_course_staff, get_student_module):
-        # pylint: disable=no-member
         """
         Test download annotated assignment for non staff.
         """

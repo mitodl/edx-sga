@@ -2,4 +2,4 @@
 Module for StaffGradedAssignmentXBlock.
 """
 
-__version__ = '0.11.0.appsembler2'
+__version__ = '0.11.1.appsembler2'
