@@ -1,7 +1,19 @@
 Release Notes
 =============
 
-Version 0.11.0
+Version 0.12.0 (Released October 07, 2020)
+--------------
+
+- Allow a grade of zero
+- removed deprecated usage of xblock fragment (#270)
+- Fix mismatch version (#272)
+
+Version 0.11.1 (Released August 12, 2020)
+--------------
+
+- Fix mismatch version (#272)
+
+Version 0.11.0 (Released May 19, 2020)
 --------------
 
 - Temporarily disable integration and Python 2 tests (#267)
