@@ -165,7 +165,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         return file_obj.tell() > cls.student_upload_max_size()
 
     @classmethod
-    def parse_xml(cls, node, runtime, keys):  # pylint: disable=arguments-differ
+    def parse_xml(cls, node, runtime, keys, id_generator):  # pylint: disable=arguments-differ
         """
         Override default serialization to handle <solution /> elements
         """
