@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand, CommandError
 from lms.djangoapps.courseware.courses import get_course_by_id
 from lms.djangoapps.courseware.models import StudentModule
 from opaque_keys.edx.keys import CourseKey
-from student.models import anonymous_id_for_user
+from common.djangoapps.student.models import anonymous_id_for_user
 from submissions import api as submissions_api
 from xmodule.modulestore.django import modulestore
 

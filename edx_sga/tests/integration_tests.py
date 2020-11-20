@@ -31,8 +31,8 @@ from lms.djangoapps.courseware.models import StudentModule
 from lms.djangoapps.courseware.tests.factories import StaffFactory
 from opaque_keys.edx.locations import Location
 from opaque_keys.edx.locator import CourseLocator
-from student.models import UserProfile, anonymous_id_for_user
-from student.tests.factories import AdminFactory
+from common.djangoapps.student.models import UserProfile, anonymous_id_for_user
+from common.djangoapps.student.tests.factories import AdminFactory
 from submissions import api as submissions_api
 from submissions.models import StudentItem
 from xblock.field_data import DictFieldData

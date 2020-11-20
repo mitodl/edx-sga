@@ -35,7 +35,7 @@ from edx_sga.utils import (file_contents_iter, get_file_modified_time_utc,
                            is_finalized_submission, utcnow)
 from lms.djangoapps.courseware.models import StudentModule
 from safe_lxml import etree
-from student.models import user_by_anonymous_id
+from common.djangoapps.student.models import user_by_anonymous_id
 from submissions import api as submissions_api
 from submissions.models import StudentItem as SubmissionsStudent
 from submissions.models import Submission
@@ -165,7 +165,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         return file_obj.tell() > cls.student_upload_max_size()
 
     @classmethod
-    def parse_xml(cls, node, runtime, keys, id_generator):  # pylint: disable=arguments-differ
+    def parse_xml(cls, node, runtime, keys, id_generator):
         """
         Override default serialization to handle <solution /> elements
         """

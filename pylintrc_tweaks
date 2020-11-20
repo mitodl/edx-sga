@@ -6,3 +6,4 @@
 # disable import-error due to us pylint disabling it everywhere in code
 disable+ =
     import-error,
+    no-name-in-module

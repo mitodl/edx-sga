@@ -123,7 +123,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             try:
                 return real_import(name, *args, **kwargs)
             except ImportError:
-                for module in ('courseware', 'lms', 'student', 'xmodule'):
+                for module in ('common', 'courseware', 'lms', 'xmodule'):
                     if name.startswith("{}.".format(module)) or name == module:
                         return mock.Mock()
                 if name == 'safe_lxml':
