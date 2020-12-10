@@ -1,10 +1,9 @@
 language: python
-python: "2.7"
 matrix:
   include:
-    - python: 3.5
+    - python: 3.8
       install: 
         - pip install tox
-      script: tox -e py35-django111
+      script: tox -e py38-django22
       env:
-        name: Python 3.5, Django 1.11 Unit Tests
+        name: Python 3.8, Django 2.22 Unit Tests
