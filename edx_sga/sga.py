@@ -2,7 +2,6 @@
 This block defines a Staff Graded Assignment.  Students are shown a rubric
 and invited to upload a file which is then graded by staff.
 """
-from __future__ import absolute_import
 
 import json
 import logging
@@ -11,12 +10,12 @@ import os
 from contextlib import closing
 from zipfile import ZipFile
 
-import pkg_resources
-import six
 import six.moves.urllib.error
 import six.moves.urllib.parse
 import six.moves.urllib.request
+import six
 
+import pkg_resources
 import pytz
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
@@ -26,13 +25,6 @@ from django.template import Context, Template
 from django.utils.encoding import force_text
 from django.utils.timezone import now as django_now
 from django.utils.translation import ugettext as _
-from edx_sga.constants import ITEM_TYPE
-from edx_sga.showanswer import ShowAnswerXBlockMixin
-from edx_sga.tasks import (get_zip_file_name, get_zip_file_path,
-                           zip_student_submissions)
-from edx_sga.utils import (file_contents_iter, get_file_modified_time_utc,
-                           get_file_storage_path, get_sha1,
-                           is_finalized_submission, utcnow)
 from lms.djangoapps.courseware.models import StudentModule
 from safe_lxml import etree
 from common.djangoapps.student.models import user_by_anonymous_id
@@ -47,6 +39,14 @@ from web_fragments.fragment import Fragment
 from xblockutils.studio_editable import StudioEditableXBlockMixin
 from xmodule.contentstore.content import StaticContent
 from xmodule.util.duedate import get_extended_due_date
+
+from edx_sga.constants import ITEM_TYPE
+from edx_sga.showanswer import ShowAnswerXBlockMixin
+from edx_sga.tasks import (get_zip_file_name, get_zip_file_path,
+                           zip_student_submissions)
+from edx_sga.utils import (file_contents_iter, get_file_modified_time_utc,
+                           get_file_storage_path, get_sha1,
+                           is_finalized_submission, utcnow)
 
 log = logging.getLogger(__name__)
 
@@ -187,12 +187,12 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         """
         Override default serialization to output solution field as a separate child element.
         """
-        super(StaffGradedAssignmentXBlock, self).add_xml_to_node(node)
+        super().add_xml_to_node(node)
 
         if 'solution' in node.attrib:
             # Try outputting it as an XML element if we can
             solution = node.attrib['solution']
-            wrapped = "<solution>{}</solution>".format(solution)
+            wrapped = f"<solution>{solution}</solution>"
             try:
                 child = etree.fromstring(wrapped)
             except:  # pylint: disable=bare-except
@@ -204,7 +204,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
 
     @XBlock.json_handler
     def save_sga(self, data, suffix=''):
-        # pylint: disable=unused-argument
+        # pylint: disable=unused-argument,raise-missing-from
         """
         Persist block data when updating settings in studio.
         """
@@ -484,7 +484,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         user = self.get_real_user()
         require(user)
         zip_file_ready = False
-        location = six.text_type(self.location)
+        location = str(self.location)
 
         if self.is_zip_file_available(user):
             log.info("Zip file already available for block: %s for instructor: %s", location, user.username)
@@ -553,7 +553,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
                 content_type='application/zip',
                 content_disposition="attachment; filename=" + zip_file_name
             )
-        except IOError:
+        except OSError:
             return Response(
                 "Sorry, submissions cannot be found. Press Collect ALL Submissions button or"
                 " contact {} if you issue is consistent".format(settings.TECH_SUPPORT_EMAIL),
@@ -603,12 +603,12 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         fragment.initialize_js('StaffGradedAssignmentXBlock')
         return fragment
 
-    def studio_view(self, context=None):  # pylint: disable=useless-super-delegation
+    def studio_view(self, context=None):
         """
         Render a form for editing this XBlock
         """
         # this method only exists to provide context=None for backwards compat
-        return super(StaffGradedAssignmentXBlock, self).studio_view(context)
+        return super().studio_view(context)
 
     def clear_student_state(self, *args, **kwargs):
         # pylint: disable=unused-argument
@@ -645,14 +645,14 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         """
         Return the usage_id of the block.
         """
-        return six.text_type(self.scope_ids.usage_id)
+        return str(self.scope_ids.usage_id)
 
     @reify
     def block_course_id(self):
         """
         Return the course_id of the block.
         """
-        return six.text_type(self.course_id)
+        return str(self.course_id)
 
     def get_student_item_dict(self, student_id=None):
         # pylint: disable=no-member
@@ -684,6 +684,8 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
             # be first
             return submissions[0]
 
+        return None
+
     def get_score(self, student_id=None):
         """
         Return student's current score.
@@ -693,6 +695,8 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         )
         if score:
             return score['points_earned']
+
+        return None
 
     @reify
     def score(self):
@@ -880,7 +884,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
                 content_disposition=content_disposition
             )
             return output
-        except IOError:
+        except OSError:
             if require_staff:
                 return Response(
                     "Sorry, assignment {} cannot be found at"
@@ -896,7 +900,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
                 status_code=404
             )
 
-    def validate_score_message(self, course_id, username):  # lint-amnesty, pylint: disable=missing-docstring
+    def validate_score_message(self, course_id, username):  # lint-amnesty, pylint: disable=missing-function-docstring
         # pylint: disable=no-member
         log.error(
             "enter_grade: invalid grade submitted for course:%s module:%s student:%s",
@@ -979,7 +983,7 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
             self.block_id,
             self.location
         )
-        return True if default_storage.exists(zip_file_path) else False
+        return default_storage.exists(zip_file_path)
 
     def count_archive_files(self, user):
         """
@@ -1054,7 +1058,7 @@ def load_resource(resource_path):  # pragma: NO COVER
     Gets the content of a resource
     """
     resource_content = pkg_resources.resource_string(__name__, resource_path)
-    return six.text_type(resource_content.decode("utf8"))
+    return str(resource_content.decode("utf8"))
 
 
 def render_template(template_path, context=None):  # pragma: NO COVER

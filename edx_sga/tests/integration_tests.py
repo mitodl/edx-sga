@@ -1,31 +1,24 @@
-# -*- coding: utf-8 -*-
 """
 Tests for SGA
 """
-from __future__ import absolute_import
-
+# pylint: disable=imported-auth-user
 import datetime
 import html
 import json
 import os
 import shutil
 import tempfile
+from unittest import mock
 
-import mock
 import six.moves.urllib.error
 import six.moves.urllib.parse
 import six.moves.urllib.request
-
 import pytz
 from ddt import data, ddt, unpack
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.test.utils import override_settings
-from edx_sga.constants import ShowAnswer
-from edx_sga.sga import StaffGradedAssignmentXBlock
-from edx_sga.tests.common import (DummyResource, TempfileMixin, get_sha1,
-                                  is_near_now, parse_timestamp, reformat_xml)
 from lms.djangoapps.courseware import module_render as render
 from lms.djangoapps.courseware.models import StudentModule
 from lms.djangoapps.courseware.tests.factories import StaffFactory
@@ -44,6 +37,12 @@ from xmodule.modulestore.xml_exporter import export_course_to_xml
 from xmodule.modulestore.xml_importer import import_course_from_xml
 
 
+from edx_sga.constants import ShowAnswer
+from edx_sga.sga import StaffGradedAssignmentXBlock
+from edx_sga.tests.common import (DummyResource, TempfileMixin, get_sha1,
+                                  is_near_now, parse_timestamp, reformat_xml)
+
+
 @ddt
 class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
     """
@@ -51,12 +50,12 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
     """
     @classmethod
     def setUpClass(cls):
-        super(StaffGradedAssignmentXblockTests, cls).setUpClass()
+        super().setUpClass()
         cls.set_up_temp_directory()
 
     @classmethod
     def tearDownClass(cls):
-        super(StaffGradedAssignmentXblockTests, cls).tearDownClass()
+        super().tearDownClass()
         cls.tear_down_temp_directory()
 
     def setUp(self):
@@ -64,7 +63,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         Creates a test course ID, mocks the runtime, and creates a fake storage
         engine for use in all tests
         """
-        super(StaffGradedAssignmentXblockTests, self).setUp()
+        super().setUp()
         self.course = CourseFactory.create(org='foo', number='bar', display_name='baz')
         self.descriptor = ItemFactory(category="pure", parent=self.course)
         self.course_id = self.course.id
@@ -140,7 +139,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         score = state.pop('score', None)
 
         with transaction.atomic():
-            user = User(username=name, email='{}@example.com'.format(name))
+            user = User(username=name, email=f'{name}@example.com')
             user.save()
             profile = UserProfile(user=user, name=name)
             profile.save()
@@ -313,12 +312,12 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
             student_state['display_name'],
             "Staff Graded Assignment"
         )
-        self.assertEqual(student_state['uploaded'], {u'filename': u'foo.txt'})
+        self.assertEqual(student_state['uploaded'], {'filename': 'foo.txt'})
         self.assertEqual(student_state['annotated'], None)
         self.assertEqual(student_state['upload_allowed'], False)
         self.assertEqual(student_state['max_score'], 100)
         self.assertEqual(student_state['graded'],
-                         {u'comment': '', u'score': 10})
+                         {'comment': '', 'score': 10})
         # pylint: disable=no-member
         fragment.add_css.assert_called_once_with(
             DummyResource("static/css/edx_sga.css"))
@@ -688,8 +687,8 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         assert fred_assignment['fullname'] == 'fred'
         assert fred_assignment['filename'] == 'bar.txt'
         assert fred_assignment['score'] is None
-        assert fred_assignment['annotated'] == u''
-        assert fred_assignment['comment'] == u''
+        assert fred_assignment['annotated'] == ''
+        assert fred_assignment['comment'] == ''
         assert fred_assignment['approved'] is False
         assert fred_assignment['finalized'] is True
         assert fred_assignment['may_grade'] is True
@@ -837,7 +836,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
             showanswer=ShowAnswer.ALWAYS,
         )
         solution = block.student_state()['solution']
-        assert '<a href="{}/test.pdf">A PDF</a>'.format(path) == solution
+        assert f'<a href="{path}/test.pdf">A PDF</a>' == solution
 
     def test_base_asset_url(self):
         """
@@ -906,7 +905,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
     def make_test_vertical(self, solution_attribute=None, solution_element=None):
         """Create a test vertical with an SGA unit inside"""
         solution_attribute = 'solution="{}"'.format(html.escape(solution_attribute)) if solution_attribute else ''
-        solution_element = '<solution>{}</solution>'.format(solution_element) if solution_element else ''
+        solution_element = f'<solution>{solution_element}</solution>' if solution_element else ''
 
         return (
             """<vertical display_name="SGA Unit">

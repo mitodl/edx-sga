@@ -1,22 +1,21 @@
 """Tests for ShowAnswerXBlockMixin"""
-from __future__ import absolute_import
 
 import datetime
-from unittest import TestCase
+from unittest import TestCase, mock
 
-import mock
 import pytest
-
 import ddt
 import pytz
-from edx_sga.constants import ShowAnswer
-from edx_sga.showanswer import ShowAnswerXBlockMixin
 from web_fragments.fragment import Fragment
 from workbench.runtime import WorkbenchRuntime
 from xblock.core import XBlock
 from xblock.fields import DateTime, Integer, String
 
-pytestmark = pytest.mark.django_db  # pylint: disable=invalid-name
+
+from edx_sga.constants import ShowAnswer
+from edx_sga.showanswer import ShowAnswerXBlockMixin
+
+pytestmark = pytest.mark.django_db
 
 
 class ShowAnswerXBlock(ShowAnswerXBlockMixin, XBlock):  # pylint: disable=abstract-method
@@ -44,7 +43,7 @@ class TestShowAnswerXBlock(TestCase):
     """
 
     def setUp(self):
-        super(TestShowAnswerXBlock, self).setUp()
+        super().setUp()
 
         self.runtime = WorkbenchRuntime()
 

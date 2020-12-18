@@ -1,16 +1,16 @@
 """XBlock mixins for showanswer"""
-from __future__ import absolute_import
 
 import logging
 
 from django.utils.translation import ugettext_lazy as _
-from edx_sga.constants import ShowAnswer
 from xblock.fields import Scope, String
+
+from edx_sga.constants import ShowAnswer
 
 log = logging.getLogger(__name__)
 
 
-class ShowAnswerXBlockMixin(object):
+class ShowAnswerXBlockMixin:
     """
     Mixin for showanswer functionality
     """

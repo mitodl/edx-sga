@@ -1,5 +1,4 @@
 """celery async tasks"""
-from __future__ import absolute_import
 
 import hashlib
 import logging
@@ -8,12 +7,13 @@ import tempfile
 import zipfile
 
 from django.core.files.storage import default_storage
-from edx_sga.constants import ITEM_TYPE
-from edx_sga.utils import get_file_storage_path
 from celery import shared_task
 from opaque_keys.edx.locator import BlockUsageLocator
 from common.djangoapps.student.models import user_by_anonymous_id
 from submissions import api as submissions_api
+
+from edx_sga.constants import ITEM_TYPE
+from edx_sga.utils import get_file_storage_path
 
 log = logging.getLogger(__name__)
 

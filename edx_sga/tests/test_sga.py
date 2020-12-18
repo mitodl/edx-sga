@@ -1,45 +1,35 @@
-# -*- coding: utf-8 -*-
 """
 Tests for SGA
 """
-from __future__ import absolute_import
-
+# pylint: disable=imported-auth-user
+import builtins
 import datetime
 import json
 import mimetypes
 import os
 import uuid
+from unittest import mock
 
-import mock
 import pytest
-import six
-from six.moves import range
-
 import pytz
 from ddt import data, ddt, unpack
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.timezone import now as django_now
-from edx_sga.tests.common import DummyResource, TempfileMixin
 from opaque_keys.edx.locations import Location
 from opaque_keys.edx.locator import CourseLocator
 from workbench.runtime import WorkbenchRuntime
 from xblock.field_data import DictFieldData
 from xblock.fields import DateTime
 
-try:
-    # Python 2
-    import six.moves.builtins as builtins  # pylint: disable=ungrouped-imports
-except ImportError:
-    # Python 3
-    import builtins
+from edx_sga.tests.common import DummyResource, TempfileMixin
 
 
 SHA1 = 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
 UUID = '8c4b765745f746f7a128470842211601'
 
 
-pytestmark = pytest.mark.django_db  # pylint: disable=invalid-name
+pytestmark = pytest.mark.django_db
 
 
 def fake_get_submission(**kwargs):
@@ -84,7 +74,7 @@ class FakeWorkbenchRuntime(WorkbenchRuntime):
     user_is_staff = True
 
     def __init__(self, *args, **kwargs):
-        super(FakeWorkbenchRuntime, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         User.objects.create(username=self.anonymous_student_id)
 
@@ -100,12 +90,12 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
     """
     @classmethod
     def setUpClass(cls):
-        super(StaffGradedAssignmentMockedTests, cls).setUpClass()
+        super().setUpClass()
         cls.set_up_temp_directory()
 
     @classmethod
     def tearDownClass(cls):
-        super(StaffGradedAssignmentMockedTests, cls).tearDownClass()
+        super().tearDownClass()
         cls.tear_down_temp_directory()
 
     def setUp(self):
@@ -113,7 +103,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         Creates a test course ID, mocks the runtime, and creates a fake storage
         engine for use in all tests
         """
-        super(StaffGradedAssignmentMockedTests, self).setUp()
+        super().setUp()
 
         # fakes imports
         real_import = builtins.__import__
@@ -124,7 +114,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
                 return real_import(name, *args, **kwargs)
             except ImportError:
                 for module in ('common', 'courseware', 'lms', 'xmodule'):
-                    if name.startswith("{}.".format(module)) or name == module:
+                    if name.startswith(f"{module}.") or name == module:
                         return mock.Mock()
                 if name == 'safe_lxml':
                     return real_import('lxml', *args, **kwargs)
@@ -150,7 +140,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         """
         Creates a XBlock SGA for testing purpose.
         """
-        from edx_sga.sga import StaffGradedAssignmentXBlock as cls
+        from edx_sga.sga import StaffGradedAssignmentXBlock as cls  # pylint: disable=import-outside-toplevel
         field_data = DictFieldData(kwargs)
         block = cls(self.runtime, field_data, self.scope_ids)
         block.location = Location(
@@ -620,7 +610,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         get_sorted_submissions.return_value = [
             {
                 'submission_id': uuid.uuid4().hex,
-                'filename': "test_{}.txt".format(uuid.uuid4().hex),
+                'filename': f"test_{uuid.uuid4().hex}.txt",
                 'timestamp': datetime.datetime.now(tz=pytz.utc)
             } for __ in range(2)
         ]
@@ -664,7 +654,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         get_sorted_submissions.return_value = [
             {
                 'submission_id': uuid.uuid4().hex,
-                'filename': "test_{}.txt".format(uuid.uuid4().hex),
+                'filename': f"test_{uuid.uuid4().hex}.txt",
                 'timestamp': now
             } for __ in range(2)
         ]
@@ -696,7 +686,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         get_sorted_submissions.return_value = [
             {
                 'submission_id': uuid.uuid4().hex,
-                'filename': "test_{}.txt".format(uuid.uuid4().hex),
+                'filename': f"test_{uuid.uuid4().hex}.txt",
                 'timestamp': datetime.datetime.utcnow()
             } for __ in range(2)
         ]
@@ -716,9 +706,9 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             assert response_body["downloadable"] is False
 
         zip_student_submissions.delay.assert_called_once_with(
-            six.text_type(block.block_course_id),
-            six.text_type(block.block_id),
-            six.text_type(block.location),
+            str(block.block_course_id),
+            str(block.block_id),
+            str(block.location),
             self.staff.username
         )
 

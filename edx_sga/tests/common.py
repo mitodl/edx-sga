@@ -1,5 +1,4 @@
 """Shared test functionality"""
-from __future__ import absolute_import
 
 import hashlib
 import shutil
@@ -7,9 +6,9 @@ import unittest
 from contextlib import contextmanager
 from datetime import datetime
 from tempfile import mkdtemp
+from unittest.mock import Mock
 
 from lxml import etree
-from mock import Mock
 
 import pytz
 from django.conf import settings
@@ -84,10 +83,11 @@ class TempfileMixin(unittest.TestCase):
                 default_storage.delete(rel_file_path)
 
 
-class DummyResource(object):
+class DummyResource:
     """
      A Resource class for use in tests
     """
+    # pylint: disable=eq-without-hash
     def __init__(self, path):
         self.path = path
 
