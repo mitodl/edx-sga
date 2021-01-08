@@ -81,7 +81,7 @@ class TestShowAnswerXBlock(TestCase):
         with mock.patch.object(
             ShowAnswerXBlock, 'correctness_available', return_value=False
         ):
-            self.assertFalse(block.answer_available())
+            self.assertTrue(block.answer_available())
 
     @XBlock.register_temp_plugin(ShowAnswerXBlock, "showanswer")
     def test_answer_available_user_is_staff(self):
