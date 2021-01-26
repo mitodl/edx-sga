@@ -40,11 +40,13 @@ def get_file_modified_time_utc(file_path):
         if settings.DEFAULT_FILE_STORAGE == 'django.core.files.storage.FileSystemStorage'
         else pytz.utc
     )
-    return file_timezone.localize(
-        default_storage.get_modified_time(file_path)
-    ).astimezone(
-        pytz.utc
-    )
+
+    file_time = default_storage.get_modified_time(file_path)
+
+    if file_time.tzinfo is None:
+        return file_timezone.localize(file_time).astimezone(pytz.utc)
+    else:
+        return file_time.astimezone(pytz.utc)
 
 
 def get_sha1(file_descriptor):
