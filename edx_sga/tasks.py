@@ -13,7 +13,7 @@ from common.djangoapps.student.models import user_by_anonymous_id
 from submissions import api as submissions_api
 
 from edx_sga.constants import ITEM_TYPE
-from edx_sga.utils import get_file_storage_path
+from edx_sga.utils import get_file_storage_path, is_finalized_submission
 
 log = logging.getLogger(__name__)
 
@@ -30,6 +30,12 @@ def _get_student_submissions(block_id, course_id, locator):
     Returns:
         list(tuple): A list of 2-element tuples - (student username, submission file path)
     """
+
+    def final_submissions(submissions):
+        for submission in submissions:
+            if is_finalized_submission(submission_data=submission):
+                yield submission
+
     submissions = submissions_api.get_all_submissions(
         course_id,
         block_id,
@@ -44,7 +50,7 @@ def _get_student_submissions(block_id, course_id, locator):
                 submission['answer']['filename']
             )
         )
-        for submission in submissions if submission['answer']
+        for submission in final_submissions(submissions)
     ]
 
 
