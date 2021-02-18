@@ -58,6 +58,13 @@
     <% } %>
   </script>
 
+  <script>
+    if (typeof window.setup_debug === 'undefined') {
+            window.setup_debug = function(element_id, edit_link, staff_context) {
+                 // stub function.
+             };
+           }
+  </script>
   <div id="sga-content">
   </div>
 
