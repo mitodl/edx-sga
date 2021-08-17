@@ -36,19 +36,13 @@ def _get_student_submissions(block_id, course_id, locator):
             if is_finalized_submission(submission_data=submission):
                 yield submission
 
-    submissions = submissions_api.get_all_submissions(
-        course_id,
-        block_id,
-        ITEM_TYPE
-    )
+    submissions = submissions_api.get_all_submissions(course_id, block_id, ITEM_TYPE)
     return [
         (
-            user_by_anonymous_id(submission['student_id']).username,
+            user_by_anonymous_id(submission["student_id"]).username,
             get_file_storage_path(
-                locator,
-                submission['answer']['sha1'],
-                submission['answer']['filename']
-            )
+                locator, submission["answer"]["sha1"], submission["answer"]["filename"]
+            ),
         )
         for submission in final_submissions(submissions)
     ]
@@ -65,28 +59,29 @@ def _compress_student_submissions(zip_file_path, block_id, course_id, locator):
     if not student_submissions:
         return
 
-    log.info("Compressing %d student submissions to path: %s ", len(student_submissions), zip_file_path)
+    log.info(
+        "Compressing %d student submissions to path: %s ",
+        len(student_submissions),
+        zip_file_path,
+    )
     # Build the zip file in memory using temporary file.
     with tempfile.TemporaryFile() as tmp:
-        with zipfile.ZipFile(tmp, 'w', compression=zipfile.ZIP_DEFLATED) as zip_pointer:
+        with zipfile.ZipFile(tmp, "w", compression=zipfile.ZIP_DEFLATED) as zip_pointer:
             for student_username, submission_file_path in student_submissions:
                 log.info(
                     "Creating zip file for student: %s, submission path: %s ",
                     student_username,
-                    submission_file_path
+                    submission_file_path,
                 )
-                with default_storage.open(submission_file_path, 'rb') as destination_file:
-                    filename_in_zip = '{}_{}'.format(
-                        student_username,
-                        os.path.basename(submission_file_path)
-                    )
+                with default_storage.open(
+                    submission_file_path, "rb"
+                ) as destination_file:
+                    filename_in_zip = f"{student_username}_{os.path.basename(submission_file_path)}"
                     zip_pointer.writestr(filename_in_zip, destination_file.read())
         # Reset file pointer
         tmp.seek(0)
         # Write the bytes of the in-memory zip file to an actual file
-        log.info(
-            "Moving zip file from memory to storage at path: %s ", zip_file_path
-        )
+        log.info("Moving zip file from memory to storage at path: %s ", zip_file_path)
         default_storage.save(zip_file_path, tmp)
 
 
@@ -107,12 +102,7 @@ def zip_student_submissions(course_id, block_id, locator_unicode, username):
     if default_storage.exists(zip_file_path):
         log.info("Deleting already-existing zip file at path: %s", zip_file_path)
         default_storage.delete(zip_file_path)
-    _compress_student_submissions(
-        zip_file_path,
-        block_id,
-        course_id,
-        locator
-    )
+    _compress_student_submissions(zip_file_path, block_id, course_id, locator)
 
 
 def get_zip_file_dir(locator):
@@ -135,11 +125,8 @@ def get_zip_file_name(username, course_id, block_id):
         course_id (unicode): edx course id
         block_id (unicode): edx block id
     """
-    return "{username}_submissions_{id}_{course_key}.zip".format(
-        username=username,
-        id=hashlib.md5(block_id.encode('utf-8')).hexdigest(),
-        course_key=course_id
-    )
+    _id=hashlib.md5(block_id.encode("utf-8")).hexdigest()
+    return f"{username}_submissions_{_id}_{course_id}.zip"
 
 
 def get_zip_file_path(username, course_id, block_id, locator):
@@ -154,6 +141,5 @@ def get_zip_file_path(username, course_id, block_id, locator):
         locator (BlockUsageLocator): BlockUsageLocator for the sga module
     """
     return os.path.join(
-        get_zip_file_dir(locator),
-        get_zip_file_name(username, course_id, block_id)
+        get_zip_file_dir(locator), get_zip_file_name(username, course_id, block_id)
     )

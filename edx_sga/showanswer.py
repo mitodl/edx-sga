@@ -2,7 +2,7 @@
 
 import logging
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from xblock.fields import Scope, String
 
 from edx_sga.constants import ShowAnswer
@@ -17,8 +17,10 @@ class ShowAnswerXBlockMixin:
 
     showanswer = String(
         display_name=_("Show Answer"),
-        help=_("Defines when to show the answer to the problem. "
-               "A default value can be set in Advanced Settings."),
+        help=_(
+            "Defines when to show the answer to the problem. "
+            "A default value can be set in Advanced Settings."
+        ),
         scope=Scope.settings,
         default=ShowAnswer.PAST_DUE,  # Default to PAST_DUE instead of FINISHED for backwards compat
         values=[
@@ -27,18 +29,21 @@ class ShowAnswerXBlockMixin:
             {"display_name": _("Attempted"), "value": ShowAnswer.ATTEMPTED},
             {"display_name": _("Closed"), "value": ShowAnswer.CLOSED},
             {"display_name": _("Finished"), "value": ShowAnswer.FINISHED},
-            {"display_name": _("Correct or Past Due"), "value": ShowAnswer.CORRECT_OR_PAST_DUE},
+            {
+                "display_name": _("Correct or Past Due"),
+                "value": ShowAnswer.CORRECT_OR_PAST_DUE,
+            },
             {"display_name": _("Past Due"), "value": ShowAnswer.PAST_DUE},
-            {"display_name": _("Never"), "value": ShowAnswer.NEVER}
-        ]
+            {"display_name": _("Never"), "value": ShowAnswer.NEVER},
+        ],
     )
     solution = String(
         help=_("Solution to the problem to show to the user"),
         display_name=_("Solution"),
         scope=Scope.settings,
-        multiline_editor='html',
+        multiline_editor="html",
         resettable_editor=False,
-        default='',
+        default="",
     )
 
     def answer_available(self):  # pylint: disable=too-many-return-statements
@@ -48,7 +53,7 @@ class ShowAnswerXBlockMixin:
         if not self.correctness_available():
             # If correctness is being withheld, then don't show answers either.
             return False
-        elif self.showanswer == '':
+        elif self.showanswer == "":
             return False
         elif self.showanswer == ShowAnswer.NEVER:
             return False

@@ -22,6 +22,7 @@ class TempfileMixin(unittest.TestCase):
     Test class that sets up a temp directory for 'uploaded' files, and configures Django's
     default_storage to use that directory
     """
+
     temp_directory = None
     default_storage = None
     _original_media_root = None
@@ -36,7 +37,7 @@ class TempfileMixin(unittest.TestCase):
         cls._original_file_storage = settings.DEFAULT_FILE_STORAGE
         cls.temp_directory = mkdtemp()
         settings.MEDIA_ROOT = cls.temp_directory
-        settings.DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+        settings.DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
         cls.default_storage = default_storage
 
     @classmethod
@@ -76,7 +77,7 @@ class TempfileMixin(unittest.TestCase):
         Puts an empty file at the given file path (relative to the class temp directory)
         """
         try:
-            default_storage.save(rel_file_path, ContentFile(b''))
+            default_storage.save(rel_file_path, ContentFile(b""))
             yield rel_file_path
         finally:
             if default_storage.exists(rel_file_path):
@@ -85,9 +86,9 @@ class TempfileMixin(unittest.TestCase):
 
 class DummyResource:
     """
-     A Resource class for use in tests
+    A Resource class for use in tests
     """
-    # pylint: disable=eq-without-hash
+
     def __init__(self, path):
         self.path = path
 
@@ -129,7 +130,7 @@ def reformat_xml(xml_string):
     root = etree.XML(xml_string, parser=parser)
 
     # Remove whitespace
-    for elem in root.iter('*'):
+    for elem in root.iter("*"):
         if elem.text is not None:
             elem.text = elem.text.strip()
             if not elem.text:

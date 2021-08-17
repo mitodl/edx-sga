@@ -15,8 +15,11 @@ jobs:
       - name: tox install
         run: pip install tox
 
-      - name: Python 3.8, Django 2.22 Unit Tests
+      - name: Python 3.8, Django 2.2 Unit Tests
         run: tox -e py38-django22
+
+      - name: Python 3.8, Django 3.2 Unit Tests
+        run: tox -e py38-django32
 
       - name: Upload coverage to CodeCov
         uses: codecov/codecov-action@v1
