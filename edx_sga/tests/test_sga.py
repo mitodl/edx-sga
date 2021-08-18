@@ -368,7 +368,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             "student_id": 1,
             "course_id": block.block_course_id,
             "item_id": block.block_id,
-            "item_type": 'sga',
+            "item_type": 'edx_sga',
         }
         upload_allowed.return_value = True
 
@@ -421,7 +421,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             "student_id": 1,
             "course_id": block.block_course_id,
             "item_id": block.block_id,
-            "item_type": 'sga',
+            "item_type": 'edx_sga',
         }
         upload_allowed.return_value = True
         existing_submitted_at_value = django_now()

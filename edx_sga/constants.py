@@ -1,7 +1,7 @@
 """Constants"""
 
 BLOCK_SIZE = 2**10 * 8  # 8kb
-ITEM_TYPE = 'sga'
+ITEM_TYPE = 'edx_sga'
 
 
 class ShowAnswer:

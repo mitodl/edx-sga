@@ -98,7 +98,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         Make scope ids
         """
         # Not sure if this is a valid block type, might be sufficient for testing purposes
-        block_type = 'sga'
+        block_type = 'edx_sga'
         def_id = runtime.id_generator.create_definition(block_type)
         return ScopeIds(
             'user', block_type, def_id, self.descriptor.location
@@ -156,7 +156,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
                 student_id=anonymous_id,
                 course_id=self.course_id,
                 item_id=block.block_id,
-                item_type='sga')
+                item_type='edx_sga')
             item.save()
 
             if answer:
