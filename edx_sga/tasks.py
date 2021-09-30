@@ -76,10 +76,8 @@ def _compress_student_submissions(zip_file_path, block_id, course_id, locator):
                     submission_file_path
                 )
                 with default_storage.open(submission_file_path, 'rb') as destination_file:
-                    filename_in_zip = '{}_{}'.format(
-                        student_username,
-                        os.path.basename(submission_file_path)
-                    )
+                    path = os.path.basename(submission_file_path)
+                    filename_in_zip = f'{student_username}_{path}'
                     zip_pointer.writestr(filename_in_zip, destination_file.read())
         # Reset file pointer
         tmp.seek(0)
@@ -135,11 +133,8 @@ def get_zip_file_name(username, course_id, block_id):
         course_id (unicode): edx course id
         block_id (unicode): edx block id
     """
-    return "{username}_submissions_{id}_{course_key}.zip".format(
-        username=username,
-        id=hashlib.md5(block_id.encode('utf-8')).hexdigest(),
-        course_key=course_id
-    )
+    b_id = hashlib.md5(block_id.encode('utf-8')).hexdigest()
+    return f"{username}_submissions_{b_id}_{course_id}.zip"
 
 
 def get_zip_file_path(username, course_id, block_id, locator):

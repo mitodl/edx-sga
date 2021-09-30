@@ -26,4 +26,4 @@ six==1.14.0
 tox==3.20.0
 
 git+https://github.com/edx/xblock-utils.git@v1.0.5#egg=xblock-utils==1.0.5
-git+https://github.com/edx/xblock-sdk.git@0.2.2#egg=xblock-sdk==0.2.2
+xblock-sdk==0.3.0

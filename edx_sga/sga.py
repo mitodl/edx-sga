@@ -249,10 +249,9 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         upload = request.params['assignment']
         sha1 = get_sha1(upload.file)
         if self.file_size_over_limit(upload.file):
+            size = self.student_upload_max_size()
             raise JsonHandlerError(
-                413, 'Unable to upload file. Max size limit is {size}'.format(
-                    size=self.student_upload_max_size()
-                )
+                413, f'Unable to upload file. Max size limit is {size}'
             )
         # Uploading an assignment represents a change of state with this user in this block,
         # so we need to ensure that the user has a StudentModule record, which represents that state.
@@ -300,10 +299,9 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
         upload = request.params['annotated']
         sha1 = get_sha1(upload.file)
         if self.file_size_over_limit(upload.file):
+            size = self.student_upload_max_size()
             raise JsonHandlerError(
-                413, 'Unable to upload file. Max size limit is {size}'.format(
-                    size=self.student_upload_max_size()
-                )
+                413, f'Unable to upload file. Max size limit is {size}'
             )
         module = self.get_student_module(request.params['module_id'])
         state = json.loads(module.state)
@@ -554,9 +552,10 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
                 content_disposition="attachment; filename=" + zip_file_name
             )
         except OSError:
+            email = settings.TECH_SUPPORT_EMAIL
             return Response(
                 "Sorry, submissions cannot be found. Press Collect ALL Submissions button or"
-                " contact {} if you issue is consistent".format(settings.TECH_SUPPORT_EMAIL),
+                f" contact {email} if you issue is consistent",
                 status_code=404
             )
 
@@ -885,18 +884,18 @@ class StaffGradedAssignmentXBlock(StudioEditableXBlockMixin, ShowAnswerXBlockMix
             )
             return output
         except OSError:
+            encoded_file = filename.encode('utf-8')
             if require_staff:
+                email = settings.TECH_SUPPORT_EMAIL
                 return Response(
-                    "Sorry, assignment {} cannot be found at"
-                    " {}. Please contact {}".format(
-                        filename.encode('utf-8'), path, settings.TECH_SUPPORT_EMAIL
-                    ),
+                    f"Sorry, assignment {encoded_file} cannot be found at"
+                    f" {path}. Please contact {email}",
                     status_code=404
                 )
             return Response(
-                "Sorry, the file you uploaded, {}, cannot be"
+                f"Sorry, the file you uploaded, {encoded_file}, cannot be"
                 " found. Please try uploading it again or contact"
-                " course staff".format(filename.encode('utf-8')),
+                " course staff",
                 status_code=404
             )
 

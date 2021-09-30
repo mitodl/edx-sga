@@ -87,7 +87,6 @@ class DummyResource:
     """
      A Resource class for use in tests
     """
-    # pylint: disable=eq-without-hash
     def __init__(self, path):
         self.path = path
 
