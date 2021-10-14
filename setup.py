@@ -21,7 +21,7 @@ setup(
     name="edx-sga",
     version=edx_sga.__version__,
     description="edx-sga Staff Graded Assignment XBlock",
-    license="Affero GNU General Public License v3 (GPLv3)",
+    license="GNU Affero General Public License v3 or later (AGPLv3+)",
     url="https://github.com/mitodl/edx-sga",
     author="MITx",
     zip_safe=False,
