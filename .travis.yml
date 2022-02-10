@@ -2,41 +2,6 @@ language: python
 python: "2.7"
 matrix:
   include:
-    - install:
-      - git clone https://github.com/edx/devstack.git
-      # Travis's version of docker-compose doesn't understand :cached, and it's not required anyway, so this removes it
-      - (cd devstack; sed -i 's/:cached//g' ./docker-compose-host.yml)
-      - (cd devstack; make dev.clone)
-      python:
-        - "2.7"
-      script: >
-        cd devstack;
-        DEVSTACK_WORKSPACE=$PWD/.. docker-compose
-        -f docker-compose.yml -f docker-compose-host.yml run
-        -e TRAVIS
-        -e TRAVIS_BRANCH
-        -e TRAVIS_JOB_NUMBER
-        -e TRAVIS_PULL_REQUEST
-        -e TRAVIS_JOB_ID
-        -e TRAVIS_TAG
-        -e TRAVIS_REPO_SLUG
-        -e TRAVIS_COMMIT
-        -e TRAVIS_PULL_REQUEST_SHA
-        -e TRAVIS_PULL_REQUEST_BRANCH
-        -e TRAVIS_COMMIT_RANGE
-        -e CI
-        -v $PWD/..:/edx-sga lms /edx-sga/run_devstack_integration_tests.sh
-      services:
-        - docker
-      env:
-        name: Integration
-    - install:
-      - pip install tox
-      python:
-        - "2.7"
-      script: tox -e django111
-      env:
-        name: Python 2.7, Django 1.11 Unit Tests
     - python: 3.5
       install: 
         - pip install tox

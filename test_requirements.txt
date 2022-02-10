@@ -8,6 +8,7 @@ edx-celeryutils==0.2.6
 edx-lint==0.5.4
 edx-opaque-keys==0.4
 edx-submissions==2.0.12
+jsonfield==2.1.1
 mako==1.0.7
 mock==2.0.0
 pdbpp

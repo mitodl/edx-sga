@@ -1055,7 +1055,7 @@ def load_resource(resource_path):  # pragma: NO COVER
     Gets the content of a resource
     """
     resource_content = pkg_resources.resource_string(__name__, resource_path)
-    return six.text_type(resource_content)
+    return six.text_type(resource_content.decode("utf8"))
 
 
 def render_template(template_path, context=None):  # pragma: NO COVER
