@@ -433,7 +433,7 @@ function StaffGradedAssignmentXBlock(runtime, element) {
     function loadjs(url) {
         $('<script>')
             .attr('type', 'text/javascript')
-            .attr('src', url)
+            .attr('src', (window.baseUrl || '/static/') + url)
             .appendTo(element);
     }
 
@@ -444,8 +444,8 @@ function StaffGradedAssignmentXBlock(runtime, element) {
          * jquery.ajaxfileupload instead.  But our XBlock uses
          * jquery.fileupload.
          */
-        loadjs('/static/js/vendor/jQuery-File-Upload/js/jquery.iframe-transport.js');
-        loadjs('/static/js/vendor/jQuery-File-Upload/js/jquery.fileupload.js');
+        loadjs('js/vendor/jQuery-File-Upload/js/jquery.iframe-transport.js');
+        loadjs('js/vendor/jQuery-File-Upload/js/jquery.fileupload.js');
         xblock($, _);
     } else {
         /**
