@@ -430,28 +430,5 @@ function StaffGradedAssignmentXBlock(runtime, element) {
       return deferred.promise();
     }
 
-    function loadjs(url) {
-        $('<script>')
-            .attr('type', 'text/javascript')
-            .attr('src', (window.baseUrl || '/static/') + url)
-            .appendTo(element);
-    }
-
-    if (require === undefined) {
-        /**
-         * The LMS does not use require.js (although it loads it...) and
-         * does not already load jquery.fileupload.  (It looks like it uses
-         * jquery.ajaxfileupload instead.  But our XBlock uses
-         * jquery.fileupload.
-         */
-        loadjs('js/vendor/jQuery-File-Upload/js/jquery.iframe-transport.js');
-        loadjs('js/vendor/jQuery-File-Upload/js/jquery.fileupload.js');
-        xblock($, _);
-    } else {
-        /**
-         * Studio, on the other hand, uses require.js and already knows about
-         * jquery.fileupload.
-         */
-        require(['jquery', 'underscore', 'jquery.fileupload'], xblock);
-    }
+    xblock($, _);
 }
