@@ -635,7 +635,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             'edx_sga.sga.StaffGradedAssignmentXBlock.get_real_user',
             return_value=self.staff
         ), mock.patch(
-            'edx_sga.utils.default_storage.modified_time',
+            'edx_sga.utils.default_storage.get_modified_time',
             return_value=datetime.datetime.now()
         ):
             response = block.prepare_download_submissions(None)
@@ -678,7 +678,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         ), mock.patch(
             'edx_sga.sga.StaffGradedAssignmentXBlock.get_real_user', return_value=self.staff
         ), mock.patch(
-            'edx_sga.utils.default_storage.modified_time', return_value=datetime.datetime.now()
+            'edx_sga.utils.default_storage.get_modified_time', return_value=datetime.datetime.now()
         ):
             response = block.prepare_download_submissions(None)
             response_body = json.loads(response.body.decode('utf-8'))
@@ -711,7 +711,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             'edx_sga.sga.StaffGradedAssignmentXBlock.get_real_user',
             return_value=self.staff
         ), mock.patch(
-            'edx_sga.sga.default_storage.modified_time',
+            'edx_sga.sga.default_storage.get_modified_time',
             return_value=datetime.datetime.now()
         ):
             response = block.prepare_download_submissions(None)
