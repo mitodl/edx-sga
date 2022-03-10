@@ -14,6 +14,8 @@ jobs:
         include:
           - python-version: 3.5
             tox-env: py35-django2
+          - python-version: 3.8
+            tox-env: py38-django2
 
     steps:
       - uses: actions/checkout@v2
@@ -23,7 +25,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install --upgrade pip wheel setuptools
           python -m pip install virtualenv tox tox-pip-version
+      - name: python 3.8 needs to downgrade setuptools to deal with an old package
+        run: |
+          python -m pip install tox-setuptools-version
+        if: matrix.python-version == 3.8
       - name: "Run tox targets for ${{ matrix.python-version }}"
         run: "tox -e ${{ matrix.tox-env }}"
