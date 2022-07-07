@@ -25,7 +25,7 @@ from django.utils.encoding import force_text
 from django.utils.timezone import now as django_now
 from django.utils.translation import gettext as _
 from lms.djangoapps.courseware.models import StudentModule
-from safe_lxml import etree
+from openedx.core.lib.safe_lxml import etree
 from common.djangoapps.student.models import user_by_anonymous_id
 from submissions import api as submissions_api
 from submissions.models import StudentItem as SubmissionsStudent

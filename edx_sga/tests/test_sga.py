@@ -116,7 +116,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
                 for module in ("common", "courseware", "lms", "xmodule"):
                     if name.startswith(f"{module}.") or name == module:
                         return mock.Mock()
-                if name == "safe_lxml":
+                if name == "openedx.core.lib.safe_lxml":
                     return real_import("lxml", *args, **kwargs)
                 raise
 
