@@ -6,7 +6,7 @@ cryptography==3.3.2
 ddt==1.4.2
 djangorestframework==3.12.4
 edx-celeryutils==1.1.0
-edx-lint==5.0.0
+edx-lint==5.2.4
 edx-opaque-keys
 edx-submissions==3.3.1
 jsonfield==3.1.0
@@ -14,10 +14,11 @@ mako==1.1.5
 mock==4.0.3
 pdbpp==0.10.3
 pep8==1.7.0
+pylint~=2.12.2
 pylint-celery==0.3
-pylint-django==2.3.0
+pylint-django==2.4.4
 pyOpenSSL==20.0.1
-pytz==2021.1
+pytz==2021.3
 pytest==6.1.1
 pytest-cov==2.12.1
 pytest-django==4.1.0

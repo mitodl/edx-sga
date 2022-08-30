@@ -386,7 +386,8 @@ disable =
 	
 	logging-fstring-interpolation,
 	import-error,
-	no-name-in-module
+	no-name-in-module,
+	django-not-configured
 
 [REPORTS]
 output-format = text
@@ -486,4 +487,4 @@ int-import-graph =
 [EXCEPTIONS]
 overgeneral-exceptions = Exception
 
-# 893de542bbc539110e34431fb7d9c2508a544c42
+# e4e48da2ae70ae33f341b6bd31cc537a054573d8

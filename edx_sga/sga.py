@@ -2,7 +2,6 @@
 This block defines a Staff Graded Assignment.  Students are shown a rubric
 and invited to upload a file which is then graded by staff.
 """
-
 import json
 import logging
 import mimetypes
@@ -605,7 +604,6 @@ class StaffGradedAssignmentXBlock(
         return super().studio_view(context)
 
     def clear_student_state(self, *args, **kwargs):
-        # pylint: disable=unused-argument
         """
         For a given user, clears submissions and uploaded files for this XBlock.
 

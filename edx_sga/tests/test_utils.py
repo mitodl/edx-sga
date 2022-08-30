@@ -1,10 +1,9 @@
 """
 Tests for SGA utility functions
 """
-
 import pytest
-
 import pytz
+
 from edx_sga.tests.common import is_near_now
 from edx_sga.utils import is_finalized_submission, utcnow
 
