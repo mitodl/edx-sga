@@ -1,0 +1,77 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-11-09 15:55-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: edx_sga/static/js/src/edx_sga.js:24
+msgid "Started preparing student submissions zip file. This may take a while."
+msgstr "Préparation du fichier zip des soumissions étudiantes. Ceci prendra un moment."
+
+#: edx_sga/static/js/src/edx_sga.js:45
+msgid "Submission failed. Please contact your course instructor."
+msgstr "Soumission échouée. Veuillez contacter votre responsable de cours."
+
+#: edx_sga/static/js/src/edx_sga.js:57
+msgid "Uploading..."
+msgstr "En téléversement..."
+
+#: edx_sga/static/js/src/edx_sga.js:64 edx_sga/static/js/src/edx_sga.js:88
+msgid "The file you are trying to upload is too large."
+msgstr "Le fichier que vous essayez de téléverser est trop grand."
+
+#: edx_sga/static/js/src/edx_sga.js:91
+msgid "There was an error uploading your file."
+msgstr "Une erreur est survenue durant le téléversement."
+
+#: edx_sga/static/js/src/edx_sga.js:166
+msgid "Uploading... %(percent)s %"
+msgstr "En téléversement... %(percent)s %"
+
+#: edx_sga/static/js/src/edx_sga.js:200
+msgid "yes"
+msgstr "oui"
+
+#: edx_sga/static/js/src/edx_sga.js:248
+msgid "Grade must be a number."
+msgstr "La note doit être un chiffre."
+
+#: edx_sga/static/js/src/edx_sga.js:250
+msgid "Grade must be an integer."
+msgstr "La note doit être un entier."
+
+#: edx_sga/static/js/src/edx_sga.js:252
+msgid "Grade must be positive."
+msgstr "La note doit être un chiffre positif"
+
+#: edx_sga/static/js/src/edx_sga.js:254
+msgid "Maximum score is %(max_score)s"
+msgstr "La note maximale est %(max_score)s"
+
+#: edx_sga/static/js/src/edx_sga.js:279
+msgid "No grade to remove."
+msgstr "Aucune note à enlever."
+
+#: edx_sga/static/js/src/edx_sga.js:372 edx_sga/static/js/src/edx_sga.js:440
+msgid ""
+"The download file was not created. Please try again or contact "
+"%(support_email)s"
+msgstr ""
+"Le fichier de téléchargement n'a pas été créé. Veuillez réessayer ou contacter "
+"%(support_email)s"
+
+#: edx_sga/static/js/src/edx_sga.js:430
+msgid "Student submission file ready for download"
+msgstr "Le fichier de soumission des étudiants est prêt à être téléchargé"
