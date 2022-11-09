@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-10 13:09+0430\n"
+"POT-Creation-Date: 2022-11-09 15:55-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,46 +17,66 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: edx_sga/static/js/src/edx_sga.js
-msgid "Upload %(file_name)s"
-msgstr "Ûplöäd %(file_name)s Ⱡ'σяєм ιρѕυм ∂σłσ#"
+#: edx_sga/static/js/src/edx_sga.js:24
+msgid "Started preparing student submissions zip file. This may take a while."
+msgstr "Started preparing student submissions zip file. This may take a while. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт#"
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:45
+msgid "Submission failed. Please contact your course instructor."
+msgstr "Sübmîssïön fäïlëd. Plëäsë çöntäçt yöür çöùrsé ïnstrùçtôr. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт#"
+
+#: edx_sga/static/js/src/edx_sga.js:57
 msgid "Uploading..."
 msgstr "Ûplöädïng... Ⱡ'σяєм ιρѕυм ∂σłσя ѕ#"
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:64 edx_sga/static/js/src/edx_sga.js:88
 msgid "The file you are trying to upload is too large."
 msgstr ""
-"Thé fïlé ýöü äré trýïng tö üplöäd ïs töö lärgé. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт,"
-" ¢σηѕє¢тєтυя α#"
+"Thé fïlé ýöü äré trýïng tö üplöäd ïs töö lärgé. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυя α#"
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:91
 msgid "There was an error uploading your file."
 msgstr ""
-"Théré wäs än érrör üplöädïng ýöür fïlé. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
-"¢σηѕє¢тєтυя#"
+"Théré wäs än érrör üplöädïng ýöür fïlé. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє"
+"¢тєтυя#"
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:166
 msgid "Uploading... %(percent)s %"
 msgstr "Ûplöädïng... %(percent)s % Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт#"
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:200
+msgid "yes"
+msgstr "ÿés Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт#"
+
+#: edx_sga/static/js/src/edx_sga.js:248
 msgid "Grade must be a number."
 msgstr "Grädé müst ßé ä nümßér. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σ#"
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:250
 msgid "Grade must be an integer."
 msgstr "Grädé müst ßé än ïntégér. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕ#"
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:252
 msgid "Grade must be positive."
 msgstr "Grädé müst ßé pösïtïvé. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σ#"
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:254
 msgid "Maximum score is %(max_score)s"
 msgstr "Mäxïmüm sçöré ïs %(max_score)s Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, #"
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:279
 msgid "No grade to remove."
 msgstr "Nö grädé tö rémövé. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт,#"
+
+#: edx_sga/static/js/src/edx_sga.js:372 edx_sga/static/js/src/edx_sga.js:440
+msgid ""
+"The download file was not created. Please try again or contact "
+"%(support_email)s"
+msgstr ""
+"Thé dôwnlöâd fïlè wàs nòt créàtëd. Plêâsê trÿ ägäïn ör cöntâct "
+"%(support_email)s"
+
+#: edx_sga/static/js/src/edx_sga.js:430
+msgid "Student submission file ready for download"
+msgstr "Stùdènt sùbmîssïon fïlè réàdÿ för döwnlöäd"
