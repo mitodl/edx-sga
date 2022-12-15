@@ -21,18 +21,17 @@ from django.db import transaction
 from django.test.utils import override_settings
 from lms.djangoapps.courseware import module_render as render
 from lms.djangoapps.courseware.models import StudentModule
-from lms.djangoapps.courseware.tests.factories import StaffFactory
 from opaque_keys.edx.locations import Location
 from opaque_keys.edx.locator import CourseLocator
 from common.djangoapps.student.models import UserProfile, anonymous_id_for_user
-from common.djangoapps.student.tests.factories import AdminFactory
+from common.djangoapps.student.tests.factories import AdminFactory, StaffFactory
 from submissions import api as submissions_api
 from submissions.models import StudentItem
 from xblock.field_data import DictFieldData
 from xblock.fields import ScopeIds
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
-from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
+from xmodule.modulestore.tests.factories import CourseFactory, BlockFactory
 from xmodule.modulestore.xml_exporter import export_course_to_xml
 from xmodule.modulestore.xml_importer import import_course_from_xml
 
@@ -72,7 +71,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         """
         super().setUp()
         self.course = CourseFactory.create(org="foo", number="bar", display_name="baz")
-        self.descriptor = ItemFactory(category="pure", parent=self.course)
+        self.descriptor = BlockFactory(category="pure", parent=self.course)
         self.course_id = self.course.id
         self.instructor = StaffFactory.create(course_key=self.course_id)
         self.student_data = mock.Mock()
@@ -902,7 +901,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
     @data(True, False)
     def test_runtime_user_is_staff(self, is_staff):
         course = CourseFactory.create(org="org", number="bar", display_name="baz")
-        descriptor = ItemFactory(category="pure", parent=course)
+        descriptor = BlockFactory(category="pure", parent=course)
 
         staff = StaffFactory.create(course_key=course.id)
         self.runtime, _ = render.get_module_system_for_user(
