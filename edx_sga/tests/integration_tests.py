@@ -71,7 +71,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         """
         super().setUp()
         self.course = CourseFactory.create(org="foo", number="bar", display_name="baz")
-        self.descriptor = BlockFactory(category="pure", parent=self.course)
+        self.block = BlockFactory(category="pure", parent=self.course)
         self.course_id = self.course.id
         self.instructor = StaffFactory.create(course_key=self.course_id)
         self.student_data = mock.Mock()
@@ -86,7 +86,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         runtime, _ = render.get_module_system_for_user(
             self.instructor,
             self.student_data,
-            self.descriptor,
+            self.block,
             self.course.id,
             mock.Mock(),
             mock.Mock(),
@@ -106,7 +106,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         # Not sure if this is a valid block type, might be sufficient for testing purposes
         block_type = "sga"
         def_id = runtime.id_generator.create_definition(block_type)
-        return ScopeIds("user", block_type, def_id, self.descriptor.location)
+        return ScopeIds("user", block_type, def_id, self.block.location)
 
     def make_one(self, display_name=None, **kw):
         """
@@ -901,13 +901,13 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
     @data(True, False)
     def test_runtime_user_is_staff(self, is_staff):
         course = CourseFactory.create(org="org", number="bar", display_name="baz")
-        descriptor = BlockFactory(category="pure", parent=course)
+        block = BlockFactory(category="pure", parent=course)
 
         staff = StaffFactory.create(course_key=course.id)
         self.runtime, _ = render.get_module_system_for_user(
             staff if is_staff else User.objects.create(),
             self.student_data,
-            descriptor,
+            block,
             course.id,
             mock.Mock(),
             mock.Mock(),
