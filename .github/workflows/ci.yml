@@ -1,28 +1,44 @@
 name: CI
-on: [push, pull_request]
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches:
+    - '**'
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   python-tests:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        python-version: ['3.8']
+        toxenv: [py38-django32]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Python setup
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.8"
+          python-version: ${{ matrix.python-version }}
 
       - name: tox install
         run: pip install tox
 
-      - name: Python 3.8, Django 2.2 Unit Tests
-        run: tox -e py38-django22
-
-      - name: Python 3.8, Django 3.2 Unit Tests
-        run: tox -e py38-django32
+      - name: Run Tests
+        env:
+          TOXENV: ${{ matrix.toxenv }}
+        run: tox
 
       - name: Upload coverage to CodeCov
-        uses: codecov/codecov-action@v1
+        if: matrix.python-version == '3.8' && matrix.toxenv == 'py38-django32'
+        uses: codecov/codecov-action@v3
         with:
           file: ./coverage.xml
           fail_ci_if_error: true
