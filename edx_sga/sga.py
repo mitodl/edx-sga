@@ -39,7 +39,7 @@ from xblockutils.studio_editable import StudioEditableXBlockMixin
 from xmodule.contentstore.content import StaticContent
 from xmodule.util.duedate import get_extended_due_date
 
-from edx_sga.constants import ITEM_TYPE
+from edx_sga.constants import ATTR_KEY_ANONYMOUS_USER_ID, ATTR_KEY_USER_IS_STAFF, ATTR_KEY_USER_ROLE, ITEM_TYPE
 from edx_sga.showanswer import ShowAnswerXBlockMixin
 from edx_sga.tasks import get_zip_file_name, get_zip_file_path, zip_student_submissions
 from edx_sga.utils import (
@@ -72,6 +72,8 @@ def reify(meth):
     return property(getter)
 
 
+@XBlock.needs('replace_urls')
+@XBlock.needs('user')
 class StaffGradedAssignmentXBlock(
     StudioEditableXBlockMixin, ShowAnswerXBlockMixin, XBlock
 ):
@@ -646,13 +648,12 @@ class StaffGradedAssignmentXBlock(
         return str(self.course_id)
 
     def get_student_item_dict(self, student_id=None):
-        # pylint: disable=no-member
         """
         Returns dict required by the submissions app for creating and
         retrieving submissions for a particular student.
         """
-        if student_id is None:
-            student_id = self.xmodule_runtime.anonymous_student_id
+        if student_id is None and (user_service := self.runtime.service(self, 'user')):
+            student_id = user_service.get_current_user().opt_attrs.get(ATTR_KEY_ANONYMOUS_USER_ID)
             assert student_id != ("MOCK", "Forgot to call 'personalize' in test.")
         return {
             "student_id": student_id,
@@ -765,8 +766,8 @@ class StaffGradedAssignmentXBlock(
         else:
             graded = None
 
-        if self.answer_available():
-            solution = self.runtime.replace_urls(force_str(self.solution))
+        if self.answer_available() and (replace_urls_service := self.runtime.service(self, 'replace_urls')):
+            solution = replace_urls_service.replace_urls(force_str(self.solution))
         else:
             solution = ""
         # pylint: disable=no-member
@@ -902,18 +903,20 @@ class StaffGradedAssignmentXBlock(
         return {"error": "Please enter valid grade"}
 
     def is_course_staff(self):
-        # pylint: disable=no-member
         """
         Check if user is course staff.
         """
-        return getattr(self.xmodule_runtime, "user_is_staff", False)
+        if user_service := self.runtime.service(self, 'user'):
+            return user_service.get_current_user().opt_attrs.get(ATTR_KEY_USER_IS_STAFF)
+        return False
 
     def is_instructor(self):
-        # pylint: disable=no-member
         """
         Check if user role is instructor.
         """
-        return self.xmodule_runtime.get_user_role() == "instructor"
+        if user_service := self.runtime.service(self, 'user'):
+            return user_service.get_current_user().opt_attrs.get(ATTR_KEY_USER_ROLE) == "instructor"
+        return False
 
     def show_staff_grading_interface(self):
         """
@@ -987,8 +990,9 @@ class StaffGradedAssignmentXBlock(
 
     def get_real_user(self):
         """returns session user"""
-        # pylint: disable=no-member
-        return self.runtime.get_real_user(self.xmodule_runtime.anonymous_student_id)
+        if user_service := self.runtime.service(self, 'user'):
+            return user_service.get_user_by_anonymous_id()
+        return None
 
     def correctness_available(self):
         """

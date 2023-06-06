@@ -22,6 +22,7 @@ from workbench.runtime import WorkbenchRuntime
 from xblock.field_data import DictFieldData
 from xblock.fields import DateTime
 
+from edx_sga.constants import ATTR_KEY_USER_IS_STAFF
 from edx_sga.tests.common import DummyResource, TempfileMixin
 
 
@@ -69,17 +70,12 @@ def fake_student_module():
 class FakeWorkbenchRuntime(WorkbenchRuntime):
     """Override for testing purposes"""
 
-    anonymous_student_id = "MOCK"
-    user_is_staff = True
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        User.objects.create(username=self.anonymous_student_id)
-
-    def get_real_user(self, username):
-        """Get the real user"""
-        return User.objects.get(username=username)
+        user = User.objects.create(username="MOCK")
+        self._services['user'].get_user_by_anonymous_id = lambda: user
+        self._services['user']._user.opt_attrs[ATTR_KEY_USER_IS_STAFF] = True
 
 
 @ddt
