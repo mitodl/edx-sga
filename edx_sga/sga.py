@@ -21,7 +21,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.files import File
 from django.core.files.storage import default_storage
 from django.template import Context, Template
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.timezone import now as django_now
 from django.utils.translation import gettext as _
 from lms.djangoapps.courseware.models import StudentModule
@@ -755,23 +755,23 @@ class StaffGradedAssignmentXBlock(
             uploaded = None
 
         if self.annotated_sha1:
-            annotated = {"filename": force_text(self.annotated_filename)}
+            annotated = {"filename": force_str(self.annotated_filename)}
         else:
             annotated = None
 
         score = self.score
         if score is not None:
-            graded = {"score": score, "comment": force_text(self.comment)}
+            graded = {"score": score, "comment": force_str(self.comment)}
         else:
             graded = None
 
         if self.answer_available():
-            solution = self.runtime.replace_urls(force_text(self.solution))
+            solution = self.runtime.replace_urls(force_str(self.solution))
         else:
             solution = ""
         # pylint: disable=no-member
         return {
-            "display_name": force_text(self.display_name),
+            "display_name": force_str(self.display_name),
             "uploaded": uploaded,
             "annotated": annotated,
             "graded": graded,
@@ -828,15 +828,15 @@ class StaffGradedAssignmentXBlock(
                     "approved": approved,
                     "needs_approval": instructor and needs_approval,
                     "may_grade": instructor or not approved,
-                    "annotated": force_text(state.get("annotated_filename", "")),
-                    "comment": force_text(state.get("comment", "")),
+                    "annotated": force_str(state.get("annotated_filename", "")),
+                    "comment": force_str(state.get("comment", "")),
                     "finalized": is_finalized_submission(submission_data=submission),
                 }
 
         return {
             "assignments": list(get_student_data()),
             "max_score": self.max_score(),
-            "display_name": force_text(self.display_name),
+            "display_name": force_str(self.display_name),
         }
 
     def get_sorted_submissions(self):
