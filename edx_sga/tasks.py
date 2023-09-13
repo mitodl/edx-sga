@@ -6,16 +6,17 @@ import os
 import tempfile
 import zipfile
 
-from django.core.files.storage import default_storage
 from celery import shared_task
 from opaque_keys.edx.locator import BlockUsageLocator
 from common.djangoapps.student.models import user_by_anonymous_id
 from submissions import api as submissions_api
 
 from edx_sga.constants import ITEM_TYPE
-from edx_sga.utils import get_file_storage_path, is_finalized_submission
+from edx_sga.utils import get_default_storage, get_file_storage_path, is_finalized_submission
 
 log = logging.getLogger(__name__)
+
+default_storage = get_default_storage()
 
 
 def _get_student_submissions(block_id, course_id, locator):

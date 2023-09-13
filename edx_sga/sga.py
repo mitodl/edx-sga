@@ -19,7 +19,6 @@ import pytz
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.core.files import File
-from django.core.files.storage import default_storage
 from django.template import Context, Template
 from django.utils.encoding import force_str
 from django.utils.timezone import now as django_now
@@ -44,6 +43,7 @@ from edx_sga.showanswer import ShowAnswerXBlockMixin
 from edx_sga.tasks import get_zip_file_name, get_zip_file_path, zip_student_submissions
 from edx_sga.utils import (
     file_contents_iter,
+    get_default_storage,
     get_file_modified_time_utc,
     get_file_storage_path,
     get_sha1,
@@ -52,6 +52,8 @@ from edx_sga.utils import (
 )
 
 log = logging.getLogger(__name__)
+
+default_storage = get_default_storage()
 
 
 def reify(meth):

@@ -9,9 +9,33 @@ from functools import partial
 
 import pytz
 from django.conf import settings
-from django.core.files.storage import default_storage
+from django.core.files.storage import default_storage as django_default_storage, get_storage_class
 from edx_sga.constants import BLOCK_SIZE
 
+
+def get_default_storage():
+    """
+    Get config for storage from settings, use Django's default_storage if no such settings are defined
+    """
+    # .. setting_name: SGA_STORAGE_SETTINGS
+    # .. setting_default: {}
+    # .. setting_description: Specifies the storage class and keyword arguments to use in the constructor
+    #    Default storage will be used if this settings in not specified.
+    # .. setting_example: {
+    #        STORAGE_CLASS: 'storage',
+    #        STORAGE_KWARGS: {}
+    #    }
+    sga_storage_settings = getattr(settings, "SGA_STORAGE_SETTINGS", None)
+
+    if sga_storage_settings:
+        return get_storage_class(
+            sga_storage_settings['STORAGE_CLASS']
+        )(**sga_storage_settings['STORAGE_KWARGS'])
+
+    # If settings not defined, use default_storage from Django
+    return django_default_storage
+
+default_storage = get_default_storage()
 
 def utcnow():
     """
