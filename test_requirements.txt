@@ -4,6 +4,7 @@ coverage==7.2.7
 cryptography==41.0.1
 ddt==1.6.0
 djangorestframework
+django-storages
 edx-celeryutils==1.2.2
 edx-lint==5.2.4
 edx-opaque-keys
