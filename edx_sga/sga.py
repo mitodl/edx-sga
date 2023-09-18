@@ -94,7 +94,7 @@ class StaffGradedAssignmentXBlock(
         default=_("Staff Graded Assignment"),
         scope=Scope.settings,
         help=_(
-            "This name appears in the horizontal navigation at the top of " "the page."
+            "This name appears in the horizontal navigation at the top of the page."
         ),
     )
 
@@ -119,7 +119,7 @@ class StaffGradedAssignmentXBlock(
     staff_score = Integer(
         display_name=_("Score assigned by non-instructor staff"),
         help=_(
-            "Score will need to be approved by instructor before being " "published."
+            "Score will need to be approved by instructor before being published."
         ),
         default=None,
         scope=Scope.settings,
@@ -484,7 +484,6 @@ class StaffGradedAssignmentXBlock(
         """
         Runs a async task that collects submissions in background and zip them.
         """
-        # pylint: disable=no-member
         require(self.is_course_staff())
         user = self.get_real_user()
         require(user)
@@ -539,7 +538,6 @@ class StaffGradedAssignmentXBlock(
         """
         Api for downloading zip file which consist of all students submissions.
         """
-        # pylint: disable=no-member
         require(self.is_course_staff())
         user = self.get_real_user()
         require(user)
@@ -575,7 +573,6 @@ class StaffGradedAssignmentXBlock(
         return Response(json_body={"zip_available": self.is_zip_file_available(user)})
 
     def student_view(self, context=None):
-        # pylint: disable=no-member
         """
         The primary view of the StaffGradedAssignmentXBlock, shown to students
         when viewing courses.
@@ -727,7 +724,6 @@ class StaffGradedAssignmentXBlock(
         Returns:
             StudentModule: A StudentModule object
         """
-        # pylint: disable=no-member
         student_module, created = StudentModule.objects.get_or_create(
             course_id=self.course_id,
             module_state_key=self.location,
@@ -772,7 +768,6 @@ class StaffGradedAssignmentXBlock(
             solution = replace_urls_service.replace_urls(force_str(self.solution))
         else:
             solution = ""
-        # pylint: disable=no-member
         return {
             "display_name": force_str(self.display_name),
             "uploaded": uploaded,
@@ -895,7 +890,6 @@ class StaffGradedAssignmentXBlock(
     def validate_score_message(
         self, course_id, username
     ):  # lint-amnesty, pylint: disable=missing-function-docstring
-        # pylint: disable=no-member
         log.error(
             "enter_grade: invalid grade submitted for course:%s module:%s student:%s",
             course_id,
@@ -962,7 +956,6 @@ class StaffGradedAssignmentXBlock(
         )
 
     def file_storage_path(self, file_hash, original_filename):
-        # pylint: disable=no-member
         """
         Helper method to get the path of an uploaded file
         """
@@ -972,7 +965,6 @@ class StaffGradedAssignmentXBlock(
         """
         returns True if zip file exists.
         """
-        # pylint: disable=no-member
         zip_file_path = get_zip_file_path(
             user.username, self.block_course_id, self.block_id, self.location
         )
@@ -982,7 +974,6 @@ class StaffGradedAssignmentXBlock(
         """
         returns number of files archive in zip.
         """
-        # pylint: disable=no-member
         zip_file_path = get_zip_file_path(
             user.username, self.block_course_id, self.block_id, self.location
         )
