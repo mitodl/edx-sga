@@ -86,7 +86,14 @@ class StaffGradedAssignmentXBlock(
 
     has_score = True
     icon_class = "problem"
-    STUDENT_FILEUPLOAD_MAX_SIZE = 4 * 1000 * 1000  # 4 MB
+    # validate if STUDENT_FILEUPLOAD_MAX_SIZE variables is defined in config.yml
+    # with custom upload size, if not put the default 4mb allowed
+    custom_file_size = settings.STUDENT_FILEUPLOAD_MAX_SIZE
+    if custom_file_size:
+        STUDENT_FILEUPLOAD_MAX_SIZE = custom_file_size
+    else:
+        STUDENT_FILEUPLOAD_MAX_SIZE = 4 * 1000 * 1000  # 4 MB
+    #########
     editable_fields = ("display_name", "points", "weight", "showanswer", "solution")
 
     display_name = String(
