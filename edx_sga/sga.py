@@ -86,14 +86,17 @@ class StaffGradedAssignmentXBlock(
 
     has_score = True
     icon_class = "problem"
-    # validate if STUDENT_FILEUPLOAD_MAX_SIZE variables is defined in config.yml
-    # with custom upload size, if not put the default 4mb allowed
-    sga_student_file_size = settings.SGA_STUDENT_FILEUPLOAD_MAX_SIZE
-    if sga_student_file_size:
-        STUDENT_FILEUPLOAD_MAX_SIZE = sga_student_file_size
-    else:
-        STUDENT_FILEUPLOAD_MAX_SIZE = 4 * 1000 * 1000  # 4 MB
-    #########
+    # .. setting_name: STUDENT_FILEUPLOAD_MAX_SIZE
+    # .. setting_default: 4 * 1000 * 1000 #4MB
+    # .. setting_description: Specifies the file size that the Student
+    #                         can upload via the Component. If not 
+    #                         specified the default is 4MB.
+    # .. setting_example: {
+    #        STUDENT_FILEUPLOAD_MAX_SIZE: 20 * 1000 * 1000 #20MB
+    #    }
+    STUDENT_FILEUPLOAD_MAX_SIZE = getattr(settings, 
+                                    "STUDENT_FILEUPLOAD_MAX_SIZE",
+                                     4 * 1000 * 1000)
     editable_fields = ("display_name", "points", "weight", "showanswer", "solution")
 
     display_name = String(
