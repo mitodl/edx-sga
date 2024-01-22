@@ -582,7 +582,7 @@ class StaffGradedAssignmentXBlock(
         """
         context = {
             "student_state": json.dumps(self.student_state()),
-            "id": self.location.name.replace(".", "_"),
+            "id": self.location.block_id.replace(".", "_"),
             "max_file_size": self.student_upload_max_size(),
             "support_email": settings.TECH_SUPPORT_EMAIL,
         }
