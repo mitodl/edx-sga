@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-12 17:09+0430\n"
+"POT-Creation-Date: 2022-11-09 15:55-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,42 +16,60 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: edx_sga/static/js/src/edx_sga.js
-msgid "Upload %(file_name)s"
+#: edx_sga/static/js/src/edx_sga.js:24
+msgid "Started preparing student submissions zip file. This may take a while."
 msgstr ""
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:45
+msgid "Submission failed. Please contact your course instructor."
+msgstr ""
+
+#: edx_sga/static/js/src/edx_sga.js:57
 msgid "Uploading..."
 msgstr ""
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:64 edx_sga/static/js/src/edx_sga.js:88
 msgid "The file you are trying to upload is too large."
 msgstr ""
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:91
 msgid "There was an error uploading your file."
 msgstr ""
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:166
 msgid "Uploading... %(percent)s %"
 msgstr ""
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:200
+msgid "yes"
+msgstr ""
+
+#: edx_sga/static/js/src/edx_sga.js:248
 msgid "Grade must be a number."
 msgstr ""
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:250
 msgid "Grade must be an integer."
 msgstr ""
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:252
 msgid "Grade must be positive."
 msgstr ""
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:254
 msgid "Maximum score is %(max_score)s"
 msgstr ""
 
-#: edx_sga/static/js/src/edx_sga.js
+#: edx_sga/static/js/src/edx_sga.js:279
 msgid "No grade to remove."
+msgstr ""
+
+#: edx_sga/static/js/src/edx_sga.js:372 edx_sga/static/js/src/edx_sga.js:440
+msgid ""
+"The download file was not created. Please try again or contact "
+"%(support_email)s"
+msgstr ""
+
+#: edx_sga/static/js/src/edx_sga.js:430
+msgid "Student submission file ready for download"
 msgstr ""
