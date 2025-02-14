@@ -644,8 +644,10 @@ class StaffGradedAssignmentXBlock(
     def block_course_id(self):
         """
         Return the course_id of the block.
+
+        Note: if this block is used in a Content Library, the returned ID will be the library's ID.
         """
-        return str(self.course_id)
+        return str(self.context_key)
 
     def get_student_item_dict(self, student_id=None):
         """
