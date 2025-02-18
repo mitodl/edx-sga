@@ -700,13 +700,18 @@ class StaffGradedAssignmentXBlock(
         """
         Add context info for the Staff Debug interface.
         """
-        published = self.start
+        published = getattr(self, 'start', None)
         context["is_released"] = published and published < utcnow()
         context["location"] = self.location
         context["category"] = type(self).__name__
-        context["fields"] = [
-            (name, field.read_from(self)) for name, field in self.fields.items()
-        ]
+        context["fields"] = []
+
+        for name, field in self.fields.items():
+            try:
+                context["fields"].append((name, field.read_from(self)))
+            # Library blocks only support the content and settings scopes
+            except NotImplementedError:
+                pass
 
     def get_student_module(self, module_id):
         """
