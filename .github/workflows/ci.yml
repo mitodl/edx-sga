@@ -50,7 +50,7 @@ jobs:
             cd devstack
             sed -i 's/:cached//g' ./docker-compose-host.yml
             make dev.clone.https
-            DEVSTACK_WORKSPACE=$PWD/.. docker-compose -f docker-compose.yml -f docker-compose-host.yml run -v $PWD/../edx-sga:/edx-sga lms /edx-sga/run_devstack_integration_tests.sh
+            DEVSTACK_WORKSPACE=$PWD/.. docker compose -f docker-compose.yml -f docker-compose-host.yml run -v $PWD/../edx-sga:/edx-sga lms /edx-sga/run_devstack_integration_tests.sh
 
       - name: Upload coverage to CodeCov
         if: matrix.python-version == '3.12' && matrix.toxenv == 'py312-django42'
