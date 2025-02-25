@@ -36,7 +36,7 @@ function StaffGradedAssignmentXBlock(runtime, element) {
       var content = $(element).find('#sga-content').html(template(state));
 
       $(content).find('.finalize-upload').on('click', function () {
-        $.post(finalizeUploadUrl).success(
+        $.post(finalizeUploadUrl).done(
           function (state) {
             render(state);
           }
@@ -256,7 +256,7 @@ function StaffGradedAssignmentXBlock(runtime, element) {
           // No errors
           form.find('.ccx-enter-grade-spinner').show();
           $.post(enterGradeUrl, form.serialize())
-            .success(renderStaffGrading)
+            .done(renderStaffGrading)
             .fail(function () {
               form.find('.ccx-enter-grade-spinner').hide();
             });
@@ -271,7 +271,7 @@ function StaffGradedAssignmentXBlock(runtime, element) {
         event.preventDefault();
         if (row.data('score')) {
           // if there is no grade then it is pointless to call api.
-          $.get(url).success(renderStaffGrading).fail(function () {
+          $.get(url).done(renderStaffGrading).fail(function () {
             $(this).prop('disabled', false);
             form.find('.ccx-enter-grade-spinner').hide();
           });
@@ -456,7 +456,7 @@ function StaffGradedAssignmentXBlock(runtime, element) {
       tries = 1;
 
     function makeLoopingRequest() {
-      $.get(url).success(function (response) {
+      $.get(url).done(function (response) {
         if (checkSuccessFn(response)) {
           deferred.resolve(response);
         } else if (tries < maxTries) {
