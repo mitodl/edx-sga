@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-source /edx/app/edxapp/venvs/edxapp/bin/activate
+source /openedx/venv/bin/activate
 
-cd /edx/app/edxapp/edx-platform
+cd /openedx/edx-platform
 mkdir -p reports
 
 pip install -r requirements/edx/testing.txt
@@ -18,9 +18,9 @@ pip install -e .
 pip freeze
 
 # adjust test files for integration tests
-cp /edx/app/edxapp/edx-platform/setup.cfg .
+cp /openedx/edx-platform/setup.cfg .
 rm ./pytest.ini
 mkdir test_root  # for edx
 
-pytest ./edx_sga/tests/integration_tests.py --cov .
+pytest ./edx_sga/tests/integration_tests.py --cov . --ds=lms.envs.test
 coverage xml
