@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.25.2
+Version 0.25.2 (Released March 04, 2025)
 --------------
 
 - build: replace Devstack with Tutor (#365)
