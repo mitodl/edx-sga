@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.25.3
+--------------
+
+- fix: Update GH Actions runner OS to latest
+
 Version 0.25.2 (Released March 04, 2025)
 --------------
 

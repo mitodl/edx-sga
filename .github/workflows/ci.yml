@@ -16,7 +16,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04]
+        os: [ubuntu-24.04]
         python-version: ['3.12']
         edx_branch: ['master', 'open-release/redwood.master', 'open-release/sumac.master']
         toxenv: [py312-django32, py312-django42]
