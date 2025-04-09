@@ -15,64 +15,63 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: edx_sga/static/js/src/edx_sga.js:24
 msgid "Started preparing student submissions zip file. This may take a while."
-msgstr "بدأت في إعداد ملف مضغوط لإرسال الطلاب. هذا قد يستغرق بعض الوقت."
+msgstr "Préparation du fichier zip des soumissions étudiantes. Ceci prendra un moment."
 
 #: edx_sga/static/js/src/edx_sga.js:45
 msgid "Submission failed. Please contact your course instructor."
-msgstr "فشل التقديم. يرجى الاتصال بمدرس الدورة الخاص بك."
+msgstr "Soumission échouée. Veuillez contacter votre responsable de cours."
 
 #: edx_sga/static/js/src/edx_sga.js:57
 msgid "Uploading..."
-msgstr "عحمخشيهرل..."
+msgstr "En téléversement..."
 
 #: edx_sga/static/js/src/edx_sga.js:64 edx_sga/static/js/src/edx_sga.js:88
 msgid "The file you are trying to upload is too large."
-msgstr "فاث بهمث غخع شقث فقغهرل فخ عحمخشي هس فخخ مشقلث."
+msgstr "Le fichier que vous essayez de téléverser est trop grand."
 
 #: edx_sga/static/js/src/edx_sga.js:91
 msgid "There was an error uploading your file."
-msgstr "فاثقث صشس شر ثققخق عحمخشيهرل غخعق بهمث."
+msgstr "Une erreur est survenue durant le téléversement."
 
 #: edx_sga/static/js/src/edx_sga.js:166
 msgid "Uploading... %(percent)s %"
-msgstr "عحمخشيهرل... %(percent)s %"
+msgstr "En téléversement... %(percent)s %"
 
 #: edx_sga/static/js/src/edx_sga.js:200
 msgid "yes"
-msgstr "نعم"
+msgstr "oui"
 
 #: edx_sga/static/js/src/edx_sga.js:248
 msgid "Grade must be a number."
-msgstr "لقشيث وعسف زث ش رعوزثق."
+msgstr "La note doit être un chiffre."
 
 #: edx_sga/static/js/src/edx_sga.js:250
 msgid "Grade must be an integer."
-msgstr "لقشيث وعسف زث شر هرفثلثق."
+msgstr "La note doit être un entier."
 
 #: edx_sga/static/js/src/edx_sga.js:252
 msgid "Grade must be positive."
-msgstr "لقشيث وعسف زث حخسهفهدث."
+msgstr "La note doit être un chiffre positif"
 
 #: edx_sga/static/js/src/edx_sga.js:254
 msgid "Maximum score is %(max_score)s"
-msgstr "وشطهوعو سذخقث هس %(max_score)s"
+msgstr "La note maximale est %(max_score)s"
 
 #: edx_sga/static/js/src/edx_sga.js:279
 msgid "No grade to remove."
-msgstr "رخ لقشيث فخ قثوخدث."
+msgstr "Aucune note à enlever."
 
 #: edx_sga/static/js/src/edx_sga.js:372 edx_sga/static/js/src/edx_sga.js:440
 msgid ""
 "The download file was not created. Please try again or contact "
 "%(support_email)s"
 msgstr ""
-"لم يتم إنشاء ملف التنزيل. يرجى المحاولة مرة أخرى أو الاتصال"
+"Le fichier de téléchargement n'a pas été créé. Veuillez réessayer ou contacter "
 "%(support_email)s"
 
 #: edx_sga/static/js/src/edx_sga.js:430
 msgid "Student submission file ready for download"
-msgstr "ملف إرسال الطالب جاهز للتنزيل"
+msgstr "Le fichier de soumission des étudiants est prêt à être téléchargé"
