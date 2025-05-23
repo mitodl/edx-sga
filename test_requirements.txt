@@ -11,7 +11,7 @@ edx-opaque-keys
 edx-submissions==3.6.0
 jsonfield==3.1.0
 mako==1.2.4
-pdbpp==0.10.3
+pdbpp==0.11.6
 pylint==3.0.3
 pylint-celery==0.3
 pylint-django==2.5.5
