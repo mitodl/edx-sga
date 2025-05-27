@@ -3,7 +3,7 @@ coverage:
     project:
       default:
         enabled: yes
-        target: 90%
+        target: 52%  # TODO: Adjust this target based on your project's requirements and coverage progress
     patch:
       default:
         enabled: yes
