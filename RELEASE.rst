@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.27.0
+Version 0.27.0 (Released November 24, 2025)
 --------------
 
 - feat: wait load js for lms (#1) (#375)
