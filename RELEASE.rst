@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+Version 0.27.0
+--------------
+
+- feat: wait load js for lms (#1) (#375)
+- chore: test CI on teak branch of Open edX (#369)
+
 Version 0.26.0 (Released June 03, 2025)
 --------------
 
