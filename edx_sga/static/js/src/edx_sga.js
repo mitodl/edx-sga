@@ -409,7 +409,7 @@ function StaffGradedAssignmentXBlock(runtime, element) {
 
 
     function sendResizeMessage(height) {
-      // This blocks checks to see if the xBlock is part 
+      // This blocks checks to see if the xBlock is part
       // of Learning MFE
       if (window.parent !== window) {
         window.parent.postMessage({
@@ -474,13 +474,29 @@ function StaffGradedAssignmentXBlock(runtime, element) {
     return deferred.promise();
   }
 
-  function loadjs(url) {
-    $('<script>')
-      .attr('type', 'text/javascript')
-      .attr('src', window.baseUrl + url)
-      .appendTo(element);
-  }
+  function loadjs(src) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = true; // Essential for non-blocking loading
 
+      // Resolve the promise when the script is successfully loaded
+      script.onload = () => {
+        console.log(`Script loaded: ${src}`);
+        resolve(script);
+      };
+
+      // Reject the promise if there's an error loading the script
+      script.onerror = () => {
+        const errorMsg = `Failed to load script: ${src}`;
+        console.error(errorMsg);
+        reject(new Error(errorMsg));
+      };
+
+      // Append the script to the element
+      element.appendChild(script);
+    });
+  }
   if (require === undefined) {
     /**
      * The LMS does not use require.js (although it loads it...) and
@@ -488,9 +504,17 @@ function StaffGradedAssignmentXBlock(runtime, element) {
      * jquery.ajaxfileupload instead.  But our XBlock uses
      * jquery.fileupload.
      */
-    loadjs('js/vendor/jQuery-File-Upload/js/jquery.iframe-transport.js');
-    loadjs('js/vendor/jQuery-File-Upload/js/jquery.fileupload.js');
-    xblock($, _);
+    baseUrl = window.baseUrl || '';
+    // Refactored code to wait for both jQuery File Upload dependencies
+    Promise.all([
+      loadjs(baseUrl + 'js/vendor/jQuery-File-Upload/js/jquery.iframe-transport.js'),
+      loadjs(baseUrl + 'js/vendor/jQuery-File-Upload/js/jquery.fileupload.js'),
+    ]).then(() => {
+      xblock($, _);
+    }).catch((error) => {
+      // Handle any errors during loading
+      console.error("Error loading scripts:", error);
+    });
   } else {
     /**
      * Studio, on the other hand, uses require.js and already knows about
