@@ -7,6 +7,7 @@ import logging
 import mimetypes
 import os
 from contextlib import closing
+from importlib.resources import files
 from zipfile import ZipFile
 
 import six.moves.urllib.error
@@ -14,7 +15,6 @@ import six.moves.urllib.parse
 import six.moves.urllib.request
 import six
 
-import pkg_resources
 import pytz
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
@@ -1039,7 +1039,7 @@ def _resource(path):  # pragma: NO COVER
     """
     Handy helper for getting resources from our kit.
     """
-    data = pkg_resources.resource_string(__name__, path)
+    data = files(__name__).joinpath(path).read_bytes()
     return data.decode("utf8")
 
 
@@ -1047,7 +1047,7 @@ def load_resource(resource_path):  # pragma: NO COVER
     """
     Gets the content of a resource
     """
-    resource_content = pkg_resources.resource_string(__name__, resource_path)
+    resource_content = files(__name__).joinpath(resource_path).read_bytes()
     return str(resource_content.decode("utf8"))
 
 

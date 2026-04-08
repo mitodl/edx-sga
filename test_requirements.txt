@@ -6,7 +6,7 @@ ddt==1.6.0
 djangorestframework
 django-storages
 edx-celeryutils==1.2.3
-edx-lint==5.3.6
+edx-lint==6.0.0
 edx-opaque-keys
 edx-submissions==3.6.0
 jsonfield==3.1.0
