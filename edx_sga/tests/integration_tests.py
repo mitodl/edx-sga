@@ -929,8 +929,17 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
 
         staff = StaffFactory.create(course_key=self.course.id)
 
+        if is_staff:
+            user = staff
+        else:
+            user = User.objects.create(username="non_staff_user", email="non_staff@example.com")
+            profile = UserProfile(user=user, name="non_staff_user")
+            profile.save()
+            self.addCleanup(profile.delete)
+            self.addCleanup(user.delete)
+
         render.prepare_runtime_for_user(
-            user=staff if is_staff else User.objects.create(),
+            user=user,
             student_data=self.student_data,
             runtime=self.block.runtime,
             course_id=self.course.id,
