@@ -6,8 +6,15 @@ Django settings for edx_sga project.
 
 import os
 
-DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 SECRET_KEY = "k(g$9p*x^a=t_lf$%=b*3$$ipg1g0tm!^pws0@g)u+v@&$657n"
 DEBUG = True
 
