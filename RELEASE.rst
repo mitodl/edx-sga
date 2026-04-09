@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.27.1
+--------------
+
+- fix: check actual storage instance instead of removed DEFAULT_FILE_STORAGE setting
+
 Version 0.27.0 (Released November 24, 2025)
 --------------
 
