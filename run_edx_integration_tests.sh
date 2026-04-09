@@ -18,7 +18,14 @@ pip install -e .
 pip freeze
 
 # adjust test files for integration tests
-cp /openedx/edx-platform/setup.cfg .
+# Copy setup.cfg if it exists, otherwise try pyproject.toml
+if [ -f /openedx/edx-platform/setup.cfg ]; then
+  cp /openedx/edx-platform/setup.cfg <destination>
+elif [ -f /openedx/edx-platform/pyproject.toml ]; then
+  cp /openedx/edx-platform/pyproject.toml <destination>
+else
+  echo "Neither setup.cfg nor pyproject.toml found, skipping."
+fi
 rm ./pytest.ini
 mkdir test_root  # for edx
 
