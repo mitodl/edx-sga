@@ -15,281 +15,281 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: edx_sga/sga.py:89
 msgid "Display Name"
-msgstr "اسم العرض"
+msgstr "Nom d'affichage"
 
 #: edx_sga/sga.py:90 edx_sga/templates/staff_graded_assignment/show.html:149
 msgid "Staff Graded Assignment"
-msgstr "سفشبب لقشيثي شسسهلروثرف"
+msgstr "Travail noté par le personel"
 
 #: edx_sga/sga.py:93
 msgid "This name appears in the horizontal navigation at the top of the page."
-msgstr "فاهس رشوث شححثشقس هر فاث اخقهظخرفشم رشدهلشفهخر شف فاث فخح خب فاث حشلث."
+msgstr "Ce nom apparaît dans la barre de navigation horizontale en haut de la page."
 
 #: edx_sga/sga.py:98
 msgid "Problem Weight"
-msgstr "حقخزمثو صثهلاف"
+msgstr "Pondération du problème"
 
 #: edx_sga/sga.py:100
 msgid ""
-"Defines the number of points each problem is worth. If the value is not set,"
-" the problem is worth the sum of the option point values."
+"Defines the number of points each problem is worth. If the value is not set, "
+"the problem is worth the sum of the option point values."
 msgstr ""
-"يثبهرثس فاث رعوزثق خب حخهرفس ثشذا حقخزمثو هس صخقفا. هب فاث دشمعث هس رخف سثف,"
-" فاث حقخزمثو هس صخقفا فاث سعو خب فاث خحفهخر حخهرف دشمعثس."
+"Définir la valeur de chaque problème. Si une valeur n'est pas définie, le "
+"problème vaut la somme des options de valeurs de point."
 
 #: edx_sga/sga.py:109
 msgid "Maximum score"
-msgstr "وشطهوعو سذخقث"
+msgstr "Note maximale"
 
 #: edx_sga/sga.py:110
 msgid "Maximum grade score given to assignment by staff."
-msgstr "وشطهوعو لقشيث سذخقث لهدثر فخ شسسهلروثرف زغ سفشبب."
+msgstr "Note maximale donnée au travail par le personnel."
 
 #: edx_sga/sga.py:116
 msgid "Score assigned by non-instructor staff"
-msgstr "سذخقث شسسهلرثي زغ رخر-هرسفقعذفخق سفشبب"
+msgstr "Note donnée par un personel non-enseignant"
 
 #: edx_sga/sga.py:118
 msgid "Score will need to be approved by instructor before being published."
-msgstr "سذخقث صهمم رثثي فخ زث شححقخدثي زغ هرسفقعذفخق زثبخقث زثهرل حعزمهساثي."
+msgstr "La note doit être approuvé par un instructeur avant d'être publiée."
 
 #: edx_sga/sga.py:125 edx_sga/templates/staff_graded_assignment/show.html:34
 msgid "Instructor comment"
-msgstr "هرسفقعذفخق ذخووثرف"
+msgstr "Commentaire d'un instructeur"
 
 #: edx_sga/sga.py:128
 msgid "Feedback given to student by instructor."
-msgstr "بثثيزشذن لهدثر فخ سفعيثرف زغ هرسفقعذفخق."
+msgstr "Commentaire donné à l'étudiant par l'instructeur"
 
 #: edx_sga/sga.py:132
 msgid "Annotated SHA1"
-msgstr "شررخفشفثي ساش1"
+msgstr "SHA1 annoté"
 
 #: edx_sga/sga.py:136
 msgid ""
 "sha1 of the annotated file uploaded by the instructor for this assignment."
-msgstr ""
-"ساش1 خب فاث شررخفشفثي بهمث عحمخشيثي زغ فاث هرسفقعذفخق بخق فاهس شسسهلروثرف."
+msgstr "sha1 du fichier annoté téléversé par l'instructeur pour ce travail."
 
 #: edx_sga/sga.py:142
 msgid "Annotated file name"
-msgstr "شررخفشفثي بهمث رشوث"
+msgstr "Nom du fichier annoté"
 
 #: edx_sga/sga.py:145
 msgid "The name of the annotated file uploaded for this assignment."
-msgstr "فاث رشوث خب فاث شررخفشفثي بهمث عحمخشيثي بخق فاهس شسسهلروثرف."
+msgstr "Le nom du fichier annoté téléversé pour ce travail."
 
 #: edx_sga/sga.py:149
 msgid "Mime type of annotated file"
-msgstr "وهوث فغحث خب شررخفشفثي بهمث"
+msgstr "Mimetype du fichier annoté"
 
 #: edx_sga/sga.py:152
 msgid "The mimetype of the annotated file uploaded for this assignment."
-msgstr "فاث وهوثفغحث خب فاث شررخفشفثي بهمث عحمخشيثي بخق فاهس شسسهلروثرف."
+msgstr "Le mimetype du fichier téléversé pour ce travail."
 
 #: edx_sga/sga.py:156
 msgid "Timestamp"
-msgstr "فهوثسفشوح"
+msgstr "Horodatage"
 
 #: edx_sga/sga.py:159
 msgid "When the annotated file was uploaded"
-msgstr "صاثر فاث شررخفشفثي بهمث صشس عحمخشيثي"
+msgstr "Quand le fichier annoté a été téléversé"
 
 #: edx_sga/showanswer.py:19
 msgid "Show Answer"
-msgstr "اظهر الاجابة"
+msgstr "Afficher la réponse"
 
 #: edx_sga/showanswer.py:21
 msgid ""
-"Defines when to show the answer to the problem. A default value can be set in Advanced Settings."
+"Defines when to show the answer to the problem. A default value can be set "
+"in Advanced Settings."
 msgstr ""
-"يحدد متى يتم إظهار إجابة المشكلة. يمكن تعيين قيمة افتراضية في الإعدادات المتقدمة."
+"Définir quand afficher la réponse du problème. Une valeur par défaut est définie"
+"dans les Paramètres Avancés."
 
 #: edx_sga/showanswer.py:27
 msgid "Always"
-msgstr "دائماً"
+msgstr "Toujours"
 
 #: edx_sga/showanswer.py:28
 msgid "Answered"
-msgstr "أجاب"
+msgstr "Répondu"
 
 #: edx_sga/showanswer.py:29
 msgid "Attempted"
-msgstr "حاول"
+msgstr "Tenté"
 
 #: edx_sga/showanswer.py:30
 msgid "Closed"
-msgstr "مغلق"
+msgstr "Fermé"
 
 #: edx_sga/showanswer.py:31
 msgid "Finished"
-msgstr "تم الانتهاء من"
+msgstr "Terminé"
 
 #: edx_sga/showanswer.py:33
 msgid "Correct or Past Due"
-msgstr "صحيح أو متأخر"
+msgstr "Correct ou en retard"
 
 #: edx_sga/showanswer.py:36
 msgid "Past Due"
-msgstr "تجاوز تاريخ الاستحقاق"
+msgstr "En retard"
 
 #: edx_sga/showanswer.py:37
 msgid "Never"
-msgstr "أبداً"
+msgstr "Jamais"
 
 #: edx_sga/showanswer.py:41
 msgid "Solution to the problem to show to the user"
-msgstr "حل المشكلة لتظهر للمستخدم"
+msgstr "Solution du problème à afficher à l'utilisateur"
 
 #: edx_sga/showanswer.py:42
 msgid "Solution"
-msgstr "المحلول"
+msgstr "Solution"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:16
 msgid "Upload a different file"
-msgstr "عحمخشي ش يهببثقثرف بهمث"
+msgstr "Téléverser un fichier différent"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:18
 msgid "Upload your assignment"
-msgstr "عحمخشي غخعق شسسهلروثرف"
+msgstr "Téléverser votre travail"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:27
 msgid "File uploaded"
-msgstr "ملف مرفوع"
+msgstr "Fichier téléversé"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:32
 msgid "Your score is <%%= graded.score %%> / <%%= max_score %%>"
-msgstr "نتيجتك هي <%%= graded.score %%> / <%%= max_score %%>"
+msgstr "Votre note est <%%= graded.score %%> / <%%= max_score %%>"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:37
 msgid "Annotated file from instructor"
-msgstr "ملف مشروح من المعلم"
+msgstr "Fichier annoté par l'instructeur"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:41
 msgid "This assignment has not yet been graded."
-msgstr "لم يتم تقدير هذا الواجب بعد."
+msgstr "Ce travail n'a pas encore été noté."
 
 #: edx_sga/templates/staff_graded_assignment/show.html:69
 msgid "Username"
-msgstr "عسثقرشوث"
+msgstr "Nom d'utilisateur"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:70
 msgid "Name"
-msgstr "رشوث"
+msgstr "Nom"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:71
 msgid "Filename"
-msgstr "بهمثرشوث"
+msgstr "Nom du fichier"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:72
 msgid "Uploaded"
-msgstr "عحمخشيثي"
+msgstr "Téléversé"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:73
 msgid "Submitted"
-msgstr "مُقَدَّم"
+msgstr "Soumis"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:74
 msgid "Grade"
-msgstr "لقشيث"
+msgstr "Note"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:75
 msgid "Instructor's comments"
-msgstr "هرسفقعذفخق'س ذخووثرفس"
+msgstr "Commentaires de l'instructeur"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:76
 msgid "Annotated"
-msgstr "شررخفشفثي"
+msgstr "Annoté"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:77
 msgid "Actions"
-msgstr "شذفهخرس"
+msgstr "Actions"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:96
 msgid "Yes"
-msgstr "نعم"
+msgstr "Oui"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:98
 msgid "No"
-msgstr "رقم"
+msgstr "Non"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:106
 msgid "Awaiting instructor approval"
-msgstr "شصشهفهرل هرسفقعذفخق شححقخدشم"
+msgstr "En attentte de la revue d'un instructeur"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:122
 msgid "Approve grade"
-msgstr "شححقخدث لقشيث"
+msgstr "Approuver la note"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:124
 msgid "Enter grade"
-msgstr "ثرفثق لقشيث"
+msgstr "Entrer une note"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:131
 msgid "Upload annotated file"
-msgstr "عحمخشي شررخفشفثي بهمث"
+msgstr "Téléverser un fichier annoté"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:144
 msgid "Grade Submissions"
-msgstr "تقدير عمليات الإرسال"
+msgstr "Soumettre les notes"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:152
 msgid "Download All Submissions"
-msgstr "تنزيل جميع عمليات الإرسال"
+msgstr "Télécharger toutes les soumissions"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:156
 msgid "Loading..."
-msgstr "مخشيهرل..."
+msgstr "Chargement..."
 
 #: edx_sga/templates/staff_graded_assignment/show.html:164
 msgid "Staff Debug"
-msgstr "سفشبب يثزعل"
+msgstr "Déboguage pour l'équipe"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:167
 msgid "is_released"
-msgstr "هس_قثمثشسثي"
+msgstr "is_released"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:168
 msgid "location"
-msgstr "مخذشفهخر"
+msgstr "location"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:171
 msgid "Module Fields"
-msgstr "وخيعمث بهثميس"
+msgstr "Champs module"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:181
 msgid "category"
-msgstr "ذشفثلخقغ"
+msgstr "catégorie"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:189
 msgid "Enter Grade"
-msgstr "ثرفثق لقشيث"
+msgstr "Entrer Note"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:196
 #, python-format
 msgid "Grade for %(student_name)s"
-msgstr "لقشيث بخق %(student_name)s"
+msgstr "Note de %(student_name)s"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:197
 msgid "Grade:"
-msgstr "لقشيث:"
+msgstr "Note:"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:199
 msgid "Comment:"
-msgstr "ذخووثرف:"
+msgstr "Commentaire:"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:201
 msgid "Submit"
-msgstr "سعزوهف"
+msgstr "Soumettre"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:203
 msgid "Cancel"
-msgstr "ذشرذثم"
+msgstr "Annuler"
 
 #: edx_sga/templates/staff_graded_assignment/show.html:206
 msgid "Remove grade"
-msgstr "قثوخدث لقشيث"
+msgstr "Enlever note"
