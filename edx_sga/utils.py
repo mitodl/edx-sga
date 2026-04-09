@@ -9,6 +9,7 @@ from functools import partial
 
 import pytz
 from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 from django.core.files.storage import default_storage as django_default_storage
 from django.core.files.storage import storages
 from django.utils.module_loading import import_string
@@ -85,8 +86,7 @@ def get_file_modified_time_utc(file_path):
         # time.tzname returns a 2 element tuple:
         #   (local non-DST timezone, e.g.: 'EST', local DST timezone, e.g.: 'EDT')
         pytz.timezone(time.tzname[0])
-        if settings.DEFAULT_FILE_STORAGE
-        == "django.core.files.storage.FileSystemStorage"
+        if isinstance(default_storage, FileSystemStorage)
         else pytz.utc
     )
 
