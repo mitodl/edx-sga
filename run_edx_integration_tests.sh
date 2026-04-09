@@ -20,9 +20,9 @@ pip freeze
 # adjust test files for integration tests
 # Copy setup.cfg if it exists, otherwise try pyproject.toml
 if [ -f /openedx/edx-platform/setup.cfg ]; then
-  cp /openedx/edx-platform/setup.cfg <destination>
+  cp /openedx/edx-platform/setup.cfg .
 elif [ -f /openedx/edx-platform/pyproject.toml ]; then
-  cp /openedx/edx-platform/pyproject.toml <destination>
+  cp /openedx/edx-platform/pyproject.toml .
 else
   echo "Neither setup.cfg nor pyproject.toml found, skipping."
 fi
