@@ -1039,7 +1039,7 @@ def _resource(path):  # pragma: NO COVER
     """
     Handy helper for getting resources from our kit.
     """
-    data = files(__name__).joinpath(path).read_bytes()
+    data = files(__package__).joinpath(path).read_bytes()
     return data.decode("utf8")
 
 
@@ -1047,7 +1047,7 @@ def load_resource(resource_path):  # pragma: NO COVER
     """
     Gets the content of a resource
     """
-    resource_content = files(__name__).joinpath(resource_path).read_bytes()
+    resource_content = files(__package__).joinpath(resource_path).read_bytes()
     return str(resource_content.decode("utf8"))
 
 
