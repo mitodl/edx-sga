@@ -26,7 +26,7 @@ from lms.djangoapps.courseware.models import StudentModule
 from opaque_keys.edx.locations import BlockUsageLocator
 from opaque_keys.edx.locator import CourseLocator
 from common.djangoapps.student.models import UserProfile, anonymous_id_for_user
-from common.djangoapps.student.tests.factories import AdminFactory, StaffFactory
+from common.djangoapps.student.tests.factories import AdminFactory, StaffFactory, UserFactory
 from submissions import api as submissions_api
 from submissions.models import StudentItem
 from xblock.field_data import DictFieldData
@@ -932,11 +932,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         if is_staff:
             user = staff
         else:
-            user = User.objects.create(username="non_staff_user", email="non_staff@example.com")
-            profile = UserProfile(user=user, name="non_staff_user")
-            profile.save()
-            self.addCleanup(profile.delete)
-            self.addCleanup(user.delete)
+            user = UserFactory.create()
 
         render.prepare_runtime_for_user(
             user=user,
