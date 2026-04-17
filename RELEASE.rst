@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+Version 0.28.0
+--------------
+
+- fix: python 3.12 compatibility (#380)
+
 Version 0.27.1 (Released April 09, 2026)
 --------------
 
