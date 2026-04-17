@@ -26,7 +26,7 @@ class TempfileMixin(unittest.TestCase):
     temp_directory = None
     default_storage = None
     _original_media_root = None
-    _original_file_storage = None
+    _original_storages_default = None
 
     @classmethod
     def set_up_temp_directory(cls):
@@ -34,10 +34,10 @@ class TempfileMixin(unittest.TestCase):
         Creates a temp directory and fixes Django settings
         """
         cls._original_media_root = settings.MEDIA_ROOT
-        cls._original_file_storage = settings.DEFAULT_FILE_STORAGE
+        cls._original_storages_default = settings.STORAGES.get("default", {}).copy()
         cls.temp_directory = mkdtemp()
         settings.MEDIA_ROOT = cls.temp_directory
-        settings.DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+        settings.STORAGES["default"] = {"BACKEND": "django.core.files.storage.FileSystemStorage"}
         cls.default_storage = default_storage
 
     @classmethod
@@ -47,9 +47,9 @@ class TempfileMixin(unittest.TestCase):
         """
         shutil.rmtree(cls.temp_directory, ignore_errors=True)
         settings.MEDIA_ROOT = cls._original_media_root
-        settings.DEFAULT_FILE_STORAGE = cls._original_file_storage
+        settings.STORAGES["default"] = cls._original_storages_default
         del cls._original_media_root
-        del cls._original_file_storage
+        del cls._original_storages_default
 
     @contextmanager
     def dummy_upload(self, filename, data=b"some information"):
