@@ -24,5 +24,4 @@ six==1.16.0
 tox
 tox-battery
 
-xblock-utils==3.4.1
 xblock-sdk==0.9.0
