@@ -37,6 +37,7 @@ from web_fragments.fragment import Fragment
 from xblock.utils.studio_editable import StudioEditableXBlockMixin
 from xmodule.contentstore.content import StaticContent
 from xmodule.util.duedate import get_extended_due_date
+from ccx_keys.locator import CCXLocator
 
 from edx_sga.constants import ATTR_KEY_ANONYMOUS_USER_ID, ATTR_KEY_USER_IS_STAFF, ATTR_KEY_USER_ROLE, ITEM_TYPE
 from edx_sga.showanswer import ShowAnswerXBlockMixin
@@ -919,6 +920,10 @@ class StaffGradedAssignmentXBlock(
         Check if user role is instructor.
         """
         if user_service := self.runtime.service(self, 'user'):
+            # If it's a CCX course, the coach (staff role) or course admin (instructor role)
+            # must be able to grade assignments without requiring instructor approval.
+            if isinstance(self.course_id, CCXLocator):
+                return user_service.get_current_user().opt_attrs.get(ATTR_KEY_USER_ROLE) in ('staff', 'instructor')
             return user_service.get_current_user().opt_attrs.get(ATTR_KEY_USER_ROLE) == "instructor"
         return False
 
