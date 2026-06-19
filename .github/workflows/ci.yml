@@ -18,7 +18,7 @@ jobs:
       matrix:
         os: [ubuntu-24.04]
         python-version: ['3.12']
-        edx_branch: ['master', 'open-release/sumac.master', 'release/teak']
+        edx_branch: ['master', 'release/teak', 'release/ulmo']
         toxenv: [py312-django42, py312-django52]
 
     steps:
