@@ -3,6 +3,7 @@
 locales:
     - en  # English - Source Language
     # Add languages here as needed
+    - fr # French translation
 
 # The locales used for fake-accented English, for testing.
 dummy_locales:
