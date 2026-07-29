@@ -4,6 +4,7 @@ coverage==7.3.1
 cryptography==41.0.3
 ddt==1.6.0
 djangorestframework
+django-statici18n
 django-storages
 edx-celeryutils==1.2.3
 edx-lint==6.0.0

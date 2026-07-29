@@ -105,7 +105,7 @@ msgstr ""
 
 #: edx_sga/templates/staff_graded_assignment/show.html
 #, python-format
-msgid "Your score is %(graded_score)s / %(max_score)s"
+msgid "Your score is %(score)s / %(max_score)s"
 msgstr ""
 
 #: edx_sga/templates/staff_graded_assignment/show.html

@@ -51,5 +51,7 @@ setup(
             "edx_sga = edx_sga.sga:StaffGradedAssignmentXBlock",
         ]
     },
-    package_data=package_data("edx_sga", ["static", "templates"]),
+    package_data=package_data(
+        "edx_sga", ["static", "templates", "conf", "locale", "translations"]
+    ),
 )

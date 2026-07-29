@@ -233,7 +233,8 @@ function StaffGradedAssignmentXBlock(runtime, element) {
     function handleGradeEntry() {
       var row = $(this).parents("tr");
       var form = $(element).find("#enter-grade-form");
-      $(element).find('#student-name').text(row.data('fullname'));
+      var studentName = row.data('fullname') || row.data('username') || '';
+      $(element).find('#student-name').text(studentName);
       form.find('#module_id-input').val(row.data('module_id'));
       form.find('#submission_id-input').val(row.data('submission_id'));
       form.find('#grade-input').val(row.data('score'));

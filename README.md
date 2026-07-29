@@ -298,6 +298,31 @@ You can specify the following values for the show answer attribute.
 
     ![Student view of graded assignment with annotated instructor response](https://raw.githubusercontent.com/mitodl/edx-sga/screenshots/img/screenshot-lms-student-video-graded.png)
 
+## Translations (Atlas / Tutor)
+
+`edx_sga/conf/locale` is the canonical source directory for translation
+catalogues. `edx_sga/translations` points to it for the XBlock runtime, while
+`edx_sga/locale` preserves Django's standard catalogue discovery for this
+package, which is both an XBlock and a Django app.
+
+To update the source catalogues, install `i18n-tools` and run:
+
+```sh
+make extract_translations
+```
+
+For Atlas, the corresponding catalogues belong in `openedx-translations` at:
+
+```
+translations/edx-sga/edx_sga/conf/locale/<locale>/LC_MESSAGES/
+```
+
+Use `django.po` for Python and Django templates. SGA also uses JavaScript
+`gettext`, so include `djangojs.po` for a fully translated interface. Tutor
+pulls and compiles these files from `openedx-translations` while building the
+`openedx` image; this repository's Makefile is for local extraction and
+validation.
+
 ## Testing
 
 Assuming `edx-sga` is installed as above, integration tests can be run in devstack with this command:

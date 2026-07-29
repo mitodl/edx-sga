@@ -29,7 +29,7 @@
         </p>
         <p>
           <% if (graded) { %>
-            {% blocktrans %}Your score is <%= graded.score %> / <%= max_score %>{% endblocktrans %}<br/>
+            {% blocktrans with score="<%= graded.score %>"|safe max_score="<%= max_score %>"|safe %}Your score is {{ score }} / {{ max_score }}{% endblocktrans %}<br/>
             <% if (graded.comment) { %>
               <b>{% trans "Instructor comment" %}</b> <%= graded.comment %><br/>
             <% } %>
@@ -43,7 +43,7 @@
         </p>
         <% if (upload_allowed) { %>
           <p>
-            <a class="button finalize-upload">Submit</a>
+            <a class="button finalize-upload">{% trans "Submit" %}</a>
           </p>
         <% } %>
       </div>
@@ -193,7 +193,7 @@
         <form id="enter-grade-form">
           <input id="module_id-input" type="hidden" name="module_id"/>
           <input id="submission_id-input" type="hidden" name="submission_id"/>
-          <div>{% blocktrans with student_name="<span id='student-name'/>" %}Grade for {{student_name}}{% endblocktrans %}</div>
+          <div>{% blocktrans with student_name='<span id="student-name"></span>'|safe %}Grade for {{ student_name }}{% endblocktrans %}</div>
           <div>{% trans "Grade:" %} <input id="grade-input" name="grade"/>
             <span class="error"></span></div>
           <div>{% trans "Comment:" %} <textarea id="comment-input" name="comment" rows="4"></textarea></div>

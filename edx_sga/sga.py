@@ -19,7 +19,6 @@ import pytz
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.core.files import File
-from django.template import Context, Template
 from django.utils.encoding import force_str
 from django.utils.timezone import now as django_now
 from django.utils.translation import gettext as _
@@ -33,6 +32,10 @@ from webob.response import Response
 from xblock.core import XBlock
 from xblock.exceptions import JsonHandlerError
 from xblock.fields import DateTime, Float, Integer, Scope, String
+try:
+    from xblock.utils.resources import ResourceLoader
+except ImportError:  # pragma: no cover - compatibility with older XBlock releases
+    from xblockutils.resources import ResourceLoader
 from web_fragments.fragment import Fragment
 from xblock.utils.studio_editable import StudioEditableXBlockMixin
 from xmodule.contentstore.content import StaticContent
@@ -52,6 +55,8 @@ from edx_sga.utils import (
 )
 
 log = logging.getLogger(__name__)
+
+loader = ResourceLoader(__name__)
 
 default_storage = get_default_storage()
 
@@ -74,8 +79,9 @@ def reify(meth):
     return property(getter)
 
 
-@XBlock.needs('replace_urls')
-@XBlock.needs('user')
+@XBlock.needs("i18n")
+@XBlock.needs("replace_urls")
+@XBlock.needs("user")
 class StaffGradedAssignmentXBlock(
     StudioEditableXBlockMixin, ShowAnswerXBlockMixin, XBlock
 ):
@@ -88,6 +94,7 @@ class StaffGradedAssignmentXBlock(
     icon_class = "problem"
     STUDENT_FILEUPLOAD_MAX_SIZE = 4 * 1000 * 1000  # 4 MB
     editable_fields = ("display_name", "points", "weight", "showanswer", "solution")
+    i18n_js_namespace = "StaffGradedAssignmentI18N"
 
     display_name = String(
         display_name=_("Display Name"),
@@ -588,11 +595,19 @@ class StaffGradedAssignmentXBlock(
             context["is_course_staff"] = True
             self.update_staff_debug_context(context)
 
+        i18n_service = self._get_i18n_service()
         fragment = Fragment()
         fragment.add_content(
-            render_template("templates/staff_graded_assignment/show.html", context)
+            render_template(
+                "templates/staff_graded_assignment/show.html",
+                context,
+                i18n_service=i18n_service,
+            )
         )
         fragment.add_css(_resource("static/css/edx_sga.css"))
+        static_i18n_js_url = self._get_statici18n_js_url(i18n_service)
+        if static_i18n_js_url:
+            fragment.add_javascript_url(static_i18n_js_url)
         fragment.add_javascript(_resource("static/js/src/edx_sga.js"))
         fragment.add_javascript(_resource("static/js/src/jquery.tablesorter.min.js"))
         fragment.initialize_js("StaffGradedAssignmentXBlock")
@@ -604,6 +619,19 @@ class StaffGradedAssignmentXBlock(
         """
         # this method only exists to provide context=None for backwards compat
         return super().studio_view(context)
+
+    def _get_i18n_service(self):
+        """Return the i18n service supplied by the XBlock runtime."""
+        return self.runtime.service(self, "i18n")
+
+    def _get_statici18n_js_url(self, i18n_service):
+        """Return the JavaScript catalogue served by the XBlock i18n service."""
+        url_getter = getattr(
+            i18n_service, "get_javascript_i18n_catalog_url", None
+        )
+        if url_getter:
+            return url_getter(self)
+        return None
 
     def clear_student_state(self, *args, **kwargs):
         """
@@ -1043,24 +1071,20 @@ def _resource(path):  # pragma: NO COVER
     return data.decode("utf8")
 
 
-def load_resource(resource_path):  # pragma: NO COVER
+def render_template(template_path, context=None, i18n_service=None):
     """
-    Gets the content of a resource
-    """
-    resource_content = files(__package__).joinpath(resource_path).read_bytes()
-    return str(resource_content.decode("utf8"))
+    Render a packaged Django template with the XBlock's i18n service.
 
-
-def render_template(template_path, context=None):  # pragma: NO COVER
-    """
-    Evaluate a template by resource path, applying the provided context.
+    ``ResourceLoader.render_django_template`` is required for translation
+    catalogues that edx-platform pulls for an XBlock through Atlas.
     """
     if context is None:
         context = {}
-
-    template_str = load_resource(template_path)
-    template = Template(template_str)
-    return template.render(Context(context))
+    return loader.render_django_template(
+        template_path,
+        context=context,
+        i18n_service=i18n_service,
+    )
 
 
 def require(assertion):

@@ -2,7 +2,9 @@
 
 locales:
     - en  # English - Source Language
-    # Add languages here as needed
+    # Atlas keeps translated locales in openedx-translations. Do not add them
+    # here; it keeps this repository's source catalogue independent from the
+    # translation repository.
 
 # The locales used for fake-accented English, for testing.
 dummy_locales:
@@ -22,4 +24,3 @@ generate_merge:
         - django-partial.po
     djangojs.po:
         - djangojs-partial.po
-

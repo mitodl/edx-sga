@@ -110,8 +110,8 @@ msgstr "رخ بهمث اشس زثثر عحمخشيثي."
 
 #: edx_sga/templates/staff_graded_assignment/show.html
 #, python-format
-msgid "Your score is %(graded_score)s / %(max_score)s"
-msgstr "غخعق سذخقث هس %(graded_score)s / %(max_score)s"
+msgid "Your score is %(score)s / %(max_score)s"
+msgstr "غخعق سذخقث هس %(score)s / %(max_score)s"
 
 #: edx_sga/templates/staff_graded_assignment/show.html
 msgid "Annotated file from instructor"

@@ -1,3 +1,5 @@
 recursive-include edx_sga/static *
 recursive-include edx_sga/templates *
+recursive-include edx_sga/conf/locale *
 recursive-include edx_sga/locale *
+recursive-include edx_sga/translations *
