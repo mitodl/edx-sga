@@ -289,11 +289,13 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
     @mock.patch("edx_sga.sga._resource", DummyResource)
     @mock.patch("edx_sga.sga.render_template")
     @mock.patch("edx_sga.sga.Fragment")
-    def test_student_view_with_score(self, fragment, render_template):
+    def test_staff_student_view_with_score_when_hidden_from_learners(
+        self, fragment, render_template
+    ):
         """
-        Tests scores are displayed correctly on student view.
+        Staff can still see scores hidden from learners.
         """
-        block = self.make_one()
+        block = self.make_one(hide_score_from_learners=True)
         student = self.make_student(block, "fred", filename="foo.txt", score=10)
         self.personalize(block, **student)
         user = student["module"].student
@@ -307,6 +309,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
             self.assertEqual(template_arg, "templates/staff_graded_assignment/show.html")
             context = render_template.call_args[0][1]
             self.assertEqual(context["is_course_staff"], True)
+            self.assertEqual(context["hide_score_from_learners"], False)
             self.assertEqual(context["id"], "d_0")
             student_state = json.loads(context["student_state"])
             self.assertEqual(student_state["display_name"], "Staff Graded Assignment")
@@ -694,7 +697,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         """
         Test fetch grading data for staff members.
         """
-        block = self.make_one()
+        block = self.make_one(hide_score_from_learners=True)
         barney = self.make_student(
             block,
             "barney",
@@ -766,7 +769,7 @@ class StaffGradedAssignmentXblockTests(TempfileMixin, ModuleStoreTestCase):
         """
         Test enter grade by instructors.
         """
-        block = self.make_one()
+        block = self.make_one(hide_score_from_learners=True)
         block.is_instructor = lambda: True
         fred = self.make_student(block, "fred5", filename="foo.txt")
         block.enter_grade(
