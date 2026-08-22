@@ -214,6 +214,12 @@ Create a branch of edx-platform to commit a few minor changes:
   - **Problem Weight**: Defines the number of points each problem is worth.
   - **Show Answer**: Specifies if and when the student will see the correct answer to the problem.
   - **Solution**: The solution that is shown to the student if Show Answer is enabled for the problem. 
+  - **Hide score from learners**: When enabled, learners see **Submitted** instead of their numeric score inside the SGA component after grading. The setting is disabled by default, and staff can still view and manage the score.
+
+    This setting only changes the learner-facing display inside the SGA
+    component. It does not alter the stored grade, gradebook, reports, or the
+    Open edX Progress page. Those surfaces may continue to show numeric grade
+    information because they read persisted grading data outside this XBlock.
   
     ![sga settings](https://user-images.githubusercontent.com/8322892/36798686-48c41bc6-1c79-11e8-9ffb-d90a0169e69d.png)
 
@@ -224,12 +230,12 @@ Create a branch of edx-platform to commit a few minor changes:
 
 ## Course Authoring in XML
 
-XML for an SGA XBlock consists of one tag with the five attributes mentioned
+XML for an SGA XBlock consists of one tag with the six attributes mentioned
 above. It is recommended to also include a url_name attribute. For example:
 
 ```xml
 <vertical display_name="Staff Graded Assignment">
-    <edx_sga url_name="sga_example" weight="10.0" display_name="SGA Example" points="100.0" showanswer="past_due" solution="solution text" />
+    <edx_sga url_name="sga_example" weight="10.0" display_name="SGA Example" points="100.0" showanswer="past_due" solution="solution text" hide_score_from_learners="false" />
 </vertical>
 ```
 You can specify the following values for the show answer attribute.

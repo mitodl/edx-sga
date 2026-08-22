@@ -29,9 +29,13 @@
         </p>
         <p>
           <% if (graded) { %>
-            {% blocktrans with score="<%= graded.score %>"|safe max_score="<%= max_score %>"|safe %}Your score is {{ score }} / {{ max_score }}{% endblocktrans %}<br/>
+            {% if hide_score_from_learners %}
+              {% trans "Submitted" %}
+            {% else %}
+              {% blocktrans with score="<%= graded.score %>"|safe max_score="<%= max_score %>"|safe %}Your score is {{ score }} / {{ max_score }}{% endblocktrans %}
+            {% endif %}<br/>
             <% if (graded.comment) { %>
-              <b>{% trans "Instructor comment" %}</b> <%= graded.comment %><br/>
+              <b>{% trans "Instructor comment:" %}</b> <%= graded.comment %><br/>
             <% } %>
             <% if (annotated) { %>
               <b>{% trans "Annotated file from instructor" %}</b>
