@@ -1,12 +1,23 @@
 #!/bin/bash
-set -e
+set -eo pipefail
 
 source /openedx/venv/bin/activate
 
 cd /openedx/edx-platform
 mkdir -p reports
 
-pip install -r requirements/edx/testing.txt
+if [ -f requirements/edx/testing.txt ]; then
+  pip install -r requirements/edx/testing.txt
+elif [ -f uv.lock ]; then
+  uv export \
+    --frozen \
+    --no-hashes \
+    --no-default-groups \
+    --group testing | uv pip install -r /dev/stdin
+else
+  echo "Unable to locate the edx-platform testing dependencies."
+  exit 1
+fi
 
 pip install -e .
 
