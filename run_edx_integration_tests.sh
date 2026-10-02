@@ -6,9 +6,11 @@ source /openedx/venv/bin/activate
 cd /openedx/edx-platform
 mkdir -p reports
 
-pip install -r requirements/edx/testing.txt
-
-pip install -e .
+# The openedx-dev image already carries edx-platform's test dependencies
+# (built from the matching release line, or from master via the
+# OPENEDX_COMMON_VERSION pin in ci.yml), so only register the mounted
+# checkout's entry points, as open-edx-plugins does.
+pip install --no-deps -e .
 
 cd /edx-sga
 pip uninstall edx-sga -y
