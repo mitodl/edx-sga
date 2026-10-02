@@ -22,7 +22,7 @@ from opaque_keys.edx.locations import Location
 from opaque_keys.edx.locator import CourseLocator
 from workbench.runtime import WorkbenchRuntime
 from xblock.field_data import DictFieldData
-from xblock.fields import DateTime
+from xblock.fields import DateTime, Scope
 
 from edx_sga.constants import ATTR_KEY_USER_IS_STAFF
 from edx_sga.tests.common import DummyResource, TempfileMixin
@@ -182,7 +182,10 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         with translation.override("en"):
             rendered = render_template(
                 "templates/staff_graded_assignment/show.html",
-                {"is_course_staff": True},
+                {
+                    "hide_score_from_learners": False,
+                    "is_course_staff": True,
+                },
                 i18n_service=None,
             )
 
@@ -191,6 +194,24 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         assert '<a class="button finalize-upload">Submit</a>' in rendered
         assert "&lt;%" not in rendered
         assert "&lt;span" not in rendered
+
+    def test_show_template_replaces_learner_score_with_submitted(self):
+        """Hide the numeric score without hiding feedback or annotated files."""
+        from edx_sga.sga import render_template  # pylint: disable=import-outside-toplevel
+
+        with translation.override("en"):
+            rendered = render_template(
+                "templates/staff_graded_assignment/show.html",
+                {"hide_score_from_learners": True},
+                i18n_service=None,
+            )
+
+        assert "Submitted" in rendered
+        assert "Your score is <%= graded.score %> / <%= max_score %>" not in rendered
+        assert "<b>Instructor comment:</b> <%= graded.comment %>" in rendered
+        assert "Annotated file from instructor" in rendered
+        assert "<%= graded.comment %>" in rendered
+        assert "<%= annotated.filename %>" in rendered
 
     def test_student_template_uses_blocktrans_placeholders(self):
         """Student-facing Underscore template text must remain translatable."""
@@ -203,6 +224,8 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         template = template_path.read_text(encoding="utf-8")
 
         assert '<a class="button finalize-upload">{% trans "Submit" %}</a>' in template
+        assert '{% if hide_score_from_learners %}' in template
+        assert '{% trans "Submitted" %}' in template
         assert (
             '{% blocktrans with score="<%= graded.score %>"|safe '
             'max_score="<%= max_score %>"|safe %}'
@@ -213,6 +236,10 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             "{% blocktrans with student_name='<span id=\"student-name\"></span>'|safe %}"
             "Grade for {{ student_name }}"
             "{% endblocktrans %}"
+        ) in template
+        assert (
+            '<b>{% trans "Instructor comment:" %}</b> '
+            '<%= graded.comment %><br/>'
         ) in template
 
     def test_grade_modal_falls_back_to_username_when_full_name_is_empty(self):
@@ -260,6 +287,20 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         block = self.make_xblock(points=10)
         assert block.display_name == "Staff Graded Assignment"
         assert block.points == 10
+
+    def test_hide_score_from_learners_configuration(self):
+        """The hide-score setting is editable, per-block, and opt-in."""
+        from edx_sga.sga import (  # pylint: disable=import-outside-toplevel
+            StaffGradedAssignmentXBlock,
+        )
+
+        block = self.make_xblock()
+        assert block.hide_score_from_learners is False
+        assert "hide_score_from_learners" in block.editable_fields
+        assert StaffGradedAssignmentXBlock.hide_score_from_learners.scope == Scope.settings
+
+        configured_block = self.make_xblock(hide_score_from_learners=True)
+        assert configured_block.hide_score_from_learners is True
 
     def test_max_score(self):
         """
@@ -318,6 +359,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             assert template_arg == "templates/staff_graded_assignment/show.html"
             context = render_template.call_args[0][1]
             assert context["is_course_staff"] is True
+            assert context["hide_score_from_learners"] is False
             assert context["id"] == "name"
             student_state = json.loads(context["student_state"])
             assert student_state["uploaded"] is None
@@ -378,6 +420,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
                 assert template_arg == "templates/staff_graded_assignment/show.html"
                 context = render_template.call_args[0][1]
                 assert context["is_course_staff"] is True
+                assert context["hide_score_from_learners"] is False
                 assert context["id"] == "name"
                 student_state = json.loads(context["student_state"])
                 assert student_state["uploaded"] == {"filename": "foo.txt"}
@@ -390,6 +433,25 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
                 fragment.initialize_js.assert_called_once_with(
                     "StaffGradedAssignmentXBlock"
                 )
+
+    @mock.patch("edx_sga.sga._resource", DummyResource)
+    @mock.patch("edx_sga.sga.render_template")
+    @mock.patch("edx_sga.sga.Fragment")
+    def test_student_view_hides_score_for_learners(self, fragment, render_template):
+        """Pass the hide-score setting to the template for learner views only."""
+        block = self.make_xblock(hide_score_from_learners=True)
+
+        with mock.patch.object(
+            block, "show_staff_grading_interface", return_value=False
+        ), mock.patch.object(block, "student_state", return_value={}):
+            block.student_view()
+
+        context = render_template.call_args[0][1]
+        assert context["hide_score_from_learners"] is True
+        assert "is_course_staff" not in context
+        fragment.return_value.initialize_js.assert_called_once_with(
+            "StaffGradedAssignmentXBlock"
+        )
 
     def test_studio_view(self):
         """

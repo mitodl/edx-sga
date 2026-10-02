@@ -43,6 +43,16 @@ msgid "Maximum grade score given to assignment by staff."
 msgstr ""
 
 #: edx_sga/sga.py
+msgid "Hide score from learners"
+msgstr ""
+
+#: edx_sga/sga.py
+msgid ""
+"When enabled, learners see 'Submitted' instead of their numeric score inside "
+"this component after grading. Staff can continue to view and manage the score."
+msgstr ""
+
+#: edx_sga/sga.py
 msgid "Score assigned by non-instructor staff"
 msgstr ""
 
@@ -50,8 +60,12 @@ msgstr ""
 msgid "Score will need to be approved by instructor before being published."
 msgstr ""
 
-#: edx_sga/sga.py edx_sga/templates/staff_graded_assignment/show.html
+#: edx_sga/sga.py
 msgid "Instructor comment"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Instructor comment:"
 msgstr ""
 
 #: edx_sga/sga.py
@@ -101,6 +115,10 @@ msgstr ""
 
 #: edx_sga/templates/staff_graded_assignment/show.html
 msgid "No file has been uploaded."
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Submitted"
 msgstr ""
 
 #: edx_sga/templates/staff_graded_assignment/show.html
