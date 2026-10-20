@@ -818,7 +818,12 @@ class StaffGradedAssignmentXBlock(
 
         score = self.score
         if score is not None:
-            graded = {"score": score, "comment": force_str(self.comment)}
+            graded = {"comment": force_str(self.comment)}
+            if not (
+                self.hide_score_from_learners
+                and not self.show_staff_grading_interface()
+            ):
+                graded["score"] = score
         else:
             graded = None
 

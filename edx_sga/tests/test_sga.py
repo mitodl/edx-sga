@@ -238,7 +238,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
             "{% endblocktrans %}"
         ) in template
         assert (
-            '<b>{% trans "Instructor comment:" %}</b> '
+            '<b>{% trans "Instructor comment" %}:</b> '
             '<%= graded.comment %><br/>'
         ) in template
 
@@ -301,6 +301,44 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
 
         configured_block = self.make_xblock(hide_score_from_learners=True)
         assert configured_block.hide_score_from_learners is True
+
+    @data(
+        (False, False, {"comment": "Good work!", "score": 10}),
+        (True, False, {"comment": "Good work!"}),
+        (True, True, {"comment": "Good work!", "score": 10}),
+    )
+    @unpack
+    def test_student_state_score_visibility(
+        self, hide_score_from_learners, show_staff_grading_interface, expected
+    ):
+        """Only learner-facing state omits a hidden score."""
+        block = self.make_xblock(
+            hide_score_from_learners=hide_score_from_learners,
+            comment="Good work!",
+            annotated_sha1=SHA1,
+            annotated_filename="annotated.txt",
+        )
+
+        with mock.patch.object(
+            block, "get_score", return_value=10
+        ), mock.patch.object(
+            block,
+            "show_staff_grading_interface",
+            return_value=show_staff_grading_interface,
+        ), mock.patch.object(
+            block,
+            "get_submission",
+            return_value=fake_get_submission(filename="assignment.txt"),
+        ), mock.patch.object(
+            block, "upload_allowed", return_value=False
+        ), mock.patch.object(
+            block, "answer_available", return_value=False
+        ):
+            state = block.student_state()
+
+        assert state["graded"] == expected
+        assert state["uploaded"] == {"filename": "assignment.txt"}
+        assert state["annotated"] == {"filename": "annotated.txt"}
 
     def test_max_score(self):
         """
@@ -438,17 +476,34 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
     @mock.patch("edx_sga.sga.render_template")
     @mock.patch("edx_sga.sga.Fragment")
     def test_student_view_hides_score_for_learners(self, fragment, render_template):
-        """Pass the hide-score setting to the template for learner views only."""
-        block = self.make_xblock(hide_score_from_learners=True)
+        """Do not expose a hidden score in the learner's initial JSON state."""
+        block = self.make_xblock(
+            hide_score_from_learners=True,
+            comment="Good work!",
+        )
 
         with mock.patch.object(
             block, "show_staff_grading_interface", return_value=False
-        ), mock.patch.object(block, "student_state", return_value={}):
+        ), mock.patch.object(
+            block, "get_score", return_value=10
+        ), mock.patch.object(
+            block, "get_submission", return_value=None
+        ), mock.patch.object(
+            block, "upload_allowed", return_value=False
+        ), mock.patch.object(
+            block, "answer_available", return_value=False
+        ), mock.patch(
+            "edx_sga.sga.StaticContent.get_base_url_path_for_course_assets",
+            return_value="/assets/",
+        ):
             block.student_view()
 
         context = render_template.call_args[0][1]
         assert context["hide_score_from_learners"] is True
         assert "is_course_staff" not in context
+        student_state = json.loads(context["student_state"])
+        assert student_state["graded"] == {"comment": "Good work!"}
+        assert '"score"' not in context["student_state"]
         fragment.return_value.initialize_js.assert_called_once_with(
             "StaffGradedAssignmentXBlock"
         )

@@ -216,10 +216,11 @@ Create a branch of edx-platform to commit a few minor changes:
   - **Solution**: The solution that is shown to the student if Show Answer is enabled for the problem. 
   - **Hide score from learners**: When enabled, learners see **Submitted** instead of their numeric score inside the SGA component after grading. The setting is disabled by default, and staff can still view and manage the score.
 
-    This setting only changes the learner-facing display inside the SGA
-    component. It does not alter the stored grade, gradebook, reports, or the
-    Open edX Progress page. Those surfaces may continue to show numeric grade
-    information because they read persisted grading data outside this XBlock.
+    This setting removes the numeric score from both the learner-facing display
+    and the learner-facing JSON state returned by the SGA component. It does not
+    alter the stored grade, gradebook, reports, or the Open edX Progress page.
+    Those surfaces may continue to show numeric grade information because they
+    read persisted grading data outside this XBlock.
   
     ![sga settings](https://user-images.githubusercontent.com/8322892/36798686-48c41bc6-1c79-11e8-9ffb-d90a0169e69d.png)
 

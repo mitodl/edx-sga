@@ -60,12 +60,8 @@ msgstr ""
 msgid "Score will need to be approved by instructor before being published."
 msgstr ""
 
-#: edx_sga/sga.py
+#: edx_sga/sga.py edx_sga/templates/staff_graded_assignment/show.html
 msgid "Instructor comment"
-msgstr ""
-
-#: edx_sga/templates/staff_graded_assignment/show.html
-msgid "Instructor comment:"
 msgstr ""
 
 #: edx_sga/sga.py
