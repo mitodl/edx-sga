@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+Version 0.30.0
+--------------
+
+- feat: publish to PyPI with Trusted Publishing when the version changes on master (#393)
+- fix: resolve Tutor root dynamically in CI (mirror open-edx-plugins) (#392)
+- Enable Atlas i18n support for SGA translations (#388)
+- chore: remove sumac tests and add for Ulmo (#387)
+
 Version 0.29.0 (Released June 19, 2026)
 --------------
 
