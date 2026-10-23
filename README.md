@@ -346,12 +346,11 @@ coverage report -m
 
 ## Releasing
 
-A release is a version bump merged to `master`. Once the tests pass on
-`master`, the `publish` job in [`ci.yml`](.github/workflows/ci.yml) builds the
-version in `edx_sga/__init__.py`, uploads it to
-[PyPI](https://pypi.org/project/edx-sga/) if that version is not there yet,
-and tags the commit `v<version>`. A merge that leaves the version alone
-publishes nothing.
+A release is a version bump merged to `master`. Once the tests pass on the
+push that changes the version in `edx_sga/__init__.py`, the `publish` job in
+[`ci.yml`](.github/workflows/ci.yml) builds that version, uploads it to
+[PyPI](https://pypi.org/project/edx-sga/) if it is not there yet, and tags the
+commit `v<version>`. A push that leaves the version alone publishes nothing.
 
 To cut a release, open a pull request that changes nothing else:
 
@@ -359,10 +358,10 @@ To cut a release, open a pull request that changes nothing else:
 2. Add a section for it at the top of `RELEASE.rst`, listing the changes since
    the last release, in the same format as the existing entries.
 
-Merge release pull requests one at a time, and wait for the `publish` job of
-one to finish before merging the next. GitHub keeps only the newest queued run
-of this workflow on `master`, so a release merged while another run is waiting
-can replace it, and the version that run would have published is skipped.
+Only the push that changes the version publishes it, so a later merge never
+ships its own changes under the release's version. If that run fails (for
+example, before the Trusted Publisher below exists), fix the cause and re-run
+its failed jobs; pushing again does not retry the release.
 
 The `release` and `release-candidate` branches are no longer updated; install
 from PyPI instead.

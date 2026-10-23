@@ -11,12 +11,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: "${{ github.workflow }}-${{ github.ref }}"
-  # Never cancel an in-progress run on master: it may be partway through
-  # publishing a release, and a cancelled tag, or an upload that got only some
-  # files onto PyPI, is not retried by the next run. GitHub still replaces a
-  # *queued* run with a newer one, so merge release PRs one at a time (see
-  # README.md#releasing).
+  # Every master run gets a group of its own. GitHub replaces a queued run
+  # with any newer run in the same group, and a release run that was replaced
+  # would never publish: only the push that changes the version does (see
+  # detect-release). Other refs share one group per ref and cancel superseded
+  # runs.
+  group: "${{ github.workflow }}-${{ github.ref == 'refs/heads/master' && github.sha || github.ref }}"
   cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 jobs:
@@ -118,12 +118,14 @@ jobs:
           file: ./coverage.xml
           fail_ci_if_error: false
 
-  # A release is a version bump landing on master: once the tests pass, a
-  # version in edx_sga/__init__.py that is not yet on PyPI is built, published
-  # with Trusted Publishing, and tagged.
+  # A release is a push to master that changes the version in
+  # edx_sga/__init__.py: once the tests pass, that version is built, published
+  # with Trusted Publishing, and tagged, unless PyPI already has it.
   #
-  # PyPI, not the git tag history, decides what counts as already released, so
-  # an ordinary merge that leaves the version alone publishes nothing.
+  # Only the push that changes the version publishes it. A later push still
+  # carries the unpublished version but publishes nothing, because building it
+  # would ship that push's unrelated changes under the release's version and
+  # tag. If a release run fails, re-run its failed jobs.
   detect-release:
     needs: python-tests
     name: Detect an unpublished version
@@ -139,6 +141,8 @@ jobs:
 
       - name: Detect
         id: detect
+        env:
+          BEFORE: ${{ github.event.before }}
         run: |
           set -euo pipefail
           # setup.py takes its version from here.
@@ -148,6 +152,16 @@ jobs:
             exit 1
           fi
           echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+          git fetch --no-tags --depth=1 origin "$BEFORE"
+          previous="$(git show "${BEFORE}:edx_sga/__init__.py" \
+            | sed -n 's/^__version__ = "\([^"]*\)"$/\1/p')"
+          if [ "$previous" = "$version" ]; then
+            echo "This push leaves the version at ${version}; nothing to publish."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "This push changes the version from ${previous:-<none>} to ${version}."
 
           status="$(curl -s --max-time 30 -o /dev/null -w '%{http_code}' \
             "https://pypi.org/pypi/edx-sga/${version}/json")"
@@ -178,7 +192,7 @@ jobs:
     # Serialize releases so two overlapping pushes cannot both decide the same
     # version is unpublished and race each other to upload it.
     concurrency:
-      group: publish-edx-sga
+      group: publish-edx-sga-${{ needs.detect-release.outputs.version }}
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
