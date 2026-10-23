@@ -126,7 +126,7 @@ the SGA XBlock in devstack.**
     ```sh
     sudo su - edxapp -s /bin/bash
     . edxapp_env
-    pip install -e git+https://github.com/mitodl/edx-sga@release#egg=edx-sga
+    pip install -e git+https://github.com/mitodl/edx-sga@master#egg=edx-sga
     ```
 
 ### Production Installation
@@ -135,11 +135,8 @@ Create a branch of edx-platform to commit a few minor changes:
 
 1. **Add SGA to the platform requirements**
 
-    In `requirements/edx/github.txt`, add:
-
-    ```
-    -e git+https://github.com/mitodl/edx-sga@release#egg=edx-sga
-    ```
+    Install the [`edx-sga` package from PyPI](https://pypi.org/project/edx-sga/),
+    for example by adding a pinned `edx-sga==<version>` to your requirements.
 
 1. **Add appropriate `edx_sga` settings**
 
@@ -346,3 +343,46 @@ To get statement coverage (in devstack):
 coverage run --source edx_sga manage.py lms --settings=test test edx_sga.tests.integration_tests
 coverage report -m
 ```
+
+## Releasing
+
+A release is a version bump merged to `master`. Once the tests pass on the
+push that changes the version in `edx_sga/__init__.py`, the `publish` job in
+[`ci.yml`](.github/workflows/ci.yml) builds that version, uploads it to
+[PyPI](https://pypi.org/project/edx-sga/) if it is not there yet, and tags the
+commit `v<version>`. A push that leaves the version alone publishes nothing.
+
+To cut a release, open a pull request that changes nothing else:
+
+1. Set `__version__` in `edx_sga/__init__.py` to the new version.
+2. Add a section for it at the top of `RELEASE.rst`, listing the changes since
+   the last release, in the same format as the existing entries.
+
+Only the push that changes the version publishes it, so a later merge never
+ships its own changes under the release's version. If that run fails (for
+example, before the Trusted Publisher below exists), fix the cause and re-run
+its failed jobs; pushing again does not retry the release.
+
+The `release` and `release-candidate` branches are no longer updated; install
+from PyPI instead.
+
+### PyPI Trusted Publishing
+
+Publishing uses [Trusted Publishing](https://docs.pypi.org/trusted-publishers/):
+GitHub mints a short-lived OIDC token for the job, so there is no PyPI API
+token in this repository. The `edx-sga` project on PyPI has to trust this
+publisher, under *Manage project → Publishing*:
+
+| Field | Value |
+| --- | --- |
+| Owner | `mitodl` |
+| Repository | `edx-sga` |
+| Workflow name | `ci.yml` |
+| Environment | `pypi` |
+
+The publisher does not name a branch, so the `pypi` environment is what limits
+publishing to `master`: its deployment branch policy allows only `master`.
+
+If the upload fails with `403 Invalid API Token: OIDC scoped token is not valid
+for project`, none of the project's publishers matches all four values. Fix it
+on PyPI and re-run the job.
