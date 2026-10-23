@@ -12,8 +12,11 @@ permissions:
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
-  # Never cancel a run on master: it may be partway through publishing a
-  # release, and a cancelled upload or tag is not retried by the next run.
+  # Never cancel an in-progress run on master: it may be partway through
+  # publishing a release, and a cancelled tag, or an upload that got only some
+  # files onto PyPI, is not retried by the next run. GitHub still replaces a
+  # *queued* run with a newer one, so merge release PRs one at a time (see
+  # README.md#releasing).
   cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 jobs:

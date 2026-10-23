@@ -126,7 +126,7 @@ the SGA XBlock in devstack.**
     ```sh
     sudo su - edxapp -s /bin/bash
     . edxapp_env
-    pip install -e git+https://github.com/mitodl/edx-sga@release#egg=edx-sga
+    pip install -e git+https://github.com/mitodl/edx-sga@master#egg=edx-sga
     ```
 
 ### Production Installation
@@ -359,6 +359,11 @@ To cut a release, open a pull request that changes nothing else:
 2. Add a section for it at the top of `RELEASE.rst`, listing the changes since
    the last release, in the same format as the existing entries.
 
+Merge release pull requests one at a time, and wait for the `publish` job of
+one to finish before merging the next. GitHub keeps only the newest queued run
+of this workflow on `master`, so a release merged while another run is waiting
+can replace it, and the version that run would have published is skipped.
+
 The `release` and `release-candidate` branches are no longer updated; install
 from PyPI instead.
 
@@ -375,6 +380,9 @@ publisher, under *Manage project → Publishing*:
 | Repository | `edx-sga` |
 | Workflow name | `ci.yml` |
 | Environment | `pypi` |
+
+The publisher does not name a branch, so the `pypi` environment is what limits
+publishing to `master`: its deployment branch policy allows only `master`.
 
 If the upload fails with `403 Invalid API Token: OIDC scoped token is not valid
 for project`, none of the project's publishers matches all four values. Fix it
