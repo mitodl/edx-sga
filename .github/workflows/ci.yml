@@ -7,9 +7,14 @@ on:
     branches:
     - '**'
 
+permissions:
+  contents: read
+
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
-  cancel-in-progress: true
+  # Never cancel a run on master: it may be partway through publishing a
+  # release, and a cancelled upload or tag is not retried by the next run.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 jobs:
   python-tests:
@@ -109,3 +114,142 @@ jobs:
         with:
           file: ./coverage.xml
           fail_ci_if_error: false
+
+  # A release is a version bump landing on master: once the tests pass, a
+  # version in edx_sga/__init__.py that is not yet on PyPI is built, published
+  # with Trusted Publishing, and tagged.
+  #
+  # PyPI, not the git tag history, decides what counts as already released, so
+  # an ordinary merge that leaves the version alone publishes nothing.
+  detect-release:
+    needs: python-tests
+    name: Detect an unpublished version
+    runs-on: ubuntu-24.04
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    outputs:
+      version: ${{ steps.detect.outputs.version }}
+      found: ${{ steps.detect.outputs.found }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Detect
+        id: detect
+        run: |
+          set -euo pipefail
+          # setup.py takes its version from here.
+          version="$(sed -n 's/^__version__ = "\([^"]*\)"$/\1/p' edx_sga/__init__.py)"
+          if [ -z "$version" ]; then
+            echo "::error::No __version__ found in edx_sga/__init__.py."
+            exit 1
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+          status="$(curl -s --max-time 30 -o /dev/null -w '%{http_code}' \
+            "https://pypi.org/pypi/edx-sga/${version}/json")"
+          case "$status" in
+            200)
+              echo "edx-sga ${version} is already on PyPI; nothing to publish."
+              echo "found=false" >> "$GITHUB_OUTPUT"
+              ;;
+            404)
+              echo "edx-sga ${version} is not on PyPI; publishing it."
+              echo "found=true" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::error::PyPI returned HTTP ${status} for edx-sga ${version}."
+              exit 1
+              ;;
+          esac
+
+  publish:
+    needs: detect-release
+    name: Publish edx-sga ${{ needs.detect-release.outputs.version }}
+    runs-on: ubuntu-24.04
+    if: needs.detect-release.outputs.found == 'true'
+    environment: pypi
+    permissions:
+      contents: write   # create the release tag
+      id-token: write   # PyPI Trusted Publishing
+    # Serialize releases so two overlapping pushes cannot both decide the same
+    # version is unpublished and race each other to upload it.
+    concurrency:
+      group: publish-edx-sga
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          enable-cache: false
+
+      - name: Build
+        env:
+          VERSION: ${{ needs.detect-release.outputs.version }}
+        run: |
+          set -euo pipefail
+          uv build --out-dir dist
+          ls dist
+          # Fail rather than upload something other than the version detected.
+          test -f "dist/edx_sga-${VERSION}-py3-none-any.whl"
+          test -f "dist/edx_sga-${VERSION}.tar.gz"
+
+      - name: Publish to PyPI
+        id: publish
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          packages-dir: dist
+          # Tolerate a version that reached PyPI after the detect step.
+          skip-existing: true
+
+      # A missing or mismatched Trusted Publisher does not fail the OIDC token
+      # exchange; the upload fails with a 403 that does not say where the
+      # publisher has to be added.
+      - name: Explain a failed upload
+        if: failure() && steps.publish.outcome == 'failure'
+        env:
+          README_URL: ${{ github.server_url }}/${{ github.repository }}/blob/master/README.md#pypi-trusted-publishing
+        run: |
+          echo "::error::If the upload failed with '403 Invalid API Token: OIDC" \
+            "scoped token is not valid', no Trusted Publisher on edx-sga matches all" \
+            "of: owner mitodl, repository edx-sga, workflow ci.yml, environment pypi." \
+            "Add one at https://pypi.org/manage/project/edx-sga/settings/publishing/" \
+            "and re-run this job. See ${README_URL}"
+
+      # Tagging last means a tag always records something that really reached
+      # PyPI, instead of being left behind by a failed build or upload.
+      - name: Tag the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          TAG: v${{ needs.detect-release.outputs.version }}
+        run: |
+          if gh api "repos/${REPOSITORY}/git/ref/tags/${TAG}" >/dev/null 2>&1; then
+            echo "Tag ${TAG} already exists."
+            exit 0
+          fi
+
+          # The package is already on PyPI by this point, and detect-release
+          # will not select it again, so a re-run cannot create a missed tag.
+          # Retry rather than leave the release permanently untagged.
+          for remaining in 2 1 0; do
+            if gh api "repos/${REPOSITORY}/git/refs" \
+              --raw-field "ref=refs/tags/${TAG}" \
+              --raw-field "sha=${SHA}" \
+              --silent; then
+              exit 0
+            fi
+
+            if [ "$remaining" -eq 0 ]; then
+              echo "::error::Published ${TAG} but could not create the tag." \
+                "Create it with: git tag ${TAG} ${SHA} && git push origin ${TAG}"
+              exit 1
+            fi
+
+            sleep 5
+          done

@@ -135,11 +135,8 @@ Create a branch of edx-platform to commit a few minor changes:
 
 1. **Add SGA to the platform requirements**
 
-    In `requirements/edx/github.txt`, add:
-
-    ```
-    -e git+https://github.com/mitodl/edx-sga@release#egg=edx-sga
-    ```
+    Install the [`edx-sga` package from PyPI](https://pypi.org/project/edx-sga/),
+    for example by adding a pinned `edx-sga==<version>` to your requirements.
 
 1. **Add appropriate `edx_sga` settings**
 
@@ -346,3 +343,39 @@ To get statement coverage (in devstack):
 coverage run --source edx_sga manage.py lms --settings=test test edx_sga.tests.integration_tests
 coverage report -m
 ```
+
+## Releasing
+
+A release is a version bump merged to `master`. Once the tests pass on
+`master`, the `publish` job in [`ci.yml`](.github/workflows/ci.yml) builds the
+version in `edx_sga/__init__.py`, uploads it to
+[PyPI](https://pypi.org/project/edx-sga/) if that version is not there yet,
+and tags the commit `v<version>`. A merge that leaves the version alone
+publishes nothing.
+
+To cut a release, open a pull request that changes nothing else:
+
+1. Set `__version__` in `edx_sga/__init__.py` to the new version.
+2. Add a section for it at the top of `RELEASE.rst`, listing the changes since
+   the last release, in the same format as the existing entries.
+
+The `release` and `release-candidate` branches are no longer updated; install
+from PyPI instead.
+
+### PyPI Trusted Publishing
+
+Publishing uses [Trusted Publishing](https://docs.pypi.org/trusted-publishers/):
+GitHub mints a short-lived OIDC token for the job, so there is no PyPI API
+token in this repository. The `edx-sga` project on PyPI has to trust this
+publisher, under *Manage project → Publishing*:
+
+| Field | Value |
+| --- | --- |
+| Owner | `mitodl` |
+| Repository | `edx-sga` |
+| Workflow name | `ci.yml` |
+| Environment | `pypi` |
+
+If the upload fails with `403 Invalid API Token: OIDC scoped token is not valid
+for project`, none of the project's publishers matches all four values. Fix it
+on PyPI and re-run the job.
