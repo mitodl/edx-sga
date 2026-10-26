@@ -214,7 +214,7 @@ Create a branch of edx-platform to commit a few minor changes:
   - **Problem Weight**: Defines the number of points each problem is worth.
   - **Show Answer**: Specifies if and when the student will see the correct answer to the problem.
   - **Solution**: The solution that is shown to the student if Show Answer is enabled for the problem. 
-  - **Hide score from learners**: When enabled, learners see **Submitted** instead of their numeric score inside the SGA component after grading. The setting is disabled by default, and staff can still view and manage the score.
+  - **Hide score from learners in this component**: When enabled, learners see **Your submission has been graded.** instead of their numeric score inside the SGA component after grading. The setting is disabled by default, and staff can still view and manage the score.
 
     This setting removes the numeric score from both the learner-facing display
     and the learner-facing JSON state returned by the SGA component. It does not

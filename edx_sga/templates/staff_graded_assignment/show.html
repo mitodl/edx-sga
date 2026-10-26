@@ -30,7 +30,7 @@
         <p>
           <% if (graded) { %>
             {% if hide_score_from_learners %}
-              {% trans "Submitted" %}
+              {% trans "Your submission has been graded." %}
             {% else %}
               {% blocktrans with score="<%= graded.score %>"|safe max_score="<%= max_score %>"|safe %}Your score is {{ score }} / {{ max_score }}{% endblocktrans %}
             {% endif %}<br/>

@@ -195,7 +195,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         assert "&lt;%" not in rendered
         assert "&lt;span" not in rendered
 
-    def test_show_template_replaces_learner_score_with_submitted(self):
+    def test_show_template_replaces_learner_score_with_graded_status(self):
         """Hide the numeric score without hiding feedback or annotated files."""
         from edx_sga.sga import render_template  # pylint: disable=import-outside-toplevel
 
@@ -206,7 +206,8 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
                 i18n_service=None,
             )
 
-        assert "Submitted" in rendered
+        assert "Your submission has been graded." in rendered
+        assert "Submitted" not in rendered
         assert "Your score is <%= graded.score %> / <%= max_score %>" not in rendered
         assert "<b>Instructor comment:</b> <%= graded.comment %>" in rendered
         assert "Annotated file from instructor" in rendered
@@ -225,7 +226,8 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
 
         assert '<a class="button finalize-upload">{% trans "Submit" %}</a>' in template
         assert '{% if hide_score_from_learners %}' in template
-        assert '{% trans "Submitted" %}' in template
+        assert '{% trans "Your submission has been graded." %}' in template
+        assert '<th class="header">{% trans "Submitted" %}' in template
         assert (
             '{% blocktrans with score="<%= graded.score %>"|safe '
             'max_score="<%= max_score %>"|safe %}'
@@ -298,6 +300,14 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         assert block.hide_score_from_learners is False
         assert "hide_score_from_learners" in block.editable_fields
         assert StaffGradedAssignmentXBlock.hide_score_from_learners.scope == Scope.settings
+        assert (
+            StaffGradedAssignmentXBlock.hide_score_from_learners.display_name
+            == "Hide score from learners in this component"
+        )
+        assert (
+            "Other Open edX views may still display it."
+            in StaffGradedAssignmentXBlock.hide_score_from_learners.help
+        )
 
         configured_block = self.make_xblock(hide_score_from_learners=True)
         assert configured_block.hide_score_from_learners is True
@@ -484,7 +494,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
 
         with mock.patch.object(
             block, "show_staff_grading_interface", return_value=False
-        ), mock.patch.object(
+        ) as show_staff_grading_interface, mock.patch.object(
             block, "get_score", return_value=10
         ), mock.patch.object(
             block, "get_submission", return_value=None
@@ -504,6 +514,7 @@ class StaffGradedAssignmentMockedTests(TempfileMixin):
         student_state = json.loads(context["student_state"])
         assert student_state["graded"] == {"comment": "Good work!"}
         assert '"score"' not in context["student_state"]
+        show_staff_grading_interface.assert_called_once_with()
         fragment.return_value.initialize_js.assert_called_once_with(
             "StaffGradedAssignmentXBlock"
         )
