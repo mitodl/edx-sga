@@ -31,7 +31,7 @@ from submissions.models import Submission
 from webob.response import Response
 from xblock.core import XBlock
 from xblock.exceptions import JsonHandlerError
-from xblock.fields import DateTime, Float, Integer, Scope, String
+from xblock.fields import Boolean, DateTime, Float, Integer, Scope, String
 try:
     from xblock.utils.resources import ResourceLoader
 except ImportError:  # pragma: no cover - compatibility with older XBlock releases
@@ -93,7 +93,14 @@ class StaffGradedAssignmentXBlock(
     has_score = True
     icon_class = "problem"
     STUDENT_FILEUPLOAD_MAX_SIZE = 4 * 1000 * 1000  # 4 MB
-    editable_fields = ("display_name", "points", "weight", "showanswer", "solution")
+    editable_fields = (
+        "display_name",
+        "points",
+        "weight",
+        "showanswer",
+        "solution",
+        "hide_score_from_learners",
+    )
     i18n_js_namespace = "StaffGradedAssignmentI18N"
 
     display_name = String(
@@ -120,6 +127,18 @@ class StaffGradedAssignmentXBlock(
         display_name=_("Maximum score"),
         help=_("Maximum grade score given to assignment by staff."),
         default=100,
+        scope=Scope.settings,
+    )
+
+    hide_score_from_learners = Boolean(
+        display_name=_("Hide score from learners in this component"),
+        help=_(
+            "When enabled, learners see 'Your submission has been graded.' "
+            "instead of their numeric score inside this SGA component after "
+            "grading. Staff can continue to view and manage the score. Other "
+            "Open edX views may still display it."
+        ),
+        default=False,
         scope=Scope.settings,
     )
 
@@ -585,13 +604,22 @@ class StaffGradedAssignmentXBlock(
         The primary view of the StaffGradedAssignmentXBlock, shown to students
         when viewing courses.
         """
+        show_staff_grading_interface = self.show_staff_grading_interface()
+        hide_score_from_current_user = self._hide_score_from_current_user(
+            show_staff_grading_interface=show_staff_grading_interface
+        )
         context = {
-            "student_state": json.dumps(self.student_state()),
+            "student_state": json.dumps(
+                self.student_state(
+                    hide_score_from_current_user=hide_score_from_current_user
+                )
+            ),
             "id": self.location.block_id.replace(".", "_"),
             "max_file_size": self.student_upload_max_size(),
             "support_email": settings.TECH_SUPPORT_EMAIL,
+            "hide_score_from_learners": hide_score_from_current_user,
         }
-        if self.show_staff_grading_interface():
+        if show_staff_grading_interface:
             context["is_course_staff"] = True
             self.update_staff_debug_context(context)
 
@@ -778,10 +806,14 @@ class StaffGradedAssignmentXBlock(
             )
         return student_module
 
-    def student_state(self):
+    def student_state(self, hide_score_from_current_user=None):
         """
         Returns a JSON serializable representation of student's state for
         rendering in client view.
+
+        ``hide_score_from_current_user`` can be supplied by ``student_view``
+        so the template context and serialized state share the same visibility
+        decision. Direct callers, including upload handlers, calculate it here.
         """
         submission = self.get_submission()
         if submission:
@@ -796,7 +828,11 @@ class StaffGradedAssignmentXBlock(
 
         score = self.score
         if score is not None:
-            graded = {"score": score, "comment": force_str(self.comment)}
+            if hide_score_from_current_user is None:
+                hide_score_from_current_user = self._hide_score_from_current_user()
+            graded = {"comment": force_str(self.comment)}
+            if not hide_score_from_current_user:
+                graded["score"] = score
         else:
             graded = None
 
@@ -956,6 +992,12 @@ class StaffGradedAssignmentXBlock(
         """
         in_studio_preview = self.scope_ids.user_id is None
         return self.is_course_staff() and not in_studio_preview
+
+    def _hide_score_from_current_user(self, show_staff_grading_interface=None):
+        """Return whether the current view should omit the numeric score."""
+        if show_staff_grading_interface is None:
+            show_staff_grading_interface = self.show_staff_grading_interface()
+        return self.hide_score_from_learners and not show_staff_grading_interface
 
     def past_due(self):
         """
